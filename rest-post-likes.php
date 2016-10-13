@@ -68,11 +68,3 @@ function the_rest_post_like_count( $post_id, $args = [] ) {
 function get_rest_post_like_button( $post_id, $args = [] ) {
 	return rest_post_likes()->get_post_like_button( $post_id, $args );
 }
-
-add_filter( 'the_content', function( $content ) {
-	if ( is_singular( [ 'post', 'page' ] ) ) {
-		$content = the_rest_post_like_count( get_the_ID(), [ 'echo' => false ] ) . $content;
-		$content = $content . get_rest_post_like_button( get_the_ID() );
-	}
-	return $content;
-} );
