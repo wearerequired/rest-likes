@@ -106,8 +106,8 @@ class Controller {
 						'required'          => true,
 					],
 				],
-				'permissions_callback' => [ $this, 'check_permission' ],
-				'callback'             => [ $this, 'add_like' ],
+				'permission_callback' => [ $this, 'check_permission' ],
+				'callback'            => [ $this, 'add_like' ],
 			],
 			[
 				'methods' => \WP_REST_Server::DELETABLE,
@@ -117,8 +117,8 @@ class Controller {
 						'required'          => true,
 					],
 				],
-				'permissions_callback' => [ $this, 'check_permission' ],
-				'callback'             => [ $this, 'remove_like' ],
+				'permission_callback' => [ $this, 'check_permission' ],
+				'callback'            => [ $this, 'remove_like' ],
 			],
 		] );
 	}
