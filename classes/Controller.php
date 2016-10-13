@@ -60,7 +60,7 @@ class Controller {
 		$this->namespace = \apply_filters( 'rest_post_likes_namespace', 'rest-post-likes' ) . '/v' . $this->version;
 
 		// Set default css classnames.
-		$this->classnames = \apply_filters( 'rest_post_likes_classnames', [ 'count_classname' => 'rest-like-count', 'button_classname' => 'rest-like-button', 'liked_classname' => 'has-like', 'storage_key' => 'rest_post_likes' ] );
+		$this->classnames = \apply_filters( 'rest_post_likes_classnames', [ 'count_classname' => 'rest-like-count', 'button_classname' => 'rest-like-button', 'liked_classname' => 'has-like' ] );
 
 		$this->add_hooks();
 	}
@@ -181,7 +181,7 @@ class Controller {
 	 */
 	public function register_scripts() {
 		\wp_enqueue_script( 'rest-post-likes', \esc_url( \plugin_dir_url( __DIR__ ) . 'js/rest-post-likes.js' ), [ 'wp-api', 'underscore' ], '1.0', true );
-		\wp_localize_script( 'rest-post-likes', 'restPostLikes', $this->classnames );
+		\wp_localize_script( 'rest-post-likes', 'restPostLikes', array_merge( $this->classnames, apply_filters( 'rest_post_likes_settings', [ 'storage_key' => 'rest_post_likes' ] ) ) );
 	}
 
 	/**
@@ -215,13 +215,13 @@ class Controller {
 	 * @return array $response
 	 */
 	public function handle_like( $post_id, $remove = false ) {
-		$likes = absint( \get_post_meta( $post_id, 'rest_post_likes', true ) );
+		$likes = absint( \get_post_meta( $post_id, $this->meta_key, true ) );
 		if ( false === $remove ) {
 			$likes++;
 		} else {
 			$likes--;
 		}
-		\update_post_meta( $post_id, 'rest_post_likes', $likes );
+		\update_post_meta( $post_id, $this->meta_key, $likes );
 		$response = array(
 			'count' => $likes,
 		);
