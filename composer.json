@@ -1,0 +1,28 @@
+{
+  "name":         "wearerequired/rest-post-likes",
+  "description":  "Post Likes using the WP REST API",
+  "version":      "1.0.0",
+  "type":         "wordpress-plugin",
+  "license":      "GPL-2.0+",
+  "authors":      [
+    {
+      "name":     "required+",
+      "email":    "support@required.ch",
+      "homepage": "https://required.ch",
+      "role":     "Developer"
+    }
+  ],
+  "repositories": [
+    {
+      "type": "composer",
+      "url":  "https://wpackagist.org"
+    }
+  ],
+  "require":      {
+    "php": ">=5.6"
+  },
+  "require-dev":  {
+    "phpunit/phpunit":          "*",
+    "wp-coding-standards/wpcs": "*"
+  }
+}
