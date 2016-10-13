@@ -3,7 +3,7 @@
  * Plugin Name: REST Post Likes
  * Description: WP REST API Post Likes
  * Author: Silvan Hagen
- * Version: 1.0
+ * Version: 1.0.0
  * Author URI: https://wearerequired.com
  *
  * @package rest-post-likes
