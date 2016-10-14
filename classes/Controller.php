@@ -30,42 +30,33 @@ class Controller {
 	 *
 	 * @var string
 	 */
-	protected $namespace;
+	public $namespace;
 
 	/**
 	 * API Allowed post types.
 	 *
 	 * @var array
 	 */
-	protected $allowed_post_types;
+	public $allowed_post_types;
 
 	/**
 	 * REST field & meta key value.
 	 *
 	 * @var string
 	 */
-	protected $meta_key = 'rest_post_likes';
+	public $meta_key = 'rest_post_likes';
 
 	/**
 	 * CSS Classnames.
 	 *
 	 * @var array
 	 */
-	protected $classnames;
+	public $classnames;
 
 	/**
 	 * Controller constructor.
 	 */
 	public function __construct() {
-		// Set allowed post types, allow filtering.
-		$this->allowed_post_types = \apply_filters( 'rest_post_likes_allowed_post_types', [ 'post', 'page' ] );
-
-		// Set our API namespace.
-		$this->namespace = \apply_filters( 'rest_post_likes_namespace', 'rest-post-likes' ) . '/v' . $this->version;
-
-		// Set default css classnames.
-		$this->classnames = \apply_filters( 'rest_post_likes_classnames', [ 'count_classname' => 'rest-like-count', 'button_classname' => 'rest-like-button', 'liked_classname' => 'has-like' ] );
-
 		$this->add_hooks();
 	}
 
@@ -76,6 +67,28 @@ class Controller {
 		add_action( 'rest_api_init', [ $this, 'add_rest_route' ] );
 		add_action( 'rest_api_init', [ $this, 'add_rest_field' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
+		add_action( 'init', [ $this, 'setup' ] );
+	}
+
+	/**
+	 * Setup the defaults.
+	 *
+	 * Note: This function is hooked to init, so a theme could
+	 * potentially overwrite the defaults with the filters below.
+	 */
+	public function setup() {
+		// Set allowed post types, allow filtering.
+		$this->allowed_post_types = \apply_filters( 'rest_post_likes_allowed_post_types', [ 'post', 'page' ] );
+
+		// Set our API namespace.
+		$this->namespace = urlencode( \apply_filters( 'rest_post_likes_namespace', 'rest-post-likes' ) . '/v' . $this->version );
+
+		// Set default css classnames.
+		$this->classnames = \apply_filters( 'rest_post_likes_classnames', [
+			'count_classname' => 'rest-like-count',
+			'button_classname' => 'rest-like-button',
+			'liked_classname' => 'has-like',
+		] );
 	}
 
 	/**
