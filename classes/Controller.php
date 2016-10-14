@@ -1,5 +1,9 @@
 <?php
-
+/**
+ * Rest Post Likes Controller.
+ *
+ * @package rest-post-likes
+ */
 
 namespace Required\RestPostLikes;
 
