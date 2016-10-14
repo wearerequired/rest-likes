@@ -200,8 +200,28 @@ class Controller {
 	 * Register javascript on front-end.
 	 */
 	public function register_scripts() {
-		\wp_enqueue_script( 'rest-post-likes', \esc_url( \plugin_dir_url( __DIR__ ) . 'js/rest-post-likes.js' ), [ 'wp-api', 'underscore' ], '1.0', true );
-		\wp_localize_script( 'rest-post-likes', 'restPostLikes', array_merge( $this->classnames, apply_filters( 'rest_post_likes_settings', [ 'storage_key' => 'rest_post_likes' ] ) ) );
+		// Enqueue the plugin script & dependencies.
+		\wp_enqueue_script(
+			'rest-post-likes',
+			\esc_url( \plugin_dir_url( __DIR__ ) . 'js/rest-post-likes.js' ),
+			[ 'wp-api', 'underscore' ],
+			'1.0',
+			true
+		);
+		// Localize the plugin script.
+		\wp_localize_script(
+			'rest-post-likes',
+			'restPostLikes',
+			array_merge(
+				$this->classnames,
+				apply_filters( 'rest_post_likes_settings',
+					[
+						'storage_key'           => $this->meta_key,
+						'endpoint_namespace'    => $this->namespace,
+					]
+				)
+			)
+		);
 	}
 
 	/**
