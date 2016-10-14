@@ -13,7 +13,7 @@ The following example code adds the post like count at the beginning of `the_con
 
 ```php
 add_filter( 'the_content', function( $content ) {
-	if ( is_singular( [ 'post', 'page' ] ) ) {
+	if ( is_singular( get_rest_post_like_allowed_post_types() ) ) {
 		$content = the_rest_post_like_count( get_the_ID(), [ 'echo' => false ] ) . $content;
 		$content = $content . get_rest_post_like_button( get_the_ID() );
 	}
