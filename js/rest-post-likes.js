@@ -2,6 +2,10 @@
 	var button = $( '.' + restPostLikes.button_classname );
 	var counter = $( '.' + restPostLikes.count_classname );
 	var storageKey = restPostLikes.storage_key;
+
+	/**
+	 * Check for localStorage support in the browser.
+	 */
 	var storage, fail, uid;
 	try {
 		uid = new Date;
@@ -11,6 +15,11 @@
 		fail && (storage = false);
 	} catch (exception) {}
 
+	/**
+	 * Get liked posts from localStorage.
+	 *
+	 * @returns {Array}
+	 */
 	var getLikedPosts = function () {
 		if ( storage ) {
 			var storageData = storage.getItem( storageKey );
@@ -21,6 +30,11 @@
 		return [];
 	};
 
+	/**
+	 * Add like to localPost.
+	 *
+	 * @param post_id
+	 */
 	var addLikedPosts = function ( post_id ) {
 		if ( storage ) {
 			var storageData = getLikedPosts();
@@ -32,6 +46,11 @@
 		}
 	};
 
+	/**
+	 * Remove like from localStorage.
+	 *
+	 * @param post_id
+	 */
 	var removeLikedPost = function ( post_id ) {
 		if ( storage ) {
 			var storageData = getLikedPosts();
@@ -43,41 +62,52 @@
 
 	var buttonHandler = function () {
 
+		// Set up the post_id of the current post.
 		var post_id = button.data( 'post-id' );
 
+		// Check localStorage for liked post, set class on button.
 		if ( _.contains( getLikedPosts(), post_id ) ) {
 			button.toggleClass( restPostLikes.liked_classname );
 		}
 
 		button.on( 'click', function () {
 
+			// Define default HTTP method.
 			var method = 'POST';
 
+			// Alter method if the user already liked the post.
 			if ( button.hasClass( restPostLikes.liked_classname ) ) {
 				method = 'DELETE';
 			}
+
+			// Toggle the button class to show interaction.
+			button.toggleClass( restPostLikes.liked_classname );
+
 			$.ajax( {
-				url: wpApiSettings.root + 'rest-post-likes/v1/posts/' + post_id + '/like',
+				url: wpApiSettings.root + restPostLikes.endpoint_namespace + '/posts/' + post_id + '/like',
 				method: method,
 				beforeSend: function ( xhr ) {
 					xhr.setRequestHeader( 'X-WP-Nonce', wpApiSettings.nonce );
 				}
 			} ).done( function ( response ) {
-				if ( 'DELETE' === method ) {
-					removeLikedPost( post_id );
-				} else {
-					addLikedPosts( post_id );
-				}
-				button.toggleClass( restPostLikes.liked_classname );
-				counter.text( response.count );
+					if ( 'DELETE' === method ) {
+						removeLikedPost( post_id );
+					} else {
+						addLikedPosts( post_id );
+					}
+					counter.text( response.count );
+			} ).fail( function () {
+					// Toggle the button class to show interaction.
+					button.toggleClass( restPostLikes.liked_classname );
 			} );
 		});
 	};
 
+	/**
+	 * Hook up the handler.
+	 */
 	$( document ).ready( function () {
 		buttonHandler();
 	});
-
-
 
 })( jQuery );
