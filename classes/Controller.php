@@ -281,18 +281,14 @@ class Controller {
 			return new \WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
 		}
 
-		$button = [
-			'<button class="',
-			$this->classnames['button_classname'],
-			'" data-post-id="' . $post_id . '">',
+		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>' ),
+			esc_attr( $this->classnames['button_classname'] ),
+			\absint( $post_id ),
 			apply_filters( 'rest_post_likes_button_text', 'Like ' ),
-			$this->the_post_like_count( $post_id, [ 'echo' => false ] ),
-			'</button>',
-		];
+			$this->the_post_like_count( $post_id, [ 'echo' => false ] )
+		);
 
-		$output = implode( '', $button );
-
-		return $output;
+		return $button;
 	}
 
 	/**
