@@ -321,21 +321,19 @@ class Controller {
 			return new \WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
 		}
 
-		$default = apply_filters( 'rest_post_likes_count_args', [
-			'before' => '<span class="' . $this->classnames['count_classname'] . '">',
-			'after'  => '</span>',
-			'echo'   => true,
-		] );
-
+		$default = apply_filters( 'rest_post_likes_count_args', [ 'echo' => true ] );
 		$args = wp_parse_args( $args, $default );
 
-		$output = $args['before'] . esc_html( $this->get_post_like_count( $post_id ) ) . $args['after'];
+		$count = sprintf( apply_filters( 'rest_post_likes_count_markup', '<span class="%1$s">%2$d</span>' ),
+			esc_attr( $this->classnames['count_classname'] ),
+			esc_html( $this->get_post_like_count( $post_id ) )
+		);
 
 		if ( ! $args['echo'] ) {
-			return $output;
+			return $count;
 		}
 
-		echo $output;
+		echo $count;
 
 	}
 }
