@@ -102,6 +102,9 @@ class Controller {
 	 * Register API endpoint.
 	 */
 	public function add_rest_route() {
+		if ( ! function_exists( 'register_rest_route' ) ) {
+			return;
+		}
 		register_rest_route( $this->namespace, '/posts/(?P<id>[\d]+)/like', [
 			[
 				'methods' => \WP_REST_Server::CREATABLE,
