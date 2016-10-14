@@ -68,3 +68,12 @@ function the_rest_post_like_count( $post_id, $args = [] ) {
 function get_rest_post_like_button( $post_id, $args = [] ) {
 	return rest_post_likes()->get_post_like_button( $post_id, $args );
 }
+
+/**
+ * Get allowed post types.
+ *
+ * @return array
+ */
+function get_rest_post_like_allowed_post_types() {
+	return (array) rest_post_likes()->allowed_post_types;
+}
