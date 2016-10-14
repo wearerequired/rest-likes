@@ -36,8 +36,8 @@ Change the namespace in of the plugin endpoint.
 * **default:** `rest-post-likes`
 
 ```php
-add_filter( ‘rest_post_likes_namespace’, function( $name ) {
-	return ‘another-end-point-namespace’;
+add_filter( 'rest_post_likes_namespace’, function( $name ) {
+	return 'another-end-point-namespace’;
 });
 ```
 
@@ -48,7 +48,7 @@ Change the post types that support likes.
 * **default:** `[ 'post', 'page' ]`
 
 ```php
-add_filter( ‘rest_post_likes_allowed_post_types’, function( $post_types ) {
+add_filter( 'rest_post_likes_allowed_post_types’, function( $post_types ) {
 	return ['post'] // Allow likes on posts
 	return $post_types[] = 'my-cpt-name' // Add another post type
 });
@@ -61,7 +61,7 @@ Change the CSS classnames used by the like count, button and already liked posts
 * **default:** `[ 'count_classname' => 'rest-like-count', 'button_classname' => 'rest-like-button', 'liked_classname' => 'has-like' ]`
 
 ```php
-add_filter( ‘rest_post_likes_classnames’, function( $classnames ) {
+add_filter( 'rest_post_likes_classnames’, function( $classnames ) {
 	$classnames['count_classname'] = 'fancy-like-count';
 	$classnames['button_classname'] = 'fancy-like-button';
 	$classnames['liked_classname'] = 'fancy-like-has';
@@ -76,8 +76,38 @@ Change the text of the like button, sort of the inner part of the button, with t
 * **default:** `Like `
 
 ```php
-add_filter( ‘rest_post_likes_button_text’, function( $button_text ) {
+add_filter( 'rest_post_likes_button_text', function( $button_text ) {
 	$button_text = '<span class="icon-thumb-up"></span>';
 	return $button_text;
+});
+```
+
+### `rest_post_likes_button_markup` filter hook
+
+Change the markup of the button entirely.
+
+* **default:** `<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>`
+* string `%1$s` the CSS classnames
+* int `%2$d` the Post ID
+* string `%3$s` button text
+* string `%4$s` like count
+
+```php
+add_filter( 'rest_post_likes_button_markup', function( $markup ) {
+	return '<span class="%1$s" data-post-id="%2$d">%4$s</span>';
+});
+```
+
+### `rest_post_likes_count_markup` filter hook
+
+Change the markup of the count element.
+
+* **default:** `<span class="%1$s">%2$d</span>`
+* string `%1$s` the CSS classnames
+* int `%2$d` current like count
+
+```php
+add_filter( 'rest_post_likes_count_markup', function( $markup ) {
+	return 'Likes so far: <span class="%1$s">%2$d</span>';
 });
 ```
