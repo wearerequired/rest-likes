@@ -81,7 +81,7 @@ class Controller {
 		$this->allowed_post_types = \apply_filters( 'rest_post_likes_allowed_post_types', [ 'post', 'page' ] );
 
 		// Set our API namespace.
-		$this->namespace = urlencode( \apply_filters( 'rest_post_likes_namespace', 'rest-post-likes' ) . '/v' . $this->version );
+		$this->namespace = \apply_filters( 'rest_post_likes_namespace', 'rest-post-likes' ) . '/v' . $this->version;
 
 		// Set default css classnames.
 		$this->classnames = \apply_filters( 'rest_post_likes_classnames', [
