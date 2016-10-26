@@ -10,13 +10,14 @@ namespace Required\RestPostLikes;
 use WP_Error;
 use WP_REST_Server;
 use WP_REST_Response;
+use WP_REST_Controller;
 
 /**
  * Class Controller
  *
  * @package RestPostLikes
  */
-class Controller {
+class Controller extends WP_REST_Controller  {
 
 	/**
 	 * API Version.
@@ -121,7 +122,7 @@ class Controller {
 		}
 		register_rest_route( $this->namespace, '/posts/(?P<id>[\d]+)/like', [
 			[
-				'methods' => \WP_REST_Server::CREATABLE,
+				'methods' => WP_REST_Server::CREATABLE,
 				'args'    => [
 					'id' => [
 						'sanitize_callback' => '\\absint',
@@ -132,7 +133,7 @@ class Controller {
 				'callback'            => [ $this, 'add_like' ],
 			],
 			[
-				'methods' => \WP_REST_Server::DELETABLE,
+				'methods' => WP_REST_Server::DELETABLE,
 				'args'    => [
 					'id' => [
 						'sanitize_callback' => '\\absint',
@@ -154,15 +155,15 @@ class Controller {
 	 */
 	public function check_permission( $request ) {
 		if ( ! $this->check_nonce() ) {
-			return new \WP_Error( 'invalid-nonce', 'No valid nonce found for action', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-nonce', 'No valid nonce found for action', array( 'status' => 400 ) );
 		}
 
 		if ( ! $this->check_post_type( $request['id'] ) ) {
-			return new \WP_Error( 'invalid-post-type', 'You can only like.' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-type', 'You can only like.' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
 
 		if ( 'publish' !== \get_post_status( $request['id'] ) ) {
-			return new \WP_Error( 'invalid-post-status', 'You can only like' . implode( ' and ', $this->allowed_post_types ) . ' that are published.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-status', 'You can only like' . implode( ' and ', $this->allowed_post_types ) . ' that are published.', array( 'status' => 400 ) );
 		}
 
 		return true;
@@ -233,7 +234,7 @@ class Controller {
 	 * @return \WP_REST_Response
 	 */
 	public function add_like( $request ) {
-		return new \WP_REST_Response( $this->handle_like( $request['id'], false ), 201 );
+		return new WP_REST_Response( $this->handle_like( $request['id'], false ), 201 );
 	}
 
 	/**
@@ -244,7 +245,7 @@ class Controller {
 	 * @return \WP_REST_Response
 	 */
 	public function remove_like( $request ) {
-		return new \WP_REST_Response( $this->handle_like( $request['id'], true ), 201 );
+		return new WP_REST_Response( $this->handle_like( $request['id'], true ), 201 );
 	}
 
 	/**
@@ -279,7 +280,7 @@ class Controller {
 	public function get_post_like_button( $post_id ) {
 
 		if ( ! $this->check_post_type( $post_id ) ) {
-			return new \WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
 		}
 
 		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>' ),
@@ -302,7 +303,7 @@ class Controller {
 	public function get_post_like_count( $post_id ) {
 
 		if ( ! $this->check_post_type( $post_id ) ) {
-			return new \WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
 		}
 
 		return \absint( \get_post_meta( $post_id, 'rest_post_likes', true ) );
@@ -319,7 +320,7 @@ class Controller {
 	public function the_post_like_count( $post_id, $args = [] ) {
 
 		if ( ! $this->check_post_type( $post_id ) ) {
-			return new \WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
 		}
 
 		$default = apply_filters( 'rest_post_likes_count_args', [ 'echo' => true ] );
