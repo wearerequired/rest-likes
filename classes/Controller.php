@@ -17,7 +17,7 @@ use WP_REST_Controller;
  *
  * @package RestPostLikes
  */
-class Controller extends WP_REST_Controller  {
+class Controller extends WP_REST_Controller {
 
 	/**
 	 * API Version.
