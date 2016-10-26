@@ -72,6 +72,9 @@
 
 		button.on( 'click', function () {
 
+			// Set class while processing
+			button.addClass( restPostLikes.processing_classname );
+
 			// Define default HTTP method.
 			var method = 'POST';
 
@@ -95,10 +98,14 @@
 					} else {
 						addLikedPosts( post_id );
 					}
+					// Remove processing class
+					button.removeClass( restPostLikes.processing_classname );
 					counter.text( response.count );
 			} ).fail( function () {
 					// Toggle the button class to show interaction.
 					button.toggleClass( restPostLikes.liked_classname );
+					// Remove processing class
+					button.removeClass( restPostLikes.processing_classname );
 			} );
 		});
 	};

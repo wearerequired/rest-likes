@@ -88,6 +88,7 @@ class Controller {
 			'count_classname' => 'rest-like-count',
 			'button_classname' => 'rest-like-button',
 			'liked_classname' => 'has-like',
+			'processing_classname' => 'rest-like-processing',
 		] );
 	}
 
