@@ -245,7 +245,7 @@ class Controller extends WP_REST_Controller {
 	 * @return \WP_REST_Response
 	 */
 	public function remove_like( $request ) {
-		return new WP_REST_Response( $this->handle_like( $request['id'], true ), 201 );
+		return new WP_REST_Response( $this->handle_like( $request['id'], true ), 200 );
 	}
 
 	/**
