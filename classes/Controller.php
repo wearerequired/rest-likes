@@ -159,11 +159,11 @@ class Controller extends WP_REST_Controller {
 		}
 
 		if ( ! $this->check_post_type( $request['id'] ) ) {
-			return new WP_Error( 'invalid-post-type', 'You can only like.' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
 
 		if ( 'publish' !== \get_post_status( $request['id'] ) ) {
-			return new WP_Error( 'invalid-post-status', 'You can only like' . implode( ' and ', $this->allowed_post_types ) . ' that are published.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-status', 'You can only like ' . implode( ' and ', $this->allowed_post_types ) . ' that are published.', array( 'status' => 400 ) );
 		}
 
 		return true;
@@ -280,7 +280,7 @@ class Controller extends WP_REST_Controller {
 	public function get_post_like_button( $post_id ) {
 
 		if ( ! $this->check_post_type( $post_id ) ) {
-			return new WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
 
 		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>' ),
@@ -303,7 +303,7 @@ class Controller extends WP_REST_Controller {
 	public function get_post_like_count( $post_id ) {
 
 		if ( ! $this->check_post_type( $post_id ) ) {
-			return new WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
 
 		return \absint( \get_post_meta( $post_id, 'rest_post_likes', true ) );
@@ -320,7 +320,7 @@ class Controller extends WP_REST_Controller {
 	public function the_post_like_count( $post_id, $args = [] ) {
 
 		if ( ! $this->check_post_type( $post_id ) ) {
-			return new WP_Error( 'invalid-post-type', 'You can only like posts and pages.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
 
 		$default = apply_filters( 'rest_post_likes_count_args', [ 'echo' => true ] );
