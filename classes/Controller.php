@@ -98,28 +98,22 @@ class Controller extends WP_REST_Controller {
 	 * so clients can display the Post Like count with posts.
 	 */
 	public function add_rest_field() {
-		if ( ! function_exists( 'register_rest_field' ) ) {
-			return;
-		}
-		register_rest_field( $this->allowed_post_types, $this->meta_key, array(
-			'get_callback' => function( $request ) {
+		register_rest_field( $this->allowed_post_types, $this->meta_key, [
+			'get_callback' => function ( $request ) {
 				return (int) get_post_meta( $request['id'], $this->meta_key, true );
 			},
-			'schema'       => array(
+			'schema'       => [
 				'type'        => 'integer',
 				'description' => 'The number of Post Likes the post has.',
-				'context'     => array( 'view', 'edit', 'embed' ),
-			),
-		) );
+				'context'     => [ 'view', 'edit', 'embed' ],
+			],
+		] );
 	}
 
 	/**
 	 * Register API endpoint.
 	 */
 	public function add_rest_route() {
-		if ( ! function_exists( 'register_rest_route' ) ) {
-			return;
-		}
 		register_rest_route( $this->namespace, '/posts/(?P<id>[\d]+)/like', [
 			[
 				'methods' => WP_REST_Server::CREATABLE,
@@ -176,26 +170,19 @@ class Controller extends WP_REST_Controller {
 	 */
 	public function check_nonce() {
 		$nonce = isset( $_SERVER['HTTP_X_WP_NONCE'] ) ? $_SERVER['HTTP_X_WP_NONCE'] : '';
+
 		return wp_verify_nonce( $nonce, 'wp_rest' );
 	}
 
 	/**
 	 * Check if this post type is allowed.
 	 *
-	 * @param int $post_id ID of current WP_Post object.
+	 * @param int|WP_Post|null $post Optional. Post ID or post object. Default is global $post.
 	 *
 	 * @return bool
 	 */
-	public function check_post_type( $post_id ) {
-		// Get post type of current id.
-		$post_type = \get_post_type( $post_id );
-
-		// Check if the post type is in the allowed array.
-		if ( ! in_array( $post_type, $this->allowed_post_types, true )  ) {
-			return false;
-		} else {
-			return true;
-		}
+	public function check_post_type( $post ) {
+		return in_array( \get_post_type( $post ), $this->allowed_post_types, true );
 	}
 
 	/**
@@ -258,16 +245,18 @@ class Controller extends WP_REST_Controller {
 	 */
 	public function handle_like( $post_id, $remove = false ) {
 		$likes = absint( \get_post_meta( $post_id, $this->meta_key, true ) );
+
 		if ( false === $remove ) {
 			$likes++;
 		} else {
 			$likes--;
 		}
+
 		\update_post_meta( $post_id, $this->meta_key, $likes );
-		$response = array(
+
+		return [
 			'count' => $likes,
-		);
-		return $response;
+		];
 	}
 
 	/**
