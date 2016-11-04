@@ -69,6 +69,7 @@ class Controller extends WP_REST_Controller {
 		add_action( 'rest_api_init', [ $this, 'add_rest_field' ] );
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 		add_action( 'init', [ $this, 'setup' ] );
+		add_action( 'rest_pre_dispatch', [ $this, 'rest_pre_dispatch' ], 10, 3 );
 	}
 
 	/**
@@ -321,6 +322,32 @@ class Controller extends WP_REST_Controller {
 		}
 
 		echo $count;
+	}
 
+	/**
+	 * Workaround for non-working DELETE requests.
+	 *
+	 * @link https://github.com/wearerequired/rest-post-likes/issues/5
+	 *
+	 * @param mixed            $result  Response to replace the requested version with. Can be anything
+	 *                                  a normal endpoint can return, or null to not hijack the request.
+	 * @param \WP_REST_Server  $server  Server instance.
+	 * @param \WP_REST_Request $request Request used to generate the response.
+	 *
+	 * @return mixed|WP_REST_Response The modified response.
+	 */
+	public function rest_pre_dispatch( $result, $server, $request ) {
+		remove_filter( current_filter(), __FUNCTION__ );
+
+		$method = $request->get_method();
+		$path   = $request->get_route();
+
+		if ( WP_REST_Server::READABLE === $method && preg_match( '@^/' . $this->namespace . '/posts/(?P<id>[\d]+)/like$@i', $path ) ) {
+			$request->set_method( WP_REST_Server::DELETABLE );
+
+			return $server->dispatch( $request );
+		}
+
+		return $result;
 	}
 }
