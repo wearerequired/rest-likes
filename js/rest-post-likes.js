@@ -1,7 +1,6 @@
 ( function( $ ) {
-	var button = $( '.' + restPostLikes.button_classname );
-	var counter = $( '.' + restPostLikes.count_classname );
-	var storageKey = restPostLikes.storage_key;
+	var button     = $( '.' + restPostLikes.button_classname ),
+	    storageKey = restPostLikes.storage_key;
 
 	/**
 	 * Check for localStorage support in the browser.
@@ -98,9 +97,10 @@
 					} else {
 						addLikedPosts( post_id );
 					}
+
 					// Remove processing class
 					button.removeClass( restPostLikes.processing_classname );
-					counter.text( response.count );
+					button.find( '.' + restPostLikes.count_classname ).text( response.count );
 			} ).fail( function () {
 					// Toggle the button class to show interaction.
 					button.toggleClass( restPostLikes.liked_classname );
