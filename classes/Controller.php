@@ -245,12 +245,8 @@ class Controller extends WP_REST_Controller {
 	 */
 	public function handle_like( $post_id, $remove = false ) {
 		$likes = absint( \get_post_meta( $post_id, $this->meta_key, true ) );
-
-		if ( false === $remove ) {
-			$likes++;
-		} else {
-			$likes--;
-		}
+		$likes = $remove ? --$likes : ++$likes;
+		$likes = max( $likes, 0 );
 
 		\update_post_meta( $post_id, $this->meta_key, $likes );
 
