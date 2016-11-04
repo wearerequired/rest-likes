@@ -48,13 +48,12 @@ function get_rest_post_like_count( $post_id ) {
 /**
  * Get or display the like count.
  *
- * @param int   $post_id WP_Post ID.
- * @param array $args Optional args to customize the count markup.
+ * @param int $post_id WP_Post ID.
  *
  * @return string
  */
-function the_rest_post_like_count( $post_id, $args = [] ) {
-	return rest_post_likes()->the_post_like_count( $post_id, $args );
+function the_rest_post_like_count( $post_id ) {
+	return rest_post_likes()->the_post_like_count( $post_id );
 }
 
 /**
