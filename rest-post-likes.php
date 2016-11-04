@@ -66,7 +66,9 @@ function the_rest_post_like_count( $post_id, $args = [] ) {
  * @return string|WP_Error
  */
 function get_rest_post_like_button( $post_id, $args = [] ) {
-	return rest_post_likes()->get_post_like_button( $post_id, $args );
+	$button = rest_post_likes()->get_post_like_button( $post_id, $args );
+
+	return is_wp_error( $button ) ? '' : $button;
 }
 
 /**
