@@ -178,7 +178,7 @@ class Controller extends WP_REST_Controller {
 	/**
 	 * Check if this post type is allowed.
 	 *
-	 * @param int|WP_Post|null $post Optional. Post ID or post object. Default is global $post.
+	 * @param int|\WP_Post|null $post Optional. Post ID or post object. Default is global $post.
 	 *
 	 * @return bool
 	 */
@@ -284,7 +284,7 @@ class Controller extends WP_REST_Controller {
 	 *
 	 * @param int $post_id WP_Post ID.
 	 *
-	 * @return int
+	 * @return int|\WP_Error
 	 */
 	public function get_post_like_count( $post_id ) {
 
@@ -301,10 +301,9 @@ class Controller extends WP_REST_Controller {
 	 * @param int   $post_id WP_Post ID.
 	 * @param array $args Array of arguments.
 	 *
-	 * @return string
+	 * @return string|void
 	 */
 	public function the_post_like_count( $post_id, $args = [] ) {
-
 		if ( ! $this->check_post_type( $post_id ) ) {
 			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
