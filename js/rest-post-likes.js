@@ -70,7 +70,6 @@
 		}
 
 		button.on( 'click', function () {
-
 			// Set class while processing
 			button.addClass( restPostLikes.processing_classname );
 
@@ -100,7 +99,8 @@
 
 					// Remove processing class
 					button.removeClass( restPostLikes.processing_classname );
-					button.find( '.' + restPostLikes.count_classname ).text( response.count );
+
+					$( '.' + restPostLikes.count_classname + '[data-post-id="' + post_id + '"]' ).text( response.count );
 			} ).fail( function () {
 					// Toggle the button class to show interaction.
 					button.toggleClass( restPostLikes.liked_classname );
