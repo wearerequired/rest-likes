@@ -311,8 +311,9 @@ class Controller extends WP_REST_Controller {
 		$default = apply_filters( 'rest_post_likes_count_args', [ 'echo' => true ] );
 		$args = wp_parse_args( $args, $default );
 
-		$count = sprintf( apply_filters( 'rest_post_likes_count_markup', '<span class="%1$s">%2$d</span>' ),
+		$count = sprintf( apply_filters( 'rest_post_likes_count_markup', '<span class="%1$s" data-post-id="%2$d">%3$d</span>' ),
 			esc_attr( $this->classnames['count_classname'] ),
+			absint( $post_id ),
 			esc_html( $this->get_post_like_count( $post_id ) )
 		);
 
