@@ -1,6 +1,6 @@
+/* global restPostLikes */
 ( function( $ ) {
-	var button     = $( '.' + restPostLikes.button_classname ),
-	    storageKey = restPostLikes.storage_key;
+	var storageKey = restPostLikes.storage_key;
 
 	/**
 	 * Check for localStorage support in the browser.
@@ -60,29 +60,33 @@
 	};
 
 	var buttonHandler = function () {
+		var $buttons = $( '.' + restPostLikes.button_classname );
 
-		// Set up the post_id of the current post.
-		var post_id = button.data( 'post-id' );
+		// Check localStorage for liked posts, set class on the buttons.
+		$buttons.each( function() {
+			var $this = $( this );
 
-		// Check localStorage for liked post, set class on button.
-		if ( _.contains( getLikedPosts(), post_id ) ) {
-			button.toggleClass( restPostLikes.liked_classname );
-		}
-
-		button.on( 'click', function () {
-			// Set class while processing
-			button.addClass( restPostLikes.processing_classname );
-
-			// Define default HTTP method.
-			var method = 'POST';
-
-			// Alter method if the user already liked the post.
-			if ( button.hasClass( restPostLikes.liked_classname ) ) {
-				method = 'DELETE';
+			if ( $this.hasClass( restPostLikes.liked_classname ) ) {
+				return;
 			}
 
+			if ( _.contains( getLikedPosts(), $this.data( 'post-id' ) ) ) {
+				$this.toggleClass( restPostLikes.liked_classname );
+			}
+		} );
+
+		$buttons.on( 'click', function () {
+			var post_id = $( this ).data( 'post-id' ),
+			    $button = $( '.' + restPostLikes.button_classname + '[data-post-id="' + post_id + '"]' );
+
+			// Set class while processing
+			$button.addClass( restPostLikes.processing_classname );
+
+			// Define HTTP method.
+			var method = $button.hasClass( restPostLikes.liked_classname ) ? 'DELETE' : 'POST';
+
 			// Toggle the button class to show interaction.
-			button.toggleClass( restPostLikes.liked_classname );
+			$button.toggleClass( restPostLikes.liked_classname );
 
 			$.ajax( {
 				url: wpApiSettings.root + restPostLikes.endpoint_namespace + '/posts/' + post_id + '/like',
@@ -91,21 +95,21 @@
 					xhr.setRequestHeader( 'X-WP-Nonce', wpApiSettings.nonce );
 				}
 			} ).done( function ( response ) {
-					if ( 'DELETE' === method ) {
-						removeLikedPost( post_id );
-					} else {
-						addLikedPosts( post_id );
-					}
+				if ( 'DELETE' === method ) {
+					removeLikedPost( post_id );
+				} else {
+					addLikedPosts( post_id );
+				}
 
-					// Remove processing class
-					button.removeClass( restPostLikes.processing_classname );
+				// Remove processing class
+				$button.removeClass( restPostLikes.processing_classname );
 
-					$( '.' + restPostLikes.count_classname + '[data-post-id="' + post_id + '"]' ).text( response.count );
-			} ).fail( function () {
-					// Toggle the button class to show interaction.
-					button.toggleClass( restPostLikes.liked_classname );
-					// Remove processing class
-					button.removeClass( restPostLikes.processing_classname );
+				$( '.' + restPostLikes.count_classname + '[data-post-id="' + post_id + '"]' ).text( response.count );
+			} ).fail( function() {
+				// Toggle the button class to show interaction.
+				$button.toggleClass( restPostLikes.liked_classname );
+				// Remove processing class
+				$button.removeClass( restPostLikes.processing_classname );
 			} );
 		});
 	};
