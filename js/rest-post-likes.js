@@ -104,7 +104,7 @@
 				// Remove processing class
 				$button.removeClass( restPostLikes.processing_classname );
 
-				$( '.' + restPostLikes.count_classname + '[data-post-id="' + post_id + '"]' ).text( response.count );
+				$( '.' + restPostLikes.count_classname + '[data-post-id="' + post_id + '"]' ).text( response.count ).attr( 'data-post-likes' , response.count );
 			} ).fail( function() {
 				// Toggle the button class to show interaction.
 				$button.toggleClass( restPostLikes.liked_classname );
