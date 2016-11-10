@@ -122,9 +122,7 @@
 		} );
 
 		$( document.body ).on( 'click', '.' + restPostLikes.button_classname, function() {
-			var post_id = $( this ).data( 'post-id' );
-
-			buttonClickHandler( post_id );
+			buttonClickHandler( $( this ).data( 'post-id' ) );
 		} );
 	} );
 })( jQuery );
