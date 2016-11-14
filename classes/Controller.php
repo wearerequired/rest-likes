@@ -252,7 +252,8 @@ class Controller extends WP_REST_Controller {
 		\update_post_meta( $post_id, $this->meta_key, $likes );
 
 		return [
-			'count' => $likes,
+			'count'          => $likes,
+			'countFormatted' => number_format_i18n( $likes ),
 		];
 	}
 
@@ -311,10 +312,12 @@ class Controller extends WP_REST_Controller {
 		$default = apply_filters( 'rest_post_likes_count_args', [ 'echo' => true ] );
 		$args = wp_parse_args( $args, $default );
 
-		$count = sprintf( apply_filters( 'rest_post_likes_count_markup', '<span class="%1$s" data-post-id="%2$d" data-post-likes="%3$d">%3$d</span>' ),
+		$likes = $this->get_post_like_count( $post_id );
+		$count = sprintf( apply_filters( 'rest_post_likes_count_markup', '<span class="%1$s" data-post-id="%2$d" data-post-likes="%3$d">%4$s</span>' ),
 			esc_attr( $this->classnames['count_classname'] ),
 			absint( $post_id ),
-			esc_html( $this->get_post_like_count( $post_id ) )
+			esc_attr( $likes ),
+			esc_html( number_format_i18n( $likes ) )
 		);
 
 		if ( ! $args['echo'] ) {
