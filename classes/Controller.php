@@ -70,6 +70,9 @@ class Controller extends WP_REST_Controller {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 		add_action( 'init', [ $this, 'setup' ] );
 		add_action( 'rest_pre_dispatch', [ $this, 'rest_pre_dispatch' ], 10, 3 );
+		add_filter( 'manage_posts_columns', [ $this, 'manage_posts_columns' ], 10, 2 );
+		add_filter( 'manage_posts_custom_column', [ $this, 'manage_posts_custom_column' ], 10, 2 );
+		add_action( 'pre_get_posts', [ $this, 'order_by_post_likes' ] );
 	}
 
 	/**
@@ -106,6 +109,10 @@ class Controller extends WP_REST_Controller {
 			'liked_classname' => 'has-like',
 			'processing_classname' => 'rest-like-processing',
 		] );
+
+		foreach( $this->allowed_post_types as $post_type ) {
+			add_filter( "manage_edit-{$post_type}_sortable_columns", [ $this, 'manage_sortable_columns' ] );
+		}
 	}
 
 	/**
@@ -369,5 +376,63 @@ class Controller extends WP_REST_Controller {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * Filters the columns displayed in the Posts list table.
+	 *
+	 * @param array  $posts_columns An array of column names.
+	 * @param string $post_type     The post type slug.
+	 * @return array The modified array of column names.
+	 */
+	public function manage_posts_columns( $posts_columns, $post_type  ) {
+		if ( ! in_array( $post_type, $this->allowed_post_types, true ) ) {
+			return $posts_columns;
+		}
+
+		$posts_columns['post_likes'] = __( 'Likes', 'rest-post-likes' );
+
+		return $posts_columns;
+	}
+
+	/**
+	 * Displays the post like count in the list table.
+	 *
+	 * @param string $column_name The name of the column to display.
+	 * @param int    $post_id     The current post ID.
+	 */
+	public function manage_posts_custom_column( $column_name, $post_id ) {
+		if ( 'post_likes' === $column_name ) {
+			$likes = $this->get_post_like_count( $post_id );
+
+			echo is_wp_error( $likes ) ? 0 : number_format_i18n( $likes, 0 );
+		}
+	}
+
+	/**
+	 * Filters the list table sortable columns for a specific screen.
+	 *
+	 * @param array $sortable_columns An array of sortable columns.
+	 *
+	 * @return array The modified array of sortable columns.
+	 */
+	public function manage_sortable_columns( $sortable_columns ) {
+		$sortable_columns['post_likes'] = 'post_likes';
+
+		return $sortable_columns;
+ 	}
+
+	/**
+	 * Orders posts by their likes.
+	 *
+	 * Fires after the query variable object is created, but before the actual query is run.
+	 *
+	 * @param \WP_Query $query The WP_Query instance (passed by reference).
+	 */
+	public function order_by_post_likes( \WP_Query $query ) {
+		if ( is_admin() && $query->is_main_query() && 'post_likes' === $query->get( 'orderby' ) ) {
+			$query->set( 'meta_key', $this->meta_key );
+			$query->set( 'orderby', 'meta_value_num' );
+		}
 	}
 }
