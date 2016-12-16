@@ -73,20 +73,34 @@ class Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Setup the defaults.
+	 * Set up the defaults.
 	 *
 	 * Note: This function is hooked to init, so a theme could
 	 * potentially overwrite the defaults with the filters below.
 	 */
 	public function setup() {
-		// Set allowed post types, allow filtering.
-		$this->allowed_post_types = \apply_filters( 'rest_post_likes_allowed_post_types', [ 'post', 'page' ] );
+		/**
+		 * Filter the allowed post types.
+		 *
+		 * Only these post types can receive post likes.
+		 *
+		 * @param array $post_types Allowed post types. Default 'post' and 'page'.
+		 */
+		$this->allowed_post_types = apply_filters( 'rest_post_likes_allowed_post_types', [ 'post', 'page' ] );
 
-		// Set our API namespace.
-		$this->namespace = \apply_filters( 'rest_post_likes_namespace', 'rest-post-likes' ) . '/v' . $this->version;
+		/**
+		 * Filter the REST API namespace.
+		 *
+		 * @param string $namespace The plugin's REST API namespace.
+		 */
+		$this->namespace = apply_filters( 'rest_post_likes_namespace', 'rest-post-likes' ) . '/v' . $this->version;
 
-		// Set default css classnames.
-		$this->classnames = \apply_filters( 'rest_post_likes_classnames', [
+		/**
+		 * Filter the post likes CSS class names.
+		 *
+		 * @param array $classnames The list of CSS class names.
+		 */
+		$this->classnames = apply_filters( 'rest_post_likes_classnames', [
 			'count_classname' => 'rest-like-count',
 			'button_classname' => 'rest-like-button',
 			'liked_classname' => 'has-like',
@@ -101,7 +115,9 @@ class Controller extends WP_REST_Controller {
 	public function add_rest_field() {
 		register_rest_field( $this->allowed_post_types, $this->meta_key, [
 			'get_callback' => function ( $request ) {
-				return (int) get_post_meta( $request['id'], $this->meta_key, true );
+				$likes = $this->get_post_like_count( $request['id'] );
+
+				return is_wp_error( $likes ) ? 0 : $likes;
 			},
 			'schema'       => [
 				'type'        => 'integer',
@@ -245,11 +261,12 @@ class Controller extends WP_REST_Controller {
 	 * @return array $response
 	 */
 	public function handle_like( $post_id, $remove = false ) {
-		$likes = absint( \get_post_meta( $post_id, $this->meta_key, true ) );
+		$likes = $this->get_post_like_count( $post_id );
+		$likes = is_wp_error( $likes ) ? 0 : $likes;
 		$likes = $remove ? --$likes : ++$likes;
 		$likes = max( $likes, 0 );
 
-		\update_post_meta( $post_id, $this->meta_key, $likes );
+		update_post_meta( $post_id, $this->meta_key, $likes );
 
 		return [
 			'count'          => $likes,
@@ -272,7 +289,7 @@ class Controller extends WP_REST_Controller {
 
 		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>' ),
 			esc_attr( $this->classnames['button_classname'] ),
-			\absint( $post_id ),
+			absint( $post_id ),
 			apply_filters( 'rest_post_likes_button_text', 'Like ' ),
 			$this->the_post_like_count( $post_id, [ 'echo' => false ] )
 		);
@@ -293,7 +310,7 @@ class Controller extends WP_REST_Controller {
 			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
 
-		return \absint( \get_post_meta( $post_id, 'rest_post_likes', true ) );
+		return absint( get_post_meta( $post_id, 'rest_post_likes', true ) );
 	}
 
 	/**

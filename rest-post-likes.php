@@ -32,6 +32,7 @@ function rest_post_likes() {
 
 	return $controller;
 }
+
 add_action( 'plugins_loaded', 'rest_post_likes' );
 
 /**
