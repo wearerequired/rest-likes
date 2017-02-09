@@ -289,14 +289,16 @@ class Controller extends WP_REST_Controller {
 	 * @return string|WP_Error
 	 */
 	public function get_post_like_button( $post_id ) {
+		$post_id = absint( $post_id );
 
 		if ( ! $this->check_post_type( $post_id ) ) {
 			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
 
-		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>' ),
+		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d" data-nonce="%3$s">%4$s %5$s</button>' ),
 			esc_attr( $this->classnames['button_classname'] ),
-			absint( $post_id ),
+			$post_id,
+			wp_create_nonce( 'like-post-' . $post_id ),
 			apply_filters( 'rest_post_likes_button_text', 'Like ' ),
 			$this->the_post_like_count( $post_id, [ 'echo' => false ] )
 		);
