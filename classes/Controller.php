@@ -176,6 +176,10 @@ class Controller extends WP_REST_Controller {
 			return new WP_Error( 'invalid-nonce', 'No valid nonce found for action', array( 'status' => 400 ) );
 		}
 
+		if ( $this->transient_exists( $request ) ) {
+			return new WP_Error( 'invalid-action', 'You cannot like the same post all day long', array( 'status' => 400 ) );
+		}
+
 		if ( ! $this->check_post_type( $request['id'] ) ) {
 			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
@@ -199,6 +203,26 @@ class Controller extends WP_REST_Controller {
 
 		return wp_verify_nonce( $nonce, 'like-post-' . $request['id'] );
 	}
+
+	/**
+	 * Checks if there's already a like for a post from a given IP address.
+	 *
+	 * @param \WP_REST_Request $request Request Object.
+	 * @return True if the user has already liked this post, false otherwise.
+	 */
+	public function transient_exists( \WP_REST_Request $request  ) {
+		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+		$transient  = sprintf( 'post_like_%s', md5( $ip_address . $request['id'] . $request->get_method() ) );
+
+		$value = get_transient( $transient );
+
+		if ( ! $value ) {
+			set_transient( $transient, 1, MINUTE_IN_SECONDS );
+
+			return false;
+		}
+
+		return true;
 	}
 
 	/**
