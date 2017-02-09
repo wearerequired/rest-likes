@@ -171,8 +171,8 @@ class Controller extends WP_REST_Controller {
 	 *
 	 * @return bool|WP_Error
 	 */
-	public function check_permission( $request ) {
-		if ( ! $this->check_nonce() ) {
+	public function check_permission( \WP_REST_Request $request ) {
+		if ( ! $this->check_nonce( $request ) ) {
 			return new WP_Error( 'invalid-nonce', 'No valid nonce found for action', array( 'status' => 400 ) );
 		}
 
@@ -190,12 +190,15 @@ class Controller extends WP_REST_Controller {
 	/**
 	 * Check nonce in the headers.
 	 *
+	 * @param \WP_REST_Request $request Request Object.
+	 *
 	 * @return false|int
 	 */
-	public function check_nonce() {
-		$nonce = isset( $_SERVER['HTTP_X_WP_NONCE'] ) ? $_SERVER['HTTP_X_WP_NONCE'] : '';
+	public function check_nonce( \WP_REST_Request $request ) {
+		$nonce = isset( $_SERVER['HTTP_X_WP_POST_LIKES_NONCE'] ) ? $_SERVER['HTTP_X_WP_POST_LIKES_NONCE'] : '';
 
-		return wp_verify_nonce( $nonce, 'wp_rest' );
+		return wp_verify_nonce( $nonce, 'like-post-' . $request['id'] );
+	}
 	}
 
 	/**
@@ -214,23 +217,26 @@ class Controller extends WP_REST_Controller {
 	 */
 	public function register_scripts() {
 		// Enqueue the plugin script & dependencies.
-		\wp_enqueue_script(
+		wp_enqueue_script(
 			'rest-post-likes',
 			\esc_url( \plugin_dir_url( __DIR__ ) . 'js/rest-post-likes.js' ),
-			[ 'wp-api', 'underscore' ],
+			[ 'jquery', 'underscore' ],
 			'1.0',
 			true
 		);
+
 		// Localize the plugin script.
-		\wp_localize_script(
+		wp_localize_script(
 			'rest-post-likes',
 			'restPostLikes',
 			array_merge(
 				$this->classnames,
 				apply_filters( 'rest_post_likes_settings',
 					[
-						'storage_key'           => $this->meta_key,
-						'endpoint_namespace'    => $this->namespace,
+						'nonce'              => wp_create_nonce( 'wp_rest' ),
+						'root'               => esc_url_raw( get_rest_url() ),
+						'storage_key'        => $this->meta_key,
+						'endpoint_namespace' => $this->namespace,
 					]
 				)
 			)
