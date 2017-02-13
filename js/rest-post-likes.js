@@ -87,11 +87,12 @@
 		$button.toggleClass( restPostLikes.liked_classname );
 
 		$.ajax( {
-			url:        wpApiSettings.root + restPostLikes.endpoint_namespace + '/posts/' + post_id + '/like',
+			url:        restPostLikes.root + restPostLikes.endpoint_namespace + '/posts/' + post_id + '/like',
 			method:     method,
 			beforeSend: function( xhr ) {
-				xhr.setRequestHeader( 'X-WP-Nonce', wpApiSettings.nonce );
-			}
+				xhr.setRequestHeader( 'X-WP-Nonce', restPostLikes.nonce );
+				xhr.setRequestHeader( 'X-WP-Post-Likes-Nonce', $button.data( 'nonce' ) );
+			},
 		} ).done( function( response ) {
 			if ( 'DELETE' === method ) {
 				removeLikedPost( post_id );
