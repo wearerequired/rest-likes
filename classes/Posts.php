@@ -34,6 +34,8 @@ class Posts extends Controller {
 	 * Add hooks to WP.
 	 */
 	public function add_hooks() {
+		parent::add_hooks();
+
 		add_filter( 'manage_posts_columns', [ $this, 'manage_posts_columns' ], 10, 2 );
 		add_filter( 'manage_posts_custom_column', [ $this, 'manage_posts_custom_column' ], 10, 2 );
 		add_action( 'pre_get_posts', [ $this, 'order_by_post_likes' ] );
