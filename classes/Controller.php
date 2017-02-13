@@ -200,7 +200,7 @@ class Controller extends WP_REST_Controller {
 		$value = get_transient( $transient );
 
 		if ( ! $value ) {
-			set_transient( $transient, 1, MINUTE_IN_SECONDS );
+			set_transient( $transient, 1, 2 * MINUTE_IN_SECONDS );
 
 			return false;
 		}
