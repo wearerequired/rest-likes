@@ -5,7 +5,7 @@
  * @package rest-post-likes
  */
 
-namespace Required\RestPostLikes;
+namespace Required\RestLikes;
 
 use WP_Error;
 use WP_REST_Server;
@@ -16,7 +16,7 @@ use WP_REST_Controller;
 /**
  * Class Controller
  *
- * @package RestPostLikes
+ * @package RestLikes
  */
 abstract class Controller extends WP_REST_Controller {
 	/**

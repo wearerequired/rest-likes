@@ -5,7 +5,7 @@
  * @package rest-post-likes
  */
 
-namespace Required\RestPostLikes;
+namespace Required\RestLikes;
 
 use WP_Error;
 use WP_Query;
@@ -13,7 +13,7 @@ use WP_Query;
 /**
  * Class Controller
  *
- * @package RestPostLikes
+ * @package RestLikes
  */
 class Posts extends Controller {
 	/**

@@ -5,12 +5,12 @@
  * @package rest-post-likes
  */
 
-namespace Required\RestPostLikes;
+namespace Required\RestLikes;
 
 /**
  * Class Controller
  *
- * @package RestPostLikes
+ * @package RestLikes
  */
 class Plugin {
 	/**
@@ -25,7 +25,7 @@ class Plugin {
 	 */
 	public function add_hooks() {
 		$allowed_object_types = apply_filters( 'rest_likes.enabled_object_types', [
-			'post'    => '\Required\RestPostLikes\Posts',
+			'post'    => '\Required\RestLikes\Posts',
 		] );
 
 		foreach ( $allowed_object_types as $object_type => $class ) {

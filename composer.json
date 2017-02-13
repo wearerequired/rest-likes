@@ -27,7 +27,7 @@
   },
   "autoload":     {
     "psr-4": {
-      "Required\\RestPostLikes\\": "classes"
+      "Required\\RestLikes\\": "classes"
     }
   }
 }
