@@ -26,7 +26,9 @@ abstract class Controller extends WP_REST_Controller {
 	 */
 	protected $meta_key = 'rest_likes';
 
-	protected $version = '1.0';
+	protected $namespace = 'rest-likes';
+
+	protected $version = 1;
 
 	/**
 	 * Add hooks to WP.
@@ -45,10 +47,10 @@ abstract class Controller extends WP_REST_Controller {
 		 * @param string $object_type The object type the class names are for.
 		 */
 		return apply_filters( 'rest_likes.classnames', [
-			'count_classname'      => 'rest-like-count',
-			'button_classname'     => 'rest-like-button',
-			'liked_classname'      => 'has-like',
-			'processing_classname' => 'rest-like-processing',
+			'count'      => 'rest-like-count',
+			'button'     => 'rest-like-button',
+			'liked'      => 'has-like',
+			'processing' => 'rest-like-processing',
 		], $this->get_object_type() );
 	}
 
@@ -67,13 +69,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return string
 	 */
 	public function get_namespace() {
-		/**
-		 * Filters the REST API namespace.
-		 *
-		 * @param string $namespace The object type's REST API namespace.
-		 */
-		return apply_filters( 'rest_likes.namespace', 'rest-' . $this->get_object_type() . '-likes', $this->get_object_type() ) . '/v' . $this->version;
-
+		return $this->namespace . '/v' . $this->version;
 	}
 
 	public function get_rest_field_object_type() {
@@ -99,16 +95,19 @@ abstract class Controller extends WP_REST_Controller {
 		return $this->get_like_count( $request['id'] );
 	}
 
-	protected function get_rest_route() {
-		return sprintf( '/%ss/(?P<id>[\d]+)/like', $this->get_object_type() );
+	public function get_rest_route_placeholder() {
+		return sprintf( '/%ss/%%s/like', $this->get_object_type() );
+	}
 
+	protected function get_rest_route() {
+		return sprintf( $this->get_rest_route_placeholder(), '(?P<id>[\d]+)' );
 	}
 
 	/**
 	 * Register API endpoint.
 	 */
 	public function add_rest_route() {
-		register_rest_route( $this->namespace, $this->get_rest_route(), [
+		register_rest_route( $this->get_namespace(), $this->get_rest_route(), [
 			[
 				'methods'             => WP_REST_Server::CREATABLE,
 				'args'                => [
@@ -196,18 +195,17 @@ abstract class Controller extends WP_REST_Controller {
 	/**
 	 * Adding or removing like from post meta.
 	 *
-	 * @param int  $post_id WP_Post ID.
-	 * @param bool $remove  toggle to add or remove like.
+	 * @param int  $object_id Object ID.
+	 * @param bool $remove    Whether to increment or decrement the counter.
 	 *
-	 * @return array $response
+	 * @return array
 	 */
-	public function handle_like( $post_id, $remove = false ) {
-		$likes = $this->get_like_count( $post_id );
-		$likes = is_wp_error( $likes ) ? 0 : $likes;
+	public function handle_like( $object_id, $remove = false ) {
+		$likes = $this->get_like_count( $object_id );
 		$likes = $remove ? -- $likes : ++ $likes;
 		$likes = max( $likes, 0 );
 
-		update_metadata( $this->get_object_type(), $this->get_object_type(), $this->get_meta_key(), $likes );
+		update_metadata( $this->get_object_type(), $object_id, $this->get_meta_key(), $likes );
 
 		return [
 			'count'          => $likes,
@@ -225,8 +223,8 @@ abstract class Controller extends WP_REST_Controller {
 	public function get_like_button( $object_id ) {
 		$object_id = absint( $object_id );
 
-		$button = sprintf( apply_filters( 'rest_likes.button_markup', '<button class="%1$s" data-%2$d-id="%3$d">%4$s %5$s</button>' ),
-			esc_attr( $this->get_classnames()['button_classname'] ),
+		$button = sprintf( apply_filters( 'rest_likes.button_markup', '<button class="%1$s" data-type="%2$s" data-id="%3$d" data-rest-like-button>%4$s %5$s</button>' ),
+			esc_attr( $this->get_classnames()['button'] ),
 			esc_attr( $this->get_object_type() ),
 			$object_id,
 			apply_filters( 'rest_likes.button_text', _x( 'Like', 'verb', 'rest-post-likes' ) ),
@@ -257,8 +255,8 @@ abstract class Controller extends WP_REST_Controller {
 	public function get_like_count_html( $object_id ) {
 		$likes = $this->get_like_count( $object_id );
 
-		return sprintf( apply_filters( 'rest_likes.count_markup', '<span class="%1$s" data-%2$d-id="%3$d" data-likes="%4$d">%5$s</span>' ),
-			esc_attr( $this->get_classnames()['count_classname'] ),
+		return sprintf( apply_filters( 'rest_likes.count_markup', '<span class="%1$s" data-type="%2$s" data-id="%3$d" data-likes="%4$d">%5$s</span>' ),
+			esc_attr( $this->get_classnames()['count'] ),
 			esc_attr( $this->get_object_type() ),
 			absint( $object_id ),
 			esc_attr( $likes ),

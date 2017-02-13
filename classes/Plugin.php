@@ -72,9 +72,8 @@ class Plugin {
 
 		foreach ( $this->enabled_object_types as $object_type => $controller ) {
 			$script_data[ $object_type ] = [
-				'storage_key'        => $controller->get_meta_key(),
-				'endpoint_namespace' => $controller->get_namespace(),
-				'classnames'         => $controller->get_classnames(),
+				'endpoint'   => $controller->get_namespace() . $controller->get_rest_route_placeholder(),
+				'classnames' => $controller->get_classnames(),
 			];
 		}
 
