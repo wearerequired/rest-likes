@@ -172,10 +172,6 @@ class Controller extends WP_REST_Controller {
 	 * @return bool|WP_Error
 	 */
 	public function check_permission( \WP_REST_Request $request ) {
-		if ( ! $this->check_nonce( $request ) ) {
-			return new WP_Error( 'invalid-nonce', 'No valid nonce found for action', array( 'status' => 400 ) );
-		}
-
 		if ( $this->transient_exists( $request ) ) {
 			return new WP_Error( 'invalid-action', 'You cannot like the same post all day long', array( 'status' => 400 ) );
 		}
@@ -189,19 +185,6 @@ class Controller extends WP_REST_Controller {
 		}
 
 		return true;
-	}
-
-	/**
-	 * Check nonce in the headers.
-	 *
-	 * @param \WP_REST_Request $request Request Object.
-	 *
-	 * @return false|int
-	 */
-	public function check_nonce( \WP_REST_Request $request ) {
-		$nonce = isset( $_SERVER['HTTP_X_WP_POST_LIKES_NONCE'] ) ? $_SERVER['HTTP_X_WP_POST_LIKES_NONCE'] : '';
-
-		return wp_verify_nonce( $nonce, 'like-post-' . $request['id'] );
 	}
 
 	/**
@@ -257,7 +240,6 @@ class Controller extends WP_REST_Controller {
 				$this->classnames,
 				apply_filters( 'rest_post_likes_settings',
 					[
-						'nonce'              => wp_create_nonce( 'wp_rest' ),
 						'root'               => esc_url_raw( get_rest_url() ),
 						'storage_key'        => $this->meta_key,
 						'endpoint_namespace' => $this->namespace,
@@ -325,10 +307,9 @@ class Controller extends WP_REST_Controller {
 			return new WP_Error( 'invalid-post-type', 'You can only like ' . implode( ' and ', $this->allowed_post_types ), array( 'status' => 400 ) );
 		}
 
-		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d" data-nonce="%3$s">%4$s %5$s</button>' ),
+		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>' ),
 			esc_attr( $this->classnames['button_classname'] ),
 			$post_id,
-			wp_create_nonce( 'like-post-' . $post_id ),
 			apply_filters( 'rest_post_likes_button_text', 'Like ' ),
 			$this->the_post_like_count( $post_id, [ 'echo' => false ] )
 		);
