@@ -14,19 +14,27 @@ class Plugin {
 	/**
 	 * List of object types that likes are enabled for.
 	 *
+	 * @since 1.0.0
+	 * @access protected
+	 *
 	 * @var Controller[]
 	 */
 	protected $enabled_object_types = [];
 
 	/**
-	 * Add hooks to WP.
+	 * Add WordPress hooks.
+	 *
+	 * Initializes the controllers for all the enabled object types.
+	 *
+	 * @since 1.0.0
+	 * @access public
 	 */
 	public function add_hooks() {
-		$allowed_object_types = apply_filters( 'rest_likes.enabled_object_types', [
-			'post'    => '\Required\RestLikes\Posts',
+		$available_object_types = apply_filters( 'rest_likes.enabled_object_types', [
+			'post' => '\Required\RestLikes\Posts',
 		] );
 
-		foreach ( $allowed_object_types as $object_type => $class ) {
+		foreach ( $available_object_types as $object_type => $class ) {
 			$this->enabled_object_types[ $object_type ] = new $class;
 			$this->enabled_object_types[ $object_type ]->add_hooks();
 		}
@@ -36,6 +44,9 @@ class Plugin {
 
 	/**
 	 * Register javascript on front end.
+	 *
+	 * @since 1.0.0
+	 * @access public
 	 */
 	public function enqueue_scripts() {
 		// Enqueue the plugin script & dependencies.
@@ -63,6 +74,9 @@ class Plugin {
 	/**
 	 * Returns script data for all enabled object types.
 	 *
+	 * @since 1.0.0
+	 * @access protected
+	 *
 	 * @return array
 	 */
 	protected function get_object_types_script_data() {
@@ -78,6 +92,17 @@ class Plugin {
 		return $script_data;
 	}
 
+	/**
+	 * Returns the like count for the given object.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @param string $object_type Object type.
+	 * @param int    $object_id   Object ID.
+	 *
+	 * @return int Like count.
+	 */
 	public function get_like_count( $object_type, $object_id ) {
 		if ( $this->enabled_object_types[ $object_type ] instanceof Controller ) {
 			return $this->enabled_object_types[ $object_type ]->get_like_count( $object_id );
@@ -86,6 +111,18 @@ class Plugin {
 		return 0;
 	}
 
+
+	/**
+	 * Returns the like count markup for the given object.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @param string $object_type Object type.
+	 * @param int    $object_id   Object ID.
+	 *
+	 * @return string Like count markup.
+	 */
 	public function get_like_count_html( $object_type, $object_id ) {
 		if ( $this->enabled_object_types[ $object_type ] instanceof Controller ) {
 			return $this->enabled_object_types[ $object_type ]->get_like_count_html( $object_id );
@@ -94,11 +131,23 @@ class Plugin {
 		return '';
 	}
 
+
+	/**
+	 * Returns the like button for the given object.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 *
+	 * @param string $object_type Object type.
+	 * @param int    $object_id   Object ID.
+	 *
+	 * @return string Like button.
+	 */
 	public function get_like_button( $object_type, $object_id ) {
 		if ( $this->enabled_object_types[ $object_type ] instanceof Controller ) {
 			return $this->enabled_object_types[ $object_type ]->get_like_button( $object_id );
 		}
 
-		return 0;
+		return '';
 	}
 }
