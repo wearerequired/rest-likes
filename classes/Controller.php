@@ -310,7 +310,7 @@ class Controller extends WP_REST_Controller {
 		$button = sprintf( apply_filters( 'rest_post_likes_button_markup', '<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>' ),
 			esc_attr( $this->classnames['button_classname'] ),
 			$post_id,
-			apply_filters( 'rest_post_likes_button_text', 'Like ' ),
+			apply_filters( 'rest_post_likes_button_text', _x( 'Like', 'verb', 'rest-post-likes' ) ),
 			$this->the_post_like_count( $post_id, [ 'echo' => false ] )
 		);
 
