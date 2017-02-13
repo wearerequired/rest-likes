@@ -1,8 +1,8 @@
 <?php
 /**
- * Rest Post Likes Controller.
+ * REST Likes Controller.
  *
- * @package rest-post-likes
+ * @package rest-likes
  */
 
 namespace Required\RestLikes;
@@ -14,9 +14,7 @@ use WP_REST_Request;
 use WP_REST_Controller;
 
 /**
- * Class Controller
- *
- * @package RestLikes
+ * Base Controller class.
  */
 abstract class Controller extends WP_REST_Controller {
 	/**
@@ -227,7 +225,7 @@ abstract class Controller extends WP_REST_Controller {
 			esc_attr( $this->get_classnames()['button'] ),
 			esc_attr( $this->get_object_type() ),
 			$object_id,
-			apply_filters( 'rest_likes.button_text', _x( 'Like', 'verb', 'rest-post-likes' ) ),
+			apply_filters( 'rest_likes.button_text', _x( 'Like', 'verb', 'rest-likes' ) ),
 			$this->get_like_count( $object_id ) ? $this->get_like_count( $object_id ) : 0
 		);
 
@@ -267,7 +265,7 @@ abstract class Controller extends WP_REST_Controller {
 	/**
 	 * Workaround for non-working DELETE requests.
 	 *
-	 * @link https://github.com/wearerequired/rest-post-likes/issues/5
+	 * @link https://github.com/wearerequired/rest-likes/issues/5
 	 *
 	 * @param mixed            $result  Response to replace the requested version with. Can be anything
 	 *                                  a normal endpoint can return, or null to not hijack the request.
@@ -306,13 +304,13 @@ abstract class Controller extends WP_REST_Controller {
 			'type'       => 'object',
 			'properties' => [
 				'count'          => [
-					'description' => __( 'Like count', 'rest-post-likes' ),
+					'description' => __( 'Like count', 'rest-likes' ),
 					'type'        => 'integer',
 					'context'     => [ 'view' ],
 					'readonly'    => true,
 				],
 				'countFormatted' => [
-					'description' => __( 'Formatted like count', 'rest-post-likes' ),
+					'description' => __( 'Formatted like count', 'rest-likes' ),
 					'type'        => 'string',
 					'format'      => 'date-time',
 					'context'     => [ 'view' ],

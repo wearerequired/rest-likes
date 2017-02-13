@@ -1,8 +1,8 @@
 <?php
 /**
- * Rest Post Likes Controller.
+ * REST Likes Controller for posts.
  *
- * @package rest-post-likes
+ * @package rest-likes
  */
 
 namespace Required\RestLikes;
@@ -11,9 +11,7 @@ use WP_Error;
 use WP_Query;
 
 /**
- * Class Controller
- *
- * @package RestLikes
+ * Posts Controller class.
  */
 class Posts extends Controller {
 	/**
@@ -147,7 +145,7 @@ class Posts extends Controller {
 			return $posts_columns;
 		}
 
-		$posts_columns['likes'] = __( 'Likes', 'rest-post-likes' );
+		$posts_columns['likes'] = __( 'Likes', 'rest-likes' );
 
 		return $posts_columns;
 	}

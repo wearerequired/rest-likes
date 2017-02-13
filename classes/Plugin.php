@@ -1,16 +1,14 @@
 <?php
 /**
- * Rest Post Likes Controller.
+ * REST Likes main plugin class.
  *
- * @package rest-post-likes
+ * @package rest-likes
  */
 
 namespace Required\RestLikes;
 
 /**
- * Class Controller
- *
- * @package RestLikes
+ * Main plugin class.
  */
 class Plugin {
 	/**

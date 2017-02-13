@@ -8,11 +8,11 @@
  * Version:     1.0.0
  * Author:      Silvan Hagen
  * Author URI:  https://required.com
- * Text Domain: rest-post-likes
+ * Text Domain: rest-likes
  * License:     GPL-2.0+
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  *
- * @package rest-post-likes
+ * @package rest-likes
  */
 
 if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
