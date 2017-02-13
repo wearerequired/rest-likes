@@ -14,8 +14,8 @@
  * @package rest-post-likes
  */
 
-if ( file_exists( dirname( __FILE__ ) . '/classes/Controller.php' ) ) {
-	include( dirname( __FILE__ ) . '/classes/Controller.php' );
+if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
+	include( dirname( __FILE__ ) . '/vendor/autoload.php' );
 }
 
 /**
