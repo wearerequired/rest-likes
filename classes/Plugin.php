@@ -43,7 +43,7 @@ class Plugin {
 	}
 
 	/**
-	 * Register javascript on front end.
+	 * Register JavaScript on front end.
 	 *
 	 * @since 1.0.0
 	 * @access public
