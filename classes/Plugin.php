@@ -104,7 +104,10 @@ class Plugin {
 	 * @return int Like count.
 	 */
 	public function get_like_count( $object_type, $object_id ) {
-		if ( $this->enabled_object_types[ $object_type ] instanceof Controller ) {
+		if (
+			isset( $this->enabled_object_types[ $object_type ] ) &&
+			$this->enabled_object_types[ $object_type ] instanceof Controller
+		) {
 			return $this->enabled_object_types[ $object_type ]->get_like_count( $object_id );
 		}
 
@@ -124,7 +127,10 @@ class Plugin {
 	 * @return string Like count markup.
 	 */
 	public function get_like_count_html( $object_type, $object_id ) {
-		if ( $this->enabled_object_types[ $object_type ] instanceof Controller ) {
+		if (
+			isset( $this->enabled_object_types[ $object_type ] ) &&
+			$this->enabled_object_types[ $object_type ] instanceof Controller
+		) {
 			return $this->enabled_object_types[ $object_type ]->get_like_count_html( $object_id );
 		}
 
@@ -144,7 +150,10 @@ class Plugin {
 	 * @return string Like button.
 	 */
 	public function get_like_button( $object_type, $object_id ) {
-		if ( $this->enabled_object_types[ $object_type ] instanceof Controller ) {
+		if (
+			isset( $this->enabled_object_types[ $object_type ] ) &&
+			$this->enabled_object_types[ $object_type ] instanceof Controller
+		) {
 			return $this->enabled_object_types[ $object_type ]->get_like_button( $object_id );
 		}
 
