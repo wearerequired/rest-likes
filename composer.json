@@ -22,10 +22,7 @@
 		"php":                                 ">=5.6",
 		"wearerequired/wp-requirements-check": "dev-master"
 	},
-	"require-dev":  {
-		"phpunit/phpunit":          "*",
-		"wp-coding-standards/wpcs": "*"
-	},
+	"require-dev":  {},
 	"autoload":     {
 		"psr-4": {
 			"Required\\RestLikes\\": "classes"
