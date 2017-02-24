@@ -1,23 +1,59 @@
-# REST Post Likes
+<table width="100%">
+	<tr>
+		<td align="left" width="70%">
+			<strong>REST Likes</strong><br />
+			Like posts, comments, or any other object type via the REST API.
+		</td>
+		<td align="right" width="30%">
+			<a href="https://travis-ci.org/wearerequired/rest-likes">
+				<img src="https://travis-ci.org/wearerequired/rest-likes.svg?branch=master" alt="Build Status" />
+			</a>
+			<br />
+			<a href="https://codecov.io/gh/wearerequired/rest-likes?branch=master">
+				<img src="https://codecov.io/gh/wearerequired/rest-likes/coverage.svg?branch=master" alt="Coverage via Codecov" />
+			</a>
+			<br />
+			<a href="https://codeclimate.com/github/wearerequired/rest-likes">
+				<img src="https://codeclimate.com/github/wearerequired/rest-likes/badges/gpa.svg" />
+			</a>
+		</td>
+	</tr>
+	<tr>
+		<td>
+			Made with ❤️ by <a href="https://required.com/"><strong>required</strong></a>.
+		</td>
+		<td align="center">
+			<img src="https://required.com/content/themes/required-valencia/img/logo-required.svg" width="100" />
+		</td>
+	</tr>
+</table>
 
-A WordPress plugin to capture likes from users using the WP REST API.
+# REST Likes
 
-## What it does
+A WordPress plugin to capture likes from users using the WP REST API. Supports posts, comments, and basically any other object type.
 
-* Creates a custom endpoint `/rest-post-likes/v1/posts/<post_id>/like` which allows users with a valid `wp_rest` nonce to `POST` and `DELETE` likes on post types (default: `post|page`).
-* Provides template tags to render the post like count `get_rest_post_like_count( $post_id )` & `the_rest_post_like_count( $post_id )`. The second one provides markup around the count.
+It does so by adding custom endpoints under the  `/rest-likes/v1` namespace to allow users to like (`POST`) and unlike (`DELETE`) a given object.
 
-### Example implementaion
+## Template Tags
+
+The plugin provides template tags for retrieving the post like count or even the complete markup for the like button. For posts it'd look like this:
+
+| Function                           | Description                              |
+| ---------------------------------- | ---------------------------------------- |
+| `get_rest_post_like_count( 123 )`  | Returns the raw like count for the post with the ID `123`. |
+| `the_rest_post_like_count()`       | Prints the like count markup for the current post. The number inside is properly formatted using `number_format_i18n()` |
+| `get_rest_post_like_button( 123 )` | Returns the like button markup for the post with the ID `123`. |
+| `the_rest_post_like_button()`      | Prints the like button markup for the current post. |
+
+## Example Usage
+
+By default, the plugin doesn't display any like button on the front end by itself.
 
 The following example code adds the post like count at the beginning of `the_content` and the post like button with count at the end of `the_content`:
 
 ```php
 add_filter( 'the_content', function( $content ) {
-	if ( is_singular( get_rest_post_like_allowed_post_types() ) ) {
-		$content = the_rest_post_like_count( get_the_ID(), [ 'echo' => false ] ) . $content;
-		$content = $content . get_rest_post_like_button( get_the_ID() );
-	}
-	return $content;
+	return get_rest_post_like_count() . $content . get_rest_post_like_button();
 } );
 ```
 
@@ -25,89 +61,115 @@ This is pretty basic and would look something like this:
 
 ![Example implementation screenshot](https://www.dropbox.com/s/y747q142g3e8zyl/Screenshot%202016-10-13%2017.58.24.png?dl=1)
 
-## Hooks aka Actions & Filters
+As you can see, now default styling is provided.
+
+## Hooks & Filters
 
 The plugin provides a few hooks to customize certain parts to your needs.
 
-### `rest_post_likes_namespace` filter hook
+### `rest_likes.enabled_object_types` Filter
 
-Change the namespace in of the plugin endpoint.
+Allows you to filter the list of object types likes are allowed for. In this associative array, the object type is the key, while the value is the name of a class extending `\Required\RestLikes\Controller`
 
-* **default:** `rest-post-likes`
+* **Default:** `[ 'post', 'comment' ]`
 
 ```php
-add_filter( 'rest_post_likes_namespace’, function( $name ) {
-	return 'another-end-point-namespace’;
-});
+add_filter( 'rest_likes.rest_likes.enabled_object_types', function( $object_types ) {
+	unset( $object_types['comment'] );
+
+	return $object_types;
+} );
 ```
 
-### `rest_post_likes_allowed_post_types` filter hook
+### `rest_likes.allowed_post_types` Filter
 
-Change the post types that support likes.
+Allows you to filter the list of post types likes are allowed for.
 
-* **default:** `[ 'post', 'page' ]`
+* **Default:** `[ 'post', 'page' ]`
 
 ```php
-add_filter( 'rest_post_likes_allowed_post_types’, function( $post_types ) {
-	return ['post'] // Allow likes on posts
-	return $post_types[] = 'my-cpt-name' // Add another post type
-});
+add_filter( 'rest_likes.allowed_post_types', function( $post_types ) {
+	$post_types[] = 'foo' // Allow the 'foo' post type.
+
+	return $post_types;
+} );
 ```
 
-### `rest_post_likes_classnames` filter hook
+### `rest_likes.script_data` Filter
 
-Change the CSS classnames used by the like count, button and already liked posts.
+Allows you to filter the daa that is sent to the JavaScript, e.g. the URL to the REST API.
 
-* **default:** `[ 'count_classname' => 'rest-like-count', 'button_classname' => 'rest-like-button', 'liked_classname' => 'has-like' ]`
+* **Default:** `[ 'root' => …, 'object_types' => … ]`
 
 ```php
-add_filter( 'rest_post_likes_classnames’, function( $classnames ) {
+add_filter( 'rest_likes.script_data', function( $script_data ) {
+	$script_data['foo'] = 'bar';
+
+ 	return $script_data;
+} );
+```
+
+
+
+### `rest_rest_likes.classnames` Filter
+
+Change the CSS classnames used inside the like count/button markup.
+
+* **Default:** `[ 'count_classname' => 'rest-like-count', 'button_classname' => 'rest-like-button', 'liked_classname' => 'has-like', 'processing' => 'rest-like-processing' ]`
+
+```php
+add_filter( 'rest_rest_likes.classnames', function( $classnames ) {
 	$classnames['count_classname'] = 'fancy-like-count';
 	$classnames['button_classname'] = 'fancy-like-button';
-	$classnames['liked_classname'] = 'fancy-like-has';
+
 	return $classnames;
-});
+} );
 ```
 
-### `rest_post_likes_button_text` filter hook
+### `rest_likes.button_markup` Filter
 
-Change the text of the like button, sort of the inner part of the button, with the count appended automatically.
+Allows you to change the entire markup of the button.
 
-* **default:** `Like `
-
-```php
-add_filter( 'rest_post_likes_button_text', function( $button_text ) {
-	$button_text = '<span class="icon-thumb-up"></span>';
-	return $button_text;
-});
-```
-
-### `rest_post_likes_button_markup` filter hook
-
-Change the markup of the button entirely.
-
-* **default:** `<button class="%1$s" data-post-id="%2$d">%3$s %4$s</button>`
-* string `%1$s` the CSS classnames
-* int `%2$d` the Post ID
-* string `%3$s` button text
-* string `%4$s` like count
+- **Default:** `<button class="%1$s" data-type="%2$s" data-id="%3$d" data-rest-like-button>%4$s %5$s</button>`
+- `%1$s`: The CSS classnames
+- `%2$s`: The object type (post, comment, etc)
+- `%3$d`: Object ID
+- `%4$s`: Button text
+- `%5$s`: Formatted ike count
 
 ```php
-add_filter( 'rest_post_likes_button_markup', function( $markup ) {
+add_filter( 'rest_likes.button_markup', function( $markup ) {
 	return '<span class="%1$s" data-post-id="%2$d">%4$s</span>';
-});
+} );
 ```
 
-### `rest_post_likes_count_markup` filter hook
+### `rest_likes.button_text` Filter
+
+Change the text inside the like button.
+
+* **Default:** `Like `
+
+```php
+add_filter( 'rest_likes.button_text', function( $button_text ) {
+	$button_text = '<span class="icon-thumb-up"></span>';
+ 
+	return $button_text;
+} );
+```
+
+### `rest_likes.count_markup` Filter
 
 Change the markup of the count element.
 
-* **default:** `<span class="%1$s">%2$d</span>`
-* string `%1$s` the CSS classnames
-* int `%2$d` current like count
+* **Default:** `<span class="%1$s" data-type="%2$s" data-id="%3$d" data-likes="%4$d">%5$s</span>`
+* `%1$s`: The CSS classnames
+* `%2$s`: The object type (post, comment, etc)
+* `%3$d`: Object ID
+* `%4$d`: Like count
+* `%5$s`: Formatted ike count
 
 ```php
-add_filter( 'rest_post_likes_count_markup', function( $markup ) {
-	return 'Likes so far: <span class="%1$s">%2$d</span>';
-});
+add_filter( 'rest_likes.count_markup', function( $markup ) {
+	return sprintf( __( 'Likes so far: %s', 'myplugin' ), $markup );
+} );
 ```
