@@ -1,5 +1,5 @@
 {
-  "name":         "wearerequired/rest-post-likes",
+  "name":         "wearerequired/rest-likes",
   "description":  "Post Likes using the WP REST API",
   "version":      "1.0.0",
   "type":         "wordpress-plugin",
@@ -24,5 +24,10 @@
   "require-dev":  {
     "phpunit/phpunit":          "*",
     "wp-coding-standards/wpcs": "*"
+  },
+  "autoload":     {
+    "psr-4": {
+      "Required\\RestLikes\\": "classes"
+    }
   }
 }
