@@ -348,7 +348,7 @@ abstract class Controller extends WP_REST_Controller {
 			esc_attr( $this->get_object_type() ),
 			$object_id,
 			apply_filters( 'rest_likes.button_text', _x( 'Like', 'verb', 'rest-likes' ) ),
-			$this->get_like_count( $object_id ) ? $this->get_like_count( $object_id ) : 0
+			$this->get_like_count_html( $object_id )
 		);
 
 		return $button;
