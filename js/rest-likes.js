@@ -99,7 +99,12 @@
 
 		$.ajax( {
 			url:    restLikes.root + restLikes.object_types[ objectType ].endpoint.replace( '%s', objectId ),
-			method: method
+			method: method,
+			beforeSend: function( xhr ) {
+				if ( restLikes.nonce ) {
+					xhr.setRequestHeader( 'X-WP-Nonce', restLikes.nonce );
+				}
+			}
 		} ).done( function( response ) {
 			if ( 'DELETE' === method ) {
 				removeLikedItem( objectType, objectId );
