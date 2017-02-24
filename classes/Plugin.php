@@ -31,7 +31,8 @@ class Plugin {
 	 */
 	public function add_hooks() {
 		$available_object_types = apply_filters( 'rest_likes.enabled_object_types', [
-			'post' => '\Required\RestLikes\Posts',
+			'post'    => '\Required\RestLikes\Posts',
+			'comment' => '\Required\RestLikes\Comments',
 		] );
 
 		foreach ( $available_object_types as $object_type => $class ) {
