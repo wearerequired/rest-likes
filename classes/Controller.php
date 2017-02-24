@@ -238,7 +238,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @param WP_REST_Request $request Request Object.
 	 *
-	 * @return bool|WP_Error True of the user has permissions, false otherwise.
+	 * @return true|WP_Error True if the user has permissions, false otherwise.
 	 */
 	public function check_permission( \WP_REST_Request $request ) {
 		if ( $this->transient_exists( $request ) ) {

@@ -103,7 +103,7 @@ class Posts extends Controller {
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 *
-	 * @return bool|WP_Error True on success, WP_Error object on failure.
+	 * @return true|WP_Error True on success, WP_Error object on failure.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( ! $this->is_allowed_post_type( $request['id'] ) ) {
