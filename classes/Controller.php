@@ -83,7 +83,9 @@ abstract class Controller extends WP_REST_Controller {
 	 */
 	public function get_classnames() {
 		/**
-		 * Filters the CSS class names for a given object type.
+		 * Filter the CSS class names for a given object type.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param array  $classnames  The list of CSS class names.
 		 * @param string $object_type The object type the class names are for.
@@ -91,6 +93,7 @@ abstract class Controller extends WP_REST_Controller {
 		return apply_filters( 'rest_likes.classnames', [
 			'count'      => 'rest-like-count',
 			'button'     => 'rest-like-button',
+			'label'      => 'rest-like-button-label',
 			'liked'      => 'has-like',
 			'processing' => 'rest-like-processing',
 		], $this->get_object_type() );
@@ -341,17 +344,37 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return string Like button markup.
 	 */
 	public function get_like_button( $object_id ) {
-		$object_id = absint( $object_id );
+		$object_id   = absint( $object_id );
 
-		$button = sprintf( apply_filters( 'rest_likes.button_markup', '<button class="%1$s" data-type="%2$s" data-id="%3$d" data-rest-like-button>%4$s %5$s</button>' ),
+		/**
+		 * Filter the text displayed inside the like button.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $button_text The button text. Default 'Like'.
+		 * @param string $object_type The object type this button is for.
+		 */
+		$button_text = apply_filters( 'rest_likes.button_text.like', _x( 'Like', 'verb', 'rest-likes' ), $this->get_object_type() );
+
+		$button = sprintf(
+			'<button class="%1$s" data-type="%2$s" data-id="%3$d" data-rest-like-button>%4$s %5$s</button>',
 			esc_attr( $this->get_classnames()['button'] ),
 			esc_attr( $this->get_object_type() ),
 			$object_id,
-			apply_filters( 'rest_likes.button_text', _x( 'Like', 'verb', 'rest-likes' ) ),
+			sprintf( '<span class="%1$s">%2$s</span>', $this->get_classnames()['label'], $button_text ),
 			$this->get_like_count_html( $object_id )
 		);
 
-		return $button;
+		/**
+		 * Filter the like button markup.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $button      The button markup.
+		 * @param int    $object_id   The object ID.
+		 * @param string $object_Type The object type.
+		 */
+		return apply_filters( 'rest_likes.button_markup', $button, $object_id, $this->get_object_type() );
 	}
 
 	/**
