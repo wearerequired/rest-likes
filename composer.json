@@ -1,33 +1,34 @@
 {
-  "name":         "wearerequired/rest-likes",
-  "description":  "Post Likes using the WP REST API",
-  "version":      "1.0.0",
-  "type":         "wordpress-plugin",
-  "license":      "GPL-2.0+",
-  "authors":      [
-    {
-      "name":     "required+",
-      "email":    "support@required.ch",
-      "homepage": "https://required.ch",
-      "role":     "Developer"
-    }
-  ],
-  "repositories": [
-    {
-      "type": "composer",
-      "url":  "https://wpackagist.org"
-    }
-  ],
-  "require":      {
-    "php": ">=5.6"
-  },
-  "require-dev":  {
-    "phpunit/phpunit":          "*",
-    "wp-coding-standards/wpcs": "*"
-  },
-  "autoload":     {
-    "psr-4": {
-      "Required\\RestLikes\\": "classes"
-    }
-  }
+	"name":         "wearerequired/rest-likes",
+	"description":  "Post Likes using the WP REST API",
+	"version":      "1.0.0",
+	"type":         "wordpress-plugin",
+	"license":      "GPL-2.0+",
+	"authors":      [
+		{
+			"name":     "required+",
+			"email":    "support@required.ch",
+			"homepage": "https://required.ch",
+			"role":     "Developer"
+		}
+	],
+	"repositories": [
+		{
+			"type": "git",
+			"url":  "https://github.com/wearerequired/wp-requirements-check"
+		}
+	],
+	"require":      {
+		"php":                                 ">=5.6",
+		"wearerequired/wp-requirements-check": "dev-master"
+	},
+	"require-dev":  {
+		"phpunit/phpunit":          "*",
+		"wp-coding-standards/wpcs": "*"
+	},
+	"autoload":     {
+		"psr-4": {
+			"Required\\RestLikes\\": "classes"
+		}
+	}
 }
