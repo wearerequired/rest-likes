@@ -242,7 +242,7 @@ abstract class Controller extends WP_REST_Controller {
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( $this->transient_exists( $request ) ) {
-			return new WP_Error( 'invalid_action', 'You cannot like the same thing all day long', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_action', 'You cannot like the same thing all day long', [ 'status' => 400 ] );
 		}
 
 		return true;

@@ -92,11 +92,11 @@ class Comments extends Controller {
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( ! $this->is_allowed_comment_type( $request['id'] ) ) {
-			return new WP_Error( 'invalid_comment_type', 'You are not allowed to like this comment.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_comment_type', 'You are not allowed to like this comment.', [ 'status' => 400 ] );
 		}
 
 		if ( 'approved' !== wp_get_comment_status( $request['id'] ) ) {
-			return new WP_Error( 'invalid_comment_status', 'You are not allowed to like this comment', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_comment_status', 'You are not allowed to like this comment', [ 'status' => 400 ] );
 		}
 
 		return parent::check_permission( $request );
