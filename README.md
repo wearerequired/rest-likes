@@ -139,7 +139,7 @@ Allows you to change the entire markup of the button.
 
 ```php
 add_filter( 'rest_likes.button_markup', function( $markup, $object_id, $object_type ) {
-	return sprintf( '<span data-id="%1$s" data-type="%2$s>Foo</span>', $object_id, $object_id );
+	return sprintf( '<span data-id="%1$d" data-type="%2$s>Foo</span>', $object_id, $object_type );
 }, 10, 3 );
 ```
 
