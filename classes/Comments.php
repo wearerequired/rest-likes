@@ -21,7 +21,7 @@ class Comments extends Controller {
 	/**
 	 * The object type this controller is for.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
 	 * @var string
@@ -31,7 +31,7 @@ class Comments extends Controller {
 	/**
 	 * REST field & meta key value.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access protected
 	 *
 	 * @var string
@@ -39,12 +39,12 @@ class Comments extends Controller {
 	protected $meta_key = 'rest_comment_likes';
 
 	/**
-	 * Add WordPress hooks.
+	 * Adds WordPress hooks.
 	 *
 	 * This includes the regular Controller hooks as well as hooks
 	 * to display likes in the comments list table.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 */
 	public function add_hooks() {
@@ -59,7 +59,7 @@ class Comments extends Controller {
 	/**
 	 * Returns the list of comment types that likes are allowed for.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @return array Allowed comment types.
@@ -83,11 +83,10 @@ class Comments extends Controller {
 	 * In addition to the parent check, this checks if the comment type
 	 * is allowed and the comment is published.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
 	 * @return true|WP_Error True on success, WP_Error object on failure.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
@@ -103,13 +102,12 @@ class Comments extends Controller {
 	}
 
 	/**
-	 * Check if this comment type is allowed.
+	 * Checks if this comment type is allowed.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param int|WP_Comment|null $comment Optional. comment ID or comment object. Default is global $comment.
-	 *
 	 * @return bool True if comment type is allowed, false otherwise.
 	 */
 	public function is_allowed_comment_type( $comment = null ) {
@@ -119,11 +117,10 @@ class Comments extends Controller {
 	/**
 	 * Returns the like button markup.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @param int $object_id comment ID.
-	 *
+	 * @param int $object_id Comment ID.
 	 * @return string Like button markup. Empty string if comment type is not allowed.
 	 */
 	public function get_like_button( $object_id ) {
@@ -135,13 +132,12 @@ class Comments extends Controller {
 	}
 
 	/**
-	 * Get like count for a comment.
+	 * Returns the like count for a comment.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param int $comment_id comment ID.
-	 *
 	 * @return int Like count. Will be zero if comment type is not allowed.
 	 */
 	public function get_like_count( $comment_id ) {
@@ -153,13 +149,12 @@ class Comments extends Controller {
 	}
 
 	/**
-	 * Get  like count markup.
+	 * Returns the like count markup.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param int $comment_id comment ID.
-	 *
 	 * @return string Like count markup. Empty string if comment type is not allowed.
 	 */
 	public function get_like_count_html( $comment_id ) {
@@ -173,11 +168,10 @@ class Comments extends Controller {
 	/**
 	 * Filters the columns displayed in the comments list table.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param array $comments_columns An array of column names.
-	 *
 	 * @return array The modified array of column names.
 	 */
 	public function manage_comments_columns( $comments_columns ) {
@@ -189,7 +183,7 @@ class Comments extends Controller {
 	/**
 	 * Displays the comment like count in the list table.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param string $column_name The name of the column to display.
@@ -204,11 +198,10 @@ class Comments extends Controller {
 	/**
 	 * Filters the list table sortable columns for a specific screen.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param array $sortable_columns An array of sortable columns.
-	 *
 	 * @return array The modified array of sortable columns.
 	 */
 	public function manage_sortable_columns( $sortable_columns ) {
@@ -222,7 +215,7 @@ class Comments extends Controller {
 	 *
 	 * Fires after the query variable object is created, but before the actual query is run.
 	 *
-	 * @since  1.0.0
+	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param WP_Comment_Query $query The WP_Comment_Query instance (passed by reference).

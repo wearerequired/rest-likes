@@ -20,7 +20,7 @@ if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
 }
 
 /**
- * Load the plugin on plugins_loaded.
+ * Returns an instance of the main plugin class.
  *
  * @return Required\RestLikes\Plugin
  */
@@ -78,7 +78,6 @@ function the_rest_post_like_count() {
  * @since 1.0.0
  *
  * @param int|WP_Post $post Optional. Post ID or object. Default global $post.
- *
  * @return string The like button markup.
  */
 function get_rest_post_like_button( $post = null ) {
@@ -108,7 +107,6 @@ function the_rest_post_like_button() {
  * @since 1.0.0
  *
  * @param int|WP_Comment $comment Optional. Comment ID or object. Default global $comment.
- *
  * @return int The comment like count.
  */
 function get_rest_comment_like_count( $comment = null ) {
@@ -144,7 +142,6 @@ function the_rest_comment_like_count() {
  * @since 1.0.0
  *
  * @param int|WP_Comment $comment Optional. Comment ID or object. Default global $comment.
- *
  * @return string The like button markup.
  */
 function get_rest_comment_like_button( $comment = null ) {
