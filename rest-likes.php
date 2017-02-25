@@ -41,7 +41,7 @@ function rest_likes() {
 	return $controller;
 }
 
-add_action( 'plugins_loaded', [ rest_likes(), 'add_hooks' ] );
+add_action( 'plugins_loaded', array( rest_likes(), 'add_hooks' ) );
 
 /**
  * Get post like count.
