@@ -110,8 +110,11 @@ class Posts extends Controller {
 			return new WP_Error( 'invalid_post_type', 'You are not allowed to like this post.', array( 'status' => 400 ) );
 		}
 
-		if ( 'publish' !== get_post_status( $request['id'] ) ) {
-			return new WP_Error( 'invalid_post_status', 'You are not allowed to like this post', array( 'status' => 400 ) );
+		$post_type = get_post_type_object( get_post_type( $request['id'] ) );
+
+		// Is the post readable?
+		if ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) {
+			return new WP_Error( 'invalid_post', 'You are not allowed to like this post', array( 'status' => 400 ) );
 		}
 
 		return parent::check_permission( $request );
