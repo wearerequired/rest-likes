@@ -1,0 +1,105 @@
+sudo: false
+
+language: php
+
+php:
+  - 5.3
+  - 5.4
+  - 5.5
+  - 5.6
+  - 7.0
+  - 7.1
+
+env:
+  - WP_VERSION=latest WP_MULTISITE=0
+
+matrix:
+  include:
+  - php: 7.1
+    env: WP_TRAVISCI=travis:phpvalidate
+  - php: 7.1
+    env: WP_TRAVISCI=travis:codecoverage
+  - php: 7.1
+    env: WP_TRAVISCI=travis:jshint
+  - php: 7.1
+    env: WP_TRAVISCI=travis:phpunit WP_VERSION=nightly
+  - php: 7.1
+    env: WP_TRAVISCI=travis:phpunit
+  - php: 7.0
+    env: WP_TRAVISCI=travis:phpunit
+  - php: 5.6
+    env: WP_TRAVISCI=travis:phpunit
+  - php: 5.5
+    env: WP_TRAVISCI=travis:phpunit
+  - php: 5.4
+    env: WP_TRAVISCI=travis:phpunit
+  - php: 5.3
+    env: WP_TRAVISCI=travis:phpunit
+  - php: hhvm
+    env: WP_TRAVISCI=travis:phpunit
+  allow_failures:
+    - php: hhvm
+  fast_finish: true
+
+cache:
+  apt: true
+  bundler: true
+  directories:
+  - vendor
+  - $HOME/.composer/cache
+  - node_modules
+
+before_script:
+  - bash bin/install-wp-tests.sh wordpress_test root '' localhost $WP_VERSION
+  - export PATH="$HOME/.composer/vendor/bin:$PATH"
+  - |
+    if [[ ${TRAVIS_PHP_VERSION:0:2} == "7." ]]; then
+      composer global require "phpunit/phpunit=5.7.*"
+    else
+      composer global require "phpunit/phpunit=4.8.*"
+    fi
+  - |
+    composer global require phpmd/phpmd
+    composer global require wp-coding-standards/wpcs
+    phpcs --config-set installed_paths $HOME/.composer/vendor/wp-coding-standards/wpcs
+    composer install --no-interaction
+  - |
+    if [[ "$WP_TRAVISCI" == "travis:jshint" ]] ; then
+      npm install
+      node --version
+      npm --version
+      grunt --version
+    fi
+
+script:
+  - |
+    if [[ "$WP_TRAVISCI" == "travis:phpvalidate" ]] ; then
+      grunt checktextdomain
+      phpmd classes text codesize,naming,unusedcode
+      phpcs --standard=phpcs.ruleset.xml $(find . -name '*.php')
+    fi
+  - |
+    if [[ "$WP_TRAVISCI" == "travis:codecoverage" ]] ; then
+      phpunit --coverage-clover build/logs/clover.xml
+    else
+      phpunit
+    fi
+  - |
+   if [[ "$WP_TRAVISCI" == "travis:jshint" ]] ; then
+     grunt jshint
+   fi
+
+after_script:
+  # Push coverage off to Codecov
+- |
+  if [[ "$WP_TRAVISCI" == "travis:codecoverage" ]] ; then
+    bash <(curl -s https://codecov.io/bash)
+  fi
+
+notifications:
+  slack:
+    rooms:
+      secure: lCaCsjKe//fJpcqC42Av8EtlxoFchul+s0iEqQX9DMjq62BS4HJ9jmJvXiGn/4VFhyZg+Guvoqn8G7PZsdXYLugt48itV8M9bii1mg/SWz1KlMs039nJ4wzwPWMqM2BeguZarWb5UM8os9yDWRflGcq/0d7v6CNjA9Fj8oclChQoCmiWGN9zC3q08Aag/9dWsAgCiuzS7dRLsmYl/T43EZjFiNHAVztm6mtRvkRZzicq7OKy6/BJplK8wma20bIy2VZPd665dkuaJjYV+LtRJyaK1/wyEHbKVjPnG4E6w/LvWoDZwoBuGtSf/KR5C2REhI6Ot4E7/1N6QavPNLhaHSJhH+3U37P9s5klyeV9tPXE5wyzn92Be8ahpQC1MJY1Z/XutGh5da3oEbye6Pkupplx0Zur0acdcbup8MbUUDe1UBe6h7ms36Deap4OW9XHkT/+L8NvBzYuReco0phgzQiLnTJujzhg6u68v188XKyfZd08jHvUL8pPaDex95FXTemR+3y9VZtqiQOpVsoJisBPbzLgEIPuR/elcNRMx0glWLHRv0tcsArrrHdp2f3SU7ApPoGXgRhvVPj74mP9HvGJK61p0qnL1dv4/vWkpJuAzw+J+19sgZLgnZobfJyzjzm+wjvhD2PwMO8iqqKtm4mNV6w+479exazBlQmBdW0=
+    on_start: never
+    on_failure: always
+    on_success: change

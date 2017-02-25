@@ -110,7 +110,7 @@
 			// Remove processing class
 			$button.removeClass( classNames.processing );
 
-			$button.find( classNames.count ).text( response.countFormatted ).attr( 'data-likes', response.count );
+			$button.find( '.' + classNames.count ).text( response.countFormatted ).attr( 'data-likes', response.count );
 		} ).fail( function() {
 			$button.toggleClass( classNames.liked ).removeClass( classNames.processing );
 		} );

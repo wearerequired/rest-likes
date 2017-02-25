@@ -79,7 +79,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @return mixed|void
+	 * @return array An array of CSS class names.
 	 */
 	public function get_classnames() {
 		/**
@@ -159,11 +159,11 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @param WP_REST_Request $request
+	 * @param WP_REST_Request $request Request Object.
 	 *
 	 * @return int The like count.
 	 */
-	public function rest_field_get_callback( \WP_REST_Request $request ) {
+	public function rest_field_get_callback( WP_REST_Request $request ) {
 		return $this->get_like_count( $request['id'] );
 	}
 
@@ -240,7 +240,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @return true|WP_Error True if the user has permissions, false otherwise.
 	 */
-	public function check_permission( \WP_REST_Request $request ) {
+	public function check_permission( WP_REST_Request $request ) {
 		if ( $this->transient_exists( $request ) ) {
 			return new WP_Error( 'invalid_action', 'You cannot like the same thing all day long', array( 'status' => 400 ) );
 		}
@@ -258,7 +258,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @return True if the user has already liked this object, false otherwise.
 	 */
-	protected function transient_exists( \WP_REST_Request $request ) {
+	protected function transient_exists( WP_REST_Request $request ) {
 		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
 		$transient  = sprintf(
 			'%s_like_%s',
