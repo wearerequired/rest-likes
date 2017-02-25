@@ -87,7 +87,7 @@ class Plugin {
 				'endpoint'   => $controller->get_namespace() . $controller->get_rest_route_placeholder(),
 				'classnames' => $controller->get_classnames(),
 				'texts'      => [
-					/** This filter is already documented in classes/Controller.php */
+					/** This filter is documented in classes/Controller.php */
 					'like'   => apply_filters( 'rest_likes.button_text.like', _x( 'Like', 'verb', 'rest-likes' ), $object_type ),
 					/**
 					 * Filter the text displayed inside the unlike button.
