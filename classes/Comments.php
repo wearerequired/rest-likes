@@ -13,7 +13,7 @@ use WP_Comment;
 use WP_REST_Request;
 
 /**
- * comments Controller class.
+ * Comments Controller class.
  *
  * @since 1.0.0
  */
