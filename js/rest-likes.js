@@ -101,7 +101,12 @@
 
 		$.ajax( {
 			url:    restLikes.root + objectType.endpoint.replace( '%s', objectId ),
-			method: method
+			method: method,
+			beforeSend: function( xhr ) {
+				if ( restLikes.nonce ) {
+					xhr.setRequestHeader( 'X-WP-Nonce', restLikes.nonce );
+				}
+			}
 		} ).done( function( response ) {
 			// Remove processing class
 			$button.removeClass( classNames.processing );

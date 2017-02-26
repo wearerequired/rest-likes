@@ -58,16 +58,27 @@ class Plugin {
 			true
 		);
 
+		$script_data = [
+			'root'         => esc_url_raw( get_rest_url() ),
+			'object_types' => $this->get_object_types_script_data(),
+		];
+
+		if ( is_user_logged_in() ) {
+			$script_data['nonce'] = wp_create_nonce( 'wp_rest' );
+		}
+
+		/**
+		 * Filter the script data used by the plugin.
+		 *
+		 * @param array $script_data Associative array of script data.
+		 */
+		$script_data = apply_filters( 'rest_likes.script_data', $script_data );
+
 		// Localize the plugin script.
 		wp_localize_script(
 			'rest-likes',
 			'restLikes',
-			apply_filters( 'rest_likes.script_data',
-				[
-					'root'         => esc_url_raw( get_rest_url() ),
-					'object_types' => $this->get_object_types_script_data(),
-				]
-			)
+			$script_data
 		);
 	}
 
