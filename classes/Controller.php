@@ -344,7 +344,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return string Like button markup.
 	 */
 	public function get_like_button( $object_id ) {
-		$object_id   = absint( $object_id );
+		$object_id = absint( $object_id );
 
 		/**
 		 * Filter the text displayed inside the like button.
