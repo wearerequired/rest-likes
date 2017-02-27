@@ -108,6 +108,19 @@ class Plugin {
 			$script_data[ $object_type ] = [
 				'endpoint'   => $controller->get_namespace() . $controller->get_rest_route_placeholder(),
 				'classnames' => $controller->get_classnames(),
+				'texts'      => [
+					/** This filter is documented in classes/Controller.php */
+					'like'   => apply_filters( 'rest_likes.button_text.like', _x( 'Like', 'verb', 'rest-likes' ), $object_type ),
+					/**
+					 * Filters the text displayed inside the unlike button.
+					 *
+					 * @since 1.0.0
+					 *
+					 * @param string $button_text The button text. Default 'Unlike'.
+					 * @param string $object_type The object type this button is for.
+					 */
+					'unlike' => apply_filters( 'rest_likes.button_text.unlike', _x( 'Unlike', 'verb', 'rest-likes' ), $object_type ),
+				],
 			];
 		}
 

@@ -74,6 +74,7 @@
 
 			if ( _.contains( getLikedItems( type ), $this.data( 'id' ) ) ) {
 				$this.toggleClass( classNames.liked );
+				$this.find( '.' + classNames.label ).html( restLikes.object_types[ type ].texts.unlike );
 			}
 		} );
 	};
@@ -86,7 +87,8 @@
 	var buttonClickHandler = function( objectType, objectId ) {
 		// Get all buttons for that specific object.
 		var $button    = $( '[data-rest-like-button][data-type="' + objectType + '"][data-id="' + objectId + '"]' ),
-		    classNames = restLikes.object_types[ objectType ].classnames;
+		    objectType = restLikes.object_types[ objectType ],
+		    classNames = objectType.classnames;
 
 		// Set class while processing.
 		$button.addClass( classNames.processing );
@@ -98,7 +100,7 @@
 		$button.toggleClass( classNames.liked );
 
 		$.ajax( {
-			url:    restLikes.root + restLikes.object_types[ objectType ].endpoint.replace( '%s', objectId ),
+			url:    restLikes.root + objectType.endpoint.replace( '%s', objectId ),
 			method: method,
 			beforeSend: function( xhr ) {
 				if ( restLikes.nonce ) {
@@ -106,16 +108,20 @@
 				}
 			}
 		} ).done( function( response ) {
-			if ( 'DELETE' === method ) {
-				removeLikedItem( objectType, objectId );
-			} else {
-				addLikedItem( objectType, objectId );
-			}
-
 			// Remove processing class
 			$button.removeClass( classNames.processing );
 
 			$button.find( '.' + classNames.count ).text( response.countFormatted ).attr( 'data-likes', response.count );
+
+			if ( 'DELETE' === method ) {
+				removeLikedItem( objectType, objectId );
+
+				$button.find( '.' + classNames.label ).html( objectType.texts.like );
+			} else {
+				addLikedItem( objectType, objectId );
+
+				$button.find( '.' + classNames.label ).html( objectType.texts.unlike );
+			}
 		} ).fail( function() {
 			$button.toggleClass( classNames.liked ).removeClass( classNames.processing );
 		} );

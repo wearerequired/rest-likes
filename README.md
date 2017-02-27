@@ -138,24 +138,36 @@ Allows you to change the entire markup of the button.
 - `%5$s`: Formatted ike count
 
 ```php
-add_filter( 'rest_likes.button_markup', function( $markup ) {
-	return '<span class="%1$s" data-post-id="%2$d">%4$s</span>';
-} );
+add_filter( 'rest_likes.button_markup', function( $markup, $object_id, $object_type ) {
+	return sprintf( '<span data-id="%1$d" data-type="%2$s>Foo</span>', $object_id, $object_type );
+}, 10, 3 );
 ```
 
-### `rest_likes.button_text` Filter
+### `rest_likes.button_text.like` Filter
 
 Change the text inside the like button.
 
 * **Default:** `Like `
 
 ```php
-add_filter( 'rest_likes.button_text', function( $button_text ) {
-	$button_text = '<span class="icon-thumb-up"></span>';
- 
-	return $button_text;
-} );
+add_filter( 'rest_likes.button_text.like', function( $button_text, $object_type ) {
+	return '<span class="icon-thumb-up"></span>';
+}, 10, 2 );
 ```
+
+### `rest_likes.button_text.unlike` Filter
+
+Change the text inside the unlike button.
+
+- **Default:** `Unlike `
+
+```php
+add_filter( 'rest_likes.button_text.unlike', function( $button_text, $object_type ) {
+	return '<span class="icon-thumb-down"></span>';
+}, 10, 2 );
+```
+
+### 
 
 ### `rest_likes.count_markup` Filter
 

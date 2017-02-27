@@ -106,14 +106,14 @@ class Posts extends Controller {
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( ! $this->is_allowed_post_type( $request['id'] ) ) {
-			return new WP_Error( 'invalid_post_type', 'You are not allowed to like this post.', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_post_type', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		$post_type = get_post_type_object( get_post_type( $request['id'] ) );
 
 		// Is the post readable?
 		if ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) {
-			return new WP_Error( 'invalid_post', 'You are not allowed to like this post', array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_post', __( 'You are not allowed to like this post', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		return parent::check_permission( $request );
