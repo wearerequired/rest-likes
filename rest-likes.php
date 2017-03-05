@@ -19,6 +19,12 @@ if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
 	include( dirname( __FILE__ ) . '/vendor/autoload.php' );
 }
 
+if ( ! class_exists( 'WP_REST_Controller' ) ) {
+	trigger_error( sprintf( '%s does not exist. Update WordPress or activate the REST API plugin.', 'WP_REST_Controller' ) );
+
+	return;
+}
+
 /**
  * Load the plugin on plugins_loaded.
  *
