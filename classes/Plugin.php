@@ -41,8 +41,8 @@ class Plugin {
 		 * @param array $object_types Array of object types. Default 'post' and 'comment'.
 		 */
 		$available_object_types = apply_filters( 'rest_likes.enabled_object_types', [
-			'post'    => '\Required\RestLikes\Posts',
-			'comment' => '\Required\RestLikes\Comments',
+			'post'    => Posts::class,
+			'comment' => Comments::class,
 		] );
 
 		foreach ( $available_object_types as $object_type => $class ) {

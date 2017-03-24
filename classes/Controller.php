@@ -27,7 +27,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @var string
 	 */
-	protected static $object_type = null;
+	protected static $object_type;
 
 	/**
 	 * REST field & meta key value.
