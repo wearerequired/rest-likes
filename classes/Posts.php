@@ -39,7 +39,7 @@ class Posts extends Controller {
 	protected $meta_key = 'rest_post_likes';
 
 	/**
-	 * Add WordPress hooks.
+	 * Adds WordPress hooks.
 	 *
 	 * This includes the regular Controller hooks as well as hooks
 	 * to display likes in the posts list table.
@@ -102,26 +102,25 @@ class Posts extends Controller {
 	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
-	 * @return bool|WP_Error True on success, WP_Error object on failure.
+	 * @return true|WP_Error True on success, WP_Error object on failure.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( ! $this->is_allowed_post_type( $request['id'] ) ) {
-			return new WP_Error( 'invalid_post_type', __( 'You are not allowed to like this post.', 'rest-likes' ), array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_post_type', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		$post_type = get_post_type_object( get_post_type( $request['id'] ) );
 
 		// Is the post readable?
 		if ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) {
-			return new WP_Error( 'invalid_post', __( 'You are not allowed to like this post', 'rest-likes' ), array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_post', __( 'You are not allowed to like this post', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		return parent::check_permission( $request );
 	}
 
 	/**
-	 * Check if this post type is allowed.
+	 * Checks if this post type is allowed.
 	 *
 	 * @since 1.0.0
 	 * @access public
@@ -141,7 +140,6 @@ class Posts extends Controller {
 	 * @access public
 	 *
 	 * @param int $object_id Post ID.
-	 *
 	 * @return string Like button markup. Empty string if post type is not allowed.
 	 */
 	public function get_like_button( $object_id ) {
@@ -153,13 +151,12 @@ class Posts extends Controller {
 	}
 
 	/**
-	 * Get like count for a post.
+	 * Returns the like count for a post.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param int $post_id Post ID.
-	 *
 	 * @return int Like count. Will be zero if post type is not allowed.
 	 */
 	public function get_like_count( $post_id ) {
@@ -171,13 +168,12 @@ class Posts extends Controller {
 	}
 
 	/**
-	 * Get  like count markup.
+	 * Returns the like count markup.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param int $post_id Post ID.
-	 *
 	 * @return string Like count markup. Empty string if post type is not allowed.
 	 */
 	public function get_like_count_html( $post_id  ) {
@@ -232,14 +228,13 @@ class Posts extends Controller {
 	 * @access public
 	 *
 	 * @param array $sortable_columns An array of sortable columns.
-	 *
 	 * @return array The modified array of sortable columns.
 	 */
 	public function manage_sortable_columns( $sortable_columns ) {
 		$sortable_columns['likes'] = 'likes';
 
 		return $sortable_columns;
- 	}
+	}
 
 	/**
 	 * Orders posts by their likes.

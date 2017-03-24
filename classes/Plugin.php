@@ -22,7 +22,7 @@ class Plugin {
 	protected $enabled_object_types = [];
 
 	/**
-	 * Add WordPress hooks.
+	 * Adds WordPress hooks.
 	 *
 	 * Initializes the controllers for all the enabled object types.
 	 *
@@ -30,8 +30,19 @@ class Plugin {
 	 * @access public
 	 */
 	public function add_hooks() {
+		/**
+		 * Filters the object types likes are enabled for.
+		 *
+		 * Contains an array with thebject type as the key,
+		 * and the value being a class extending the Controller class.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param array $object_types Array of object types. Default 'post' and 'comment'.
+		 */
 		$available_object_types = apply_filters( 'rest_likes.enabled_object_types', [
-			'post' => '\Required\RestLikes\Posts',
+			'post'    => '\Required\RestLikes\Posts',
+			'comment' => '\Required\RestLikes\Comments',
 		] );
 
 		foreach ( $available_object_types as $object_type => $class ) {
@@ -43,13 +54,12 @@ class Plugin {
 	}
 
 	/**
-	 * Register JavaScript on front end.
+	 * Registers JavaScript on front end.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 */
 	public function enqueue_scripts() {
-		// Enqueue the plugin script & dependencies.
 		wp_enqueue_script(
 			'rest-likes',
 			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
@@ -68,13 +78,14 @@ class Plugin {
 		}
 
 		/**
-		 * Filter the script data used by the plugin.
+		 * Filters the script data used by the plugin.
+		 *
+		 * @since 1.0.0
 		 *
 		 * @param array $script_data Associative array of script data.
 		 */
 		$script_data = apply_filters( 'rest_likes.script_data', $script_data );
 
-		// Localize the plugin script.
 		wp_localize_script(
 			'rest-likes',
 			'restLikes',
@@ -88,7 +99,7 @@ class Plugin {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @return array
+	 * @return array Data for use in JavaScript part.
 	 */
 	protected function get_object_types_script_data() {
 		$script_data = [];
@@ -101,7 +112,7 @@ class Plugin {
 					/** This filter is documented in classes/Controller.php */
 					'like'   => apply_filters( 'rest_likes.button_text.like', _x( 'Like', 'verb', 'rest-likes' ), $object_type ),
 					/**
-					 * Filter the text displayed inside the unlike button.
+					 * Filters the text displayed inside the unlike button.
 					 *
 					 * @since 1.0.0
 					 *
@@ -124,7 +135,6 @@ class Plugin {
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
-	 *
 	 * @return int Like count.
 	 */
 	public function get_like_count( $object_type, $object_id ) {
@@ -147,7 +157,6 @@ class Plugin {
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
-	 *
 	 * @return string Like count markup.
 	 */
 	public function get_like_count_html( $object_type, $object_id ) {
@@ -170,7 +179,6 @@ class Plugin {
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
-	 *
 	 * @return string Like button.
 	 */
 	public function get_like_button( $object_type, $object_id ) {

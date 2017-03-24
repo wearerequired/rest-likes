@@ -60,7 +60,7 @@ abstract class Controller extends WP_REST_Controller {
 	protected $version = 1;
 
 	/**
-	 * Add WordPress hooks.
+	 * Adds WordPress hooks.
 	 *
 	 * @since 1.0.0
 	 * @access public
@@ -83,7 +83,7 @@ abstract class Controller extends WP_REST_Controller {
 	 */
 	public function get_classnames() {
 		/**
-		 * Filter the CSS class names for a given object type.
+		 * Filters the CSS class names for a given object type.
 		 *
 		 * @since 1.0.0
 		 *
@@ -105,7 +105,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @return string
+	 * @return string The meta key.
 	 */
 	public function get_meta_key() {
 		return $this->meta_key;
@@ -117,7 +117,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @return string
+	 * @return string The REST API namespace.
 	 */
 	public function get_namespace() {
 		return $this->namespace . '/v' . $this->version;
@@ -131,14 +131,14 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @return array|string
+	 * @return string The object type the REST field should be registered for.
 	 */
 	protected function get_rest_field_object_type() {
 		return $this->get_object_type();
 	}
 
 	/**
-	 * Register a new REST field for the current object type.
+	 * Registers a new REST field for the current object type.
 	 *
 	 * That way, clients can easily retrieve information about the like count.
 	 *
@@ -163,7 +163,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request Object.
-	 *
 	 * @return int The like count.
 	 */
 	public function rest_field_get_callback( WP_REST_Request $request ) {
@@ -178,7 +177,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @return string
+	 * @return string The REST route placeholder.
 	 */
 	public function get_rest_route_placeholder() {
 		return sprintf( '/%ss/%%s/like', $this->get_object_type() );
@@ -192,7 +191,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 * @access protected
 	 *
-	 * @return string
+	 * @return string The REST route.
 	 */
 	protected function get_rest_route() {
 		return sprintf( $this->get_rest_route_placeholder(), '(?P<id>[\d]+)' );
@@ -201,10 +200,10 @@ abstract class Controller extends WP_REST_Controller {
 	/**
 	 * Registers the API endpoint.
 	 *
+	 * The only allowed methods are POST (like) and DELETE (unlike).
+	 *
 	 * @since 1.0.0
 	 * @access public
-	 *
-	 * The only allowed methods are POST (like) and DELETE (unlike).
 	 */
 	public function add_rest_route() {
 		register_rest_route( $this->get_namespace(), $this->get_rest_route(), [
@@ -240,12 +239,11 @@ abstract class Controller extends WP_REST_Controller {
 	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request Object.
-	 *
-	 * @return bool|WP_Error True of the user has permissions, false otherwise.
+	 * @return true|WP_Error True if the user has permissions, false otherwise.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( $this->transient_exists( $request ) ) {
-			return new WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), array( 'status' => 400 ) );
+			return new WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		return true;
@@ -258,7 +256,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * @access protected
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
 	 * @return True if the user has already liked this object, false otherwise.
 	 */
 	protected function transient_exists( WP_REST_Request $request ) {
@@ -282,42 +279,43 @@ abstract class Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Add a like to an object.
+	 * Adds a like to an object.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
-	 * @return WP_REST_Response
+	 * @return WP_REST_Response Response object.
 	 */
 	public function add_like( $request ) {
 		return new WP_REST_Response( $this->handle_like( $request['id'], false ), 201 );
 	}
 
 	/**
-	 * Remove like from an object.
+	 * Removes a like from an object.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
-	 *
-	 * @return WP_REST_Response
+	 * @return WP_REST_Response Response object.
 	 */
 	public function remove_like( $request ) {
 		return new WP_REST_Response( $this->handle_like( $request['id'], true ), 200 );
 	}
 
 	/**
-	 * Adding or removing like from meta data.
+	 * Adds or removes a like from meta data.
+	 *
+	 * Returns the new like count in both formatted and unformatted form.
+	 *
+	 * Negative like counts are not possible.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param int  $object_id Object ID.
 	 * @param bool $remove    Whether to increment or decrement the counter.
-	 *
 	 * @return array Response data containing the new like count, raw and formatted.
 	 */
 	public function handle_like( $object_id, $remove = false ) {
@@ -340,14 +338,13 @@ abstract class Controller extends WP_REST_Controller {
 	 * @access public
 	 *
 	 * @param int $object_id Object ID.
-	 *
 	 * @return string Like button markup.
 	 */
 	public function get_like_button( $object_id ) {
 		$object_id = absint( $object_id );
 
 		/**
-		 * Filter the text displayed inside the like button.
+		 * Filters the text displayed inside the like button.
 		 *
 		 * @since 1.0.0
 		 *
@@ -366,7 +363,7 @@ abstract class Controller extends WP_REST_Controller {
 		);
 
 		/**
-		 * Filter the like button markup.
+		 * Filters the like button markup.
 		 *
 		 * @since 1.0.0
 		 *
@@ -378,13 +375,12 @@ abstract class Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Get like count for an object.
+	 * Returns the like count for an object.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 *
 	 * @param int $object_id Object ID.
-	 *
 	 * @return int Like count.
 	 */
 	public function get_like_count( $object_id ) {
@@ -398,7 +394,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * @access public
 	 *
 	 * @param int $object_id Object ID.
-	 *
 	 * @return string Like count markup.
 	 */
 	public function get_like_count_html( $object_id ) {
@@ -427,7 +422,6 @@ abstract class Controller extends WP_REST_Controller {
 	 *                                  a normal endpoint can return, or null to not hijack the request.
 	 * @param WP_REST_Server  $server   Server instance.
 	 * @param WP_REST_Request $request  Request used to generate the response.
-	 *
 	 * @return mixed|WP_REST_Response The modified response.
 	 */
 	public function rest_pre_dispatch( $result, $server, $request ) {
