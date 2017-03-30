@@ -15,8 +15,15 @@
  * @package rest-likes
  */
 
-if ( file_exists( dirname( __FILE__ ) . '/vendor/autoload.php' ) ) {
-	include( dirname( __FILE__ ) . '/vendor/autoload.php' );
+$requirements_check = new WP_Requirements_Check( array(
+	'title' => __( 'REST Likes', 'rest-likes' ),
+	'php'   => '5.6',
+	'wp'    => '4.7',
+	'file'  => __FILE__,
+) );
+
+if ( ! $requirements_check->passes() ) {
+	return;
 }
 
 if ( ! class_exists( 'WP_REST_Controller' ) ) {
@@ -40,7 +47,7 @@ function rest_likes() {
 	return $controller;
 }
 
-add_action( 'plugins_loaded', [ rest_likes(), 'add_hooks' ] );
+add_action( 'plugins_loaded', array( rest_likes(), 'add_hooks' ) );
 
 /**
  * Returns a post's like count.
