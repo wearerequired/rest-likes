@@ -50,7 +50,7 @@ class Plugin {
 			$this->enabled_object_types[ $object_type ]->add_hooks();
 		}
 
-		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 	}
 
 	/**
@@ -59,8 +59,8 @@ class Plugin {
 	 * @since 1.0.0
 	 * @access public
 	 */
-	public function enqueue_scripts() {
-		wp_enqueue_script(
+	public function register_scripts() {
+		wp_register_script(
 			'rest-likes',
 			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
 			[ 'jquery', 'underscore' ],
@@ -186,6 +186,10 @@ class Plugin {
 			isset( $this->enabled_object_types[ $object_type ] ) &&
 			$this->enabled_object_types[ $object_type ] instanceof Controller
 		) {
+			if ( ! wp_script_is( 'rest-likes' ) ) {
+				wp_enqueue_script( 'rest-likes' );
+			}
+
 			return $this->enabled_object_types[ $object_type ]->get_like_button( $object_id );
 		}
 
