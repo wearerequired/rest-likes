@@ -20,9 +20,14 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	include __DIR__ . '/vendor/autoload.php';
 }
 
-if ( ! class_exists( 'WP_REST_Controller' ) ) {
-	trigger_error( sprintf( '%s does not exist. Update WordPress or activate the REST API plugin.', 'WP_REST_Controller' ) );
+$requirements_check = new WP_Requirements_Check( array(
+	'title' => 'REST Likes',
+	'php'   => '5.6',
+	'wp'    => '4.7',
+	'file'  => __FILE__,
+) );
 
+if ( ! $requirements_check->passes() ) {
 	return;
 }
 
