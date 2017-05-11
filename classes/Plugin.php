@@ -63,7 +63,7 @@ class Plugin {
 		wp_enqueue_script(
 			'rest-likes',
 			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
-			[ 'jquery', 'underscore' ],
+			[ 'jquery', 'underscore', 'wp-a11y' ],
 			'1.0.0',
 			true
 		);
@@ -75,6 +75,13 @@ class Plugin {
 
 		if ( is_user_logged_in() ) {
 			$script_data['nonce'] = wp_create_nonce( 'wp_rest' );
+			$script_data['l10n']  = [
+				/* translators: %d: Like count */
+				'likeMsg'   => __( 'Like processed. New like count: %d', 'rest-likes' ),
+				/* translators: %d: Like count */
+				'unlikeMsg' => __( 'Unlike processed. New like count: %d', 'rest-likes' ),
+				'errorMsg'  => __( 'There was an error processing your request.', 'rest-likes' ),
+			];
 		}
 
 		/**
