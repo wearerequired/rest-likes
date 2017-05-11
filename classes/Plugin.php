@@ -60,9 +60,11 @@ class Plugin {
 	 * @access public
 	 */
 	public function enqueue_scripts() {
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
 		wp_enqueue_script(
 			'rest-likes',
-			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
+			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes' . $suffix . '.js' ),
 			[ 'jquery', 'underscore' ],
 			'1.0.0',
 			true
