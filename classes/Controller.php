@@ -37,7 +37,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @var string
 	 */
-	protected $meta_key = 'rest_likes';
+	protected $meta_key = '_rest_likes';
 
 	/**
 	 * REST namespace.
