@@ -1,11 +1,11 @@
 <?php
 /**
- * REST Likes Controller.
+ * REST Likes Object Type Controller.
  *
  * @package rest-likes
  */
 
-namespace Required\RestLikes;
+namespace Required\RestLikes\Controller;
 
 use WP_Error;
 use WP_REST_Server;
@@ -14,9 +14,9 @@ use WP_REST_Request;
 use WP_REST_Controller;
 
 /**
- * Base Controller class.
+ * Base Controller class for an object type.
  */
-abstract class Controller extends WP_REST_Controller {
+abstract class ObjectType extends WP_REST_Controller implements Controller {
 	/**
 	 * Object type this controller is for.
 	 *

@@ -6,6 +6,9 @@
  */
 
 namespace Required\RestLikes;
+use Required\RestLikes\Controller\Comments;
+use Required\RestLikes\Controller\Controller;
+use Required\RestLikes\Controller\Posts;
 
 /**
  * Main plugin class.

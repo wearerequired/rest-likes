@@ -5,7 +5,7 @@
  * @package rest-likes
  */
 
-namespace Required\RestLikes;
+namespace Required\RestLikes\Controller;
 
 use WP_Comment_Query;
 use WP_Error;
@@ -17,7 +17,7 @@ use WP_REST_Request;
  *
  * @since 1.0.0
  */
-class Comments extends Controller {
+class Comments extends ObjectType {
 	/**
 	 * The object type this controller is for.
 	 *
