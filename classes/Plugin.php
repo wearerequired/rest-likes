@@ -51,6 +51,18 @@ class Plugin {
 		}
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+
+		add_action( 'init', [ $this, 'load_textdomain' ] );
+	}
+
+	/**
+	 * Loads the plugin's text domain.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'rest-likes', false, plugin_dir_path( __DIR__ ) . 'languages' );
 	}
 
 	/**
