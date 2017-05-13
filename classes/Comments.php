@@ -95,7 +95,7 @@ class Comments extends Controller {
 		}
 
 		if ( 'approved' !== wp_get_comment_status( $request['id'] ) ) {
-			return new WP_Error( 'invalid_comment_status', __( 'You are not allowed to like this comment', 'rest-likes' ), [ 'status' => 400 ] );
+			return new WP_Error( 'invalid_comment_status', __( 'You are not allowed to like this comment.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		return parent::check_permission( $request );

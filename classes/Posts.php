@@ -113,7 +113,7 @@ class Posts extends Controller {
 
 		// Is the post readable?
 		if ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) {
-			return new WP_Error( 'invalid_post', __( 'You are not allowed to like this post', 'rest-likes' ), [ 'status' => 400 ] );
+			return new WP_Error( 'invalid_post', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		return parent::check_permission( $request );
