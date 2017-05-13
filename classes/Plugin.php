@@ -62,7 +62,7 @@ class Plugin {
 	 * @access public
 	 */
 	public function load_textdomain() {
-		load_plugin_textdomain( 'rest-likes', false, plugin_dir_path( __DIR__ ) . 'languages' );
+		load_plugin_textdomain( 'rest-likes', false, basename( plugin_dir_path( __DIR__ ) ) . '/languages' );
 	}
 
 	/**
