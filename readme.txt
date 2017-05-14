@@ -1,4 +1,4 @@
-=== OpenInbound ===
+=== REST Likes ===
 Contributors: wearerequired, swissspidy, neverything, ocean90
 Tags: rest, rest-api, like, like button
 Requires at least: 4.4
