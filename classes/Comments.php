@@ -29,16 +29,6 @@ class Comments extends Controller {
 	protected static $object_type = 'comment';
 
 	/**
-	 * REST field & meta key value.
-	 *
-	 * @since 1.0.0
-	 * @access protected
-	 *
-	 * @var string
-	 */
-	protected $meta_key = 'rest_comment_likes';
-
-	/**
 	 * Adds WordPress hooks.
 	 *
 	 * This includes the regular Controller hooks as well as hooks

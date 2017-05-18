@@ -29,16 +29,6 @@ class Posts extends Controller {
 	protected static $object_type = 'post';
 
 	/**
-	 * REST field & meta key value.
-	 *
-	 * @since 1.0.0
-	 * @access protected
-	 *
-	 * @var string
-	 */
-	protected $meta_key = 'rest_post_likes';
-
-	/**
 	 * Adds WordPress hooks.
 	 *
 	 * This includes the regular Controller hooks as well as hooks
