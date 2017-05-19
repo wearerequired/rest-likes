@@ -186,9 +186,7 @@ class Plugin {
 			isset( $this->enabled_object_types[ $object_type ] ) &&
 			$this->enabled_object_types[ $object_type ] instanceof Controller
 		) {
-			if ( ! wp_script_is( 'rest-likes' ) ) {
-				wp_enqueue_script( 'rest-likes' );
-			}
+			wp_enqueue_script( 'rest-likes' );
 
 			return $this->enabled_object_types[ $object_type ]->get_like_button( $object_id );
 		}
