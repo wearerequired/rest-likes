@@ -1,0 +1,21 @@
+{
+  "name":            "rest-likes",
+  "version":         "1.0.0",
+  "description":     "Like posts and comments using the REST API.",
+  "scripts":         {
+    "build:js": "uglifyjs -o ./js/rest-likes.min.js ./js/rest-likes.js"
+  },
+  "repository":      {
+    "type": "git",
+    "url":  "git+https://github.com/wearerequired/rest-likes.git"
+  },
+  "author":          "required",
+  "license":         "GPL-2.0+",
+  "bugs":            {
+    "url": "https://github.com/wearerequired/rest-likes/issues"
+  },
+  "homepage":        "https://github.com/wearerequired/rest-likes#readme",
+  "devDependencies": {
+    "uglify-js": "^3.0.3"
+  }
+}

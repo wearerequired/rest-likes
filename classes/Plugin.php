@@ -51,6 +51,18 @@ class Plugin {
 		}
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
+
+		add_action( 'init', [ $this, 'load_textdomain' ] );
+	}
+
+	/**
+	 * Loads the plugin's text domain.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'rest-likes', false, basename( plugin_dir_path( __DIR__ ) ) . '/languages' );
 	}
 
 	/**
@@ -60,10 +72,12 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_scripts() {
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
 		wp_register_script(
 			'rest-likes',
-			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
-			[ 'jquery', 'underscore' ],
+			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes' . $suffix . '.js' ),
+			[ 'jquery', 'underscore', 'wp-a11y' ],
 			'1.0.0',
 			true
 		);
@@ -75,6 +89,13 @@ class Plugin {
 
 		if ( is_user_logged_in() ) {
 			$script_data['nonce'] = wp_create_nonce( 'wp_rest' );
+			$script_data['l10n']  = [
+				/* translators: %d: Like count */
+				'likeMsg'   => __( 'Like processed. New like count: %d', 'rest-likes' ),
+				/* translators: %d: Like count */
+				'unlikeMsg' => __( 'Unlike processed. New like count: %d', 'rest-likes' ),
+				'errorMsg'  => __( 'There was an error processing your request.', 'rest-likes' ),
+			];
 		}
 
 		/**

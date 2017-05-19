@@ -37,7 +37,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @var string
 	 */
-	protected $meta_key = 'rest_likes';
+	protected $meta_key = '_rest_likes';
 
 	/**
 	 * REST namespace.
@@ -68,7 +68,6 @@ abstract class Controller extends WP_REST_Controller {
 	public function add_hooks() {
 		add_action( 'rest_api_init', [ $this, 'add_rest_route' ] );
 		add_action( 'rest_api_init', [ $this, 'add_rest_field' ] );
-		add_action( 'rest_pre_dispatch', [ $this, 'rest_pre_dispatch' ], 10, 3 );
 	}
 
 	/**
@@ -406,37 +405,6 @@ abstract class Controller extends WP_REST_Controller {
 			esc_attr( $likes ),
 			esc_html( number_format_i18n( $likes ) )
 		);
-	}
-
-	/**
-	 * Workaround for non-working DELETE requests.
-	 *
-	 * @link https://github.com/wearerequired/rest-likes/issues/5
-	 *
-	 * @todo Consider moving out of the plugin as it seems to be a server-specific issue.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param mixed           $result   Response to replace the requested version with. Can be anything
-	 *                                  a normal endpoint can return, or null to not hijack the request.
-	 * @param WP_REST_Server  $server   Server instance.
-	 * @param WP_REST_Request $request  Request used to generate the response.
-	 * @return mixed|WP_REST_Response The modified response.
-	 */
-	public function rest_pre_dispatch( $result, $server, $request ) {
-		remove_filter( current_filter(), __FUNCTION__ );
-
-		if (
-			WP_REST_Server::READABLE === $request->get_method() &&
-			preg_match( '@^/' . $this->get_namespace() . $this->get_rest_route() . '$@i', $request->get_route() )
-		) {
-			$request->set_method( WP_REST_Server::DELETABLE );
-
-			return $server->dispatch( $request );
-		}
-
-		return $result;
 	}
 
 	/**
