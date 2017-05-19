@@ -1,4 +1,4 @@
-(function( $, restLikes ) {
+(function( $, restLikes, wp ) {
 	/**
 	 * Check for localStorage support in the browser.
 	 */
@@ -117,13 +117,19 @@
 				removeLikedItem( objectType, objectId );
 
 				$button.find( '.' + classNames.label ).html( objectType.texts.like );
+
+				wp.a11y.speak( restLikes.l10n.unlikeMsg.replace( '%s', response.count ), 'polite' );
 			} else {
 				addLikedItem( objectType, objectId );
 
 				$button.find( '.' + classNames.label ).html( objectType.texts.unlike );
+
+				wp.a11y.speak( restLikes.l10n.likeMsg.replace( '%s', response.count ), 'polite' );
 			}
 		} ).fail( function() {
 			$button.toggleClass( classNames.liked ).removeClass( classNames.processing );
+
+			wp.a11y.speak( restLikes.l10n.errorMsg, 'polite' );
 		} );
 	};
 
@@ -142,4 +148,4 @@
 			buttonClickHandler( $( this ).data( 'type' ), $( this ).data( 'id' ) );
 		} );
 	} );
-})( jQuery, window.restLikes );
+})( jQuery, window.restLikes, wp );
