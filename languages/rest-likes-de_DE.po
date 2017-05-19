@@ -4,63 +4,64 @@ msgid ""
 msgstr ""
 "Project-Id-Version: REST Likes 1.0.0\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/rest-post-likes\n"
-"POT-Creation-Date: 2017-05-13 14:42:44+00:00\n"
+"POT-Creation-Date: 2017-05-13 16:42+0200\n"
+"PO-Revision-Date: 2017-05-13 16:43+0200\n"
+"Last-Translator: Pascal Birchler <swissspidy@chat.wordpress.org>\n"
+"Language-Team: \n"
+"Language: de_DE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2017-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
+"X-Generator: Poedit 2.0\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: classes/Comments.php:94 classes/Comments.php:98
 msgid "You are not allowed to like this comment."
-msgstr ""
+msgstr "Du bist nicht berechtigt diesen Kommentar zu liken."
 
 #: classes/Comments.php:178 classes/Posts.php:202
 msgid "Likes"
-msgstr ""
+msgstr "Likes"
 
 #: classes/Controller.php:245
 msgid "You cannot like the same thing all day long"
-msgstr ""
+msgstr "Du kannst nicht den ganzen Tag lang das Gleiche liken"
 
 #: classes/Controller.php:353 classes/Plugin.php:127
 msgctxt "verb"
 msgid "Like"
-msgstr ""
+msgstr "Liken"
 
 #: classes/Controller.php:425
 msgid "Like count"
-msgstr ""
+msgstr "Anzahl Likes"
 
 #: classes/Controller.php:431
 msgid "Formatted like count"
-msgstr ""
+msgstr "Formatierte Anzahl Likes"
 
 #: classes/Plugin.php:136
 msgctxt "verb"
 msgid "Unlike"
-msgstr ""
+msgstr "Entliken"
 
 #: classes/Posts.php:109 classes/Posts.php:116
 msgid "You are not allowed to like this post."
-msgstr ""
+msgstr "Du bist nicht berechtigt diesen Beitrag zu liken."
 
 #. Plugin Name of the plugin/theme
 msgid "REST Likes"
-msgstr ""
+msgstr "REST Likes"
 
-#. #-#-#-#-#  rest-likes.pot (REST Likes 1.0.0)  #-#-#-#-#
 #. Plugin URI of the plugin/theme
-#. #-#-#-#-#  rest-likes.pot (REST Likes 1.0.0)  #-#-#-#-#
 #. Author URI of the plugin/theme
 msgid "https://required.com"
-msgstr ""
+msgstr "https://required.com"
 
 #. Description of the plugin/theme
 msgid "Like posts and comments using the REST API."
-msgstr ""
+msgstr "Like Beiträge und Kommentare über die REST API."
 
 #. Author of the plugin/theme
 msgid "Silvan Hagen"
-msgstr ""
+msgstr "Silvan Hagen"

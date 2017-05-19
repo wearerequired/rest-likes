@@ -51,6 +51,18 @@ class Plugin {
 		}
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'enqueue_scripts' ] );
+
+		add_action( 'init', [ $this, 'load_textdomain' ] );
+	}
+
+	/**
+	 * Loads the plugin's text domain.
+	 *
+	 * @since 1.0.0
+	 * @access public
+	 */
+	public function load_textdomain() {
+		load_plugin_textdomain( 'rest-likes', false, basename( plugin_dir_path( __DIR__ ) ) . '/languages' );
 	}
 
 	/**
@@ -60,9 +72,11 @@ class Plugin {
 	 * @access public
 	 */
 	public function enqueue_scripts() {
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+
 		wp_enqueue_script(
 			'rest-likes',
-			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
+			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes' . $suffix . '.js' ),
 			[ 'jquery', 'underscore', 'wp-a11y' ],
 			'1.0.0',
 			true
