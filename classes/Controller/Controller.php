@@ -119,7 +119,7 @@ interface Controller {
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response Response object.
 	 */
-	public function add_like( $request );
+	public function add_like( WP_REST_Request $request );
 
 	/**
 	 * Removes a like from an object.
@@ -130,7 +130,7 @@ interface Controller {
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response Response object.
 	 */
-	public function remove_like( $request );
+	public function remove_like( WP_REST_Request $request );
 
 	/**
 	 * Adds or removes a like from meta data.
