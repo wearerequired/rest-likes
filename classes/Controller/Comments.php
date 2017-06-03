@@ -211,7 +211,7 @@ class Comments extends ObjectType {
 	 * @param WP_Comment_Query $query The WP_Comment_Query instance (passed by reference).
 	 */
 	public function order_by_comment_likes( WP_Comment_Query $query ) {
-		if ( is_admin() && 'likes' === $query->query_vars['orderby'] ) {
+		if ( 'likes' === $query->query_vars['orderby'] && is_admin() ) {
 			$query->query_vars['meta_key'] = $this->meta_key;
 			$query->query_vars['orderby']  = 'meta_value_num';
 		}

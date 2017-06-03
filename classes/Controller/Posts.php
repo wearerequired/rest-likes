@@ -166,7 +166,7 @@ class Posts extends ObjectType {
 	 * @param int $post_id Post ID.
 	 * @return string Like count markup. Empty string if post type is not allowed.
 	 */
-	public function get_like_count_html( $post_id  ) {
+	public function get_like_count_html( $post_id ) {
 		if ( ! $this->is_allowed_post_type( $post_id ) ) {
 			return '';
 		}
@@ -184,7 +184,7 @@ class Posts extends ObjectType {
 	 * @param string $post_type     The post type slug.
 	 * @return array The modified array of column names.
 	 */
-	public function manage_posts_columns( $posts_columns, $post_type  ) {
+	public function manage_posts_columns( $posts_columns, $post_type ) {
 		if ( ! in_array( $post_type, $this->get_allowed_post_types(), true ) ) {
 			return $posts_columns;
 		}

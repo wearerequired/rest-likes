@@ -286,7 +286,7 @@ abstract class ObjectType extends WP_REST_Controller implements Controller {
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response Response object.
 	 */
-	public function add_like( $request ) {
+	public function add_like( WP_REST_Request $request ) {
 		return new WP_REST_Response( $this->handle_like( $request['id'], false ), 201 );
 	}
 
@@ -299,7 +299,7 @@ abstract class ObjectType extends WP_REST_Controller implements Controller {
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response Response object.
 	 */
-	public function remove_like( $request ) {
+	public function remove_like( WP_REST_Request $request ) {
 		return new WP_REST_Response( $this->handle_like( $request['id'], true ), 200 );
 	}
 
