@@ -1,4 +1,4 @@
-(function( $, restLikes, wp ) {
+(function( document, window, $, restLikes, wp ) {
 	/**
 	 * Check for localStorage support in the browser.
 	 */
@@ -10,6 +10,23 @@
 		storage.removeItem( uid );
 		fail && (storage = false);
 	} catch ( exception ) {
+	}
+
+	/**
+	 * Check for CustomEvent support in the browser.
+	 *
+	 * @url https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+	 */
+	if ( typeof window.CustomEvent !== 'function' ) {
+		function CustomEvent( event, params ) {
+			params  = params || { bubbles: false, cancelable: false, detail: undefined };
+			var evt = document.createEvent( 'CustomEvent' );
+			evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+			return evt;
+		}
+
+		CustomEvent.prototype = window.Event.prototype;
+		window.CustomEvent = CustomEvent;
 	}
 
 	/**
@@ -119,17 +136,39 @@
 				$button.find( '.' + classNames.label ).html( objectType.texts.like );
 
 				wp.a11y.speak( restLikes.l10n.unlikeMsg.replace( '%s', response.count ), 'polite' );
+
+				document.dispatchEvent( new CustomEvent( 'restLikes', {
+					detail: {
+						'action':         'unlike',
+						'count':          response.count,
+						'countFormatted': response.countFormatted,
+					}
+				} ) );
 			} else {
 				addLikedItem( objectType, objectId );
 
 				$button.find( '.' + classNames.label ).html( objectType.texts.unlike );
 
 				wp.a11y.speak( restLikes.l10n.likeMsg.replace( '%s', response.count ), 'polite' );
+
+				document.dispatchEvent( new CustomEvent( 'restLikes', {
+					detail: {
+						'action':         'like',
+						'count':          response.count,
+						'countFormatted': response.countFormatted,
+					}
+				} ) );
 			}
 		} ).fail( function() {
 			$button.toggleClass( classNames.liked ).removeClass( classNames.processing );
 
 			wp.a11y.speak( restLikes.l10n.errorMsg, 'polite' );
+
+			document.dispatchEvent( new CustomEvent( 'restLikes', {
+				detail: {
+					'action': 'error',
+				}
+			} ) );
 		} );
 	};
 
@@ -148,4 +187,4 @@
 			buttonClickHandler( $( this ).data( 'type' ), $( this ).data( 'id' ) );
 		} );
 	} );
-})( jQuery, window.restLikes, wp );
+})( document, window, jQuery, window.restLikes, wp );
