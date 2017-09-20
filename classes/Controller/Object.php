@@ -16,7 +16,7 @@ use WP_REST_Controller;
 /**
  * Base Controller class for an object type.
  */
-abstract class ObjectType extends WP_REST_Controller implements Controller {
+abstract class Object extends WP_REST_Controller implements Controller {
 	/**
 	 * Object type this controller is for.
 	 *

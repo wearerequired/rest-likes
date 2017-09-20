@@ -17,7 +17,7 @@ use WP_REST_Request;
  *
  * @since 1.0.0
  */
-class Posts extends ObjectType {
+class Posts extends Object {
 	/**
 	 * The object type this controller is for.
 	 *

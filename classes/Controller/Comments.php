@@ -17,7 +17,7 @@ use WP_REST_Request;
  *
  * @since 1.0.0
  */
-class Comments extends ObjectType {
+class Comments extends Object {
 	/**
 	 * The object type this controller is for.
 	 *
