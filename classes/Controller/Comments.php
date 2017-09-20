@@ -181,7 +181,7 @@ class Comments extends Object {
 	 */
 	public function manage_comments_custom_column( $column_name, $comment_id ) {
 		if ( 'likes' === $column_name ) {
-			echo number_format_i18n( $this->get_like_count( $comment_id ), 0 );
+			echo number_format_i18n( $this->get_like_count( $comment_id ) );
 		}
 	}
 

@@ -207,7 +207,7 @@ class Posts extends Object {
 		if ( 'likes' === $column_name ) {
 			$likes = $this->get_like_count( $post_id );
 
-			echo is_wp_error( $likes ) ? 0 : number_format_i18n( $likes, 0 );
+			echo is_wp_error( $likes ) ? 0 : number_format_i18n( $likes );
 		}
 	}
 
