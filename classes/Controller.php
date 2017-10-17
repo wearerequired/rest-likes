@@ -265,16 +265,54 @@ abstract class Controller extends WP_REST_Controller {
 			md5( $ip_address . $request['id'] . $request->get_method() )
 		);
 
-		$value = get_transient( $transient );
+		return (bool) get_transient( $transient );
+	}
 
-		if ( ! $value ) {
-			// Todo: consider moving to a separate method to keep it side-effect free.
-			set_transient( $transient, 1, 2 * MINUTE_IN_SECONDS );
+	/**
+	 * Sets the transient for the current object and user.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 */
+	protected function set_transient( $request ) {
+		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+		$transient  = sprintf(
+			'%s_like_%s',
+			$this->get_object_type(),
+			md5( $ip_address . $request['id'] . $request->get_method() )
+		);
 
-			return false;
-		}
+		set_transient( $transient, 1, 2 * MINUTE_IN_SECONDS );
+	}
 
-		return true;
+	/**
+	 * Deletes like and unlike transients for the current object and user.
+	 *
+	 * @since 1.0.0
+	 * @access protected
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 */
+	protected function delete_transients( $request ) {
+		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+
+		$like  = sprintf(
+			'%s_like_%s',
+			$this->get_object_type(),
+			md5( $ip_address . $request['id'] . WP_REST_Server::CREATABLE )
+		);
+
+		delete_transient( $like );
+
+		$unlike  = sprintf(
+			'%s_like_%s',
+			$this->get_object_type(),
+			md5( $ip_address . $request['id'] . WP_REST_Server::DELETABLE )
+		);
+
+		delete_transient( $unlike );
 	}
 
 	/**
@@ -287,6 +325,8 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response Response object.
 	 */
 	public function add_like( $request ) {
+		$this->delete_transients( $request );
+		$this->set_transient( $request );
 		return new WP_REST_Response( $this->handle_like( $request['id'], false ), 201 );
 	}
 
@@ -300,6 +340,8 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return WP_REST_Response Response object.
 	 */
 	public function remove_like( $request ) {
+		$this->delete_transients( $request );
+		$this->set_transient( $request );
 		return new WP_REST_Response( $this->handle_like( $request['id'], true ), 200 );
 	}
 
