@@ -1,21 +1,35 @@
 {
-  "name":            "rest-likes",
-  "version":         "1.0.0",
-  "description":     "Like posts and comments using the REST API.",
-  "scripts":         {
-    "build:js": "uglifyjs -o ./js/rest-likes.min.js ./js/rest-likes.js"
-  },
-  "repository":      {
+  "name": "rest-likes",
+  "description": "Like posts and comments using the REST API.",
+  "license": "GPL-2.0+",
+  "version": "1.0.0",
+  "repository": {
     "type": "git",
-    "url":  "git+https://github.com/wearerequired/rest-likes.git"
+    "url": "https://github.com/wearerequired/rest-likes.git"
   },
-  "author":          "required",
-  "license":         "GPL-2.0+",
-  "bugs":            {
+  "author": {
+    "name": "required",
+    "email": "info@required.ch",
+    "url": "https://required.com"
+  },
+  "bugs": {
     "url": "https://github.com/wearerequired/rest-likes/issues"
   },
-  "homepage":        "https://github.com/wearerequired/rest-likes#readme",
+  "homepage": "https://github.com/wearerequired/rest-likes#readme",
+  "directories": {
+    "js": "./js"
+  },
   "devDependencies": {
-    "uglify-js": "^3.0.3"
+    "babel-cli": "^6.24.1",
+    "babel-preset-env": "^1.5.2",
+    "nodemon": "^1.11.0",
+    "uglify-js": "^3.1.0"
+  },
+  "scripts": {
+    "uglifyjs": "find js -type f -name '*.js' ! -name '*.min.js' -maxdepth 1 | while read FILE ; do uglifyjs \"${FILE}\" -o \"${FILE%.js}.min.js\" ; done",
+    "build:js": "babel js/src -d js && npm run uglifyjs",
+    "build": "npm run build:js",
+    "watch:js": "nodemon --watch js/src -e js -x 'npm run build:js'",
+    "watch": "nodemon --watch js/src -e js -x 'npm run build'"
   }
 }
