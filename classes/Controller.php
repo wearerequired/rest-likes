@@ -366,9 +366,23 @@ abstract class Controller extends WP_REST_Controller {
 
 		update_metadata( $this->get_object_type(), $object_id, $this->get_meta_key(), $likes );
 
+		$likes_i18n = number_format_i18n( $likes );
+
+		/**
+		 * Fires when the like count is updated for an object.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $object_type The object type.
+		 * @param int    $object_id   Object ID.
+		 * @param int    $likes       The like count.
+		 * @param int    $likes_i18n  The formatted like count.
+		 */
+		do_action( 'rest_likes.update_likes', $this->get_object_type(), $object_id, $likes, $likes_i18n );
+
 		return [
 			'count'          => $likes,
-			'countFormatted' => number_format_i18n( $likes ),
+			'countFormatted' => $likes_i18n,
 		];
 	}
 
