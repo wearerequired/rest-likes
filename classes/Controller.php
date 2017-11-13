@@ -360,8 +360,8 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return array Response data containing the new like count, raw and formatted.
 	 */
 	public function handle_like( $object_id, $remove = false ) {
-		$likes = $this->get_like_count( $object_id );
-		$likes = $remove ? -- $likes : ++ $likes;
+		$old_likes = $this->get_like_count( $object_id );
+		$likes = $remove ? -- $old_likes : ++ $old_likes;
 		$likes = max( $likes, 0 );
 
 		update_metadata( $this->get_object_type(), $object_id, $this->get_meta_key(), $likes );
@@ -377,8 +377,9 @@ abstract class Controller extends WP_REST_Controller {
 		 * @param int    $object_id   Object ID.
 		 * @param int    $likes       The like count.
 		 * @param int    $likes_i18n  The formatted like count.
+		 * @param int    $old_likes   The old like count.
 		 */
-		do_action( 'rest_likes.update_likes', $this->get_object_type(), $object_id, $likes, $likes_i18n );
+		do_action( 'rest_likes.update_likes', $this->get_object_type(), $object_id, $likes, $likes_i18n, $old_likes );
 
 		return [
 			'count'          => $likes,
