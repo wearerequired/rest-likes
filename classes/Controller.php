@@ -361,7 +361,7 @@ abstract class Controller extends WP_REST_Controller {
 	 */
 	public function handle_like( $object_id, $remove = false ) {
 		$old_likes = $this->get_like_count( $object_id );
-		$likes = $remove ? -- $old_likes : ++ $old_likes;
+		$likes = $remove ? $old_likes - 1 : $old_likes + 1;
 		$likes = max( $likes, 0 );
 
 		update_metadata( $this->get_object_type(), $object_id, $this->get_meta_key(), $likes );
