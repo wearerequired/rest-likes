@@ -147,7 +147,9 @@
 					detail: {
 						'action': 'unlike',
 						'count': response.count,
-						'countFormatted': response.countFormatted
+						'countFormatted': response.countFormatted,
+						objectType: objectType,
+						objectId: objectId
 					}
 				}));
 			} else {
@@ -161,7 +163,9 @@
 					detail: {
 						'action': 'like',
 						'count': response.count,
-						'countFormatted': response.countFormatted
+						'countFormatted': response.countFormatted,
+						objectType: objectType,
+						objectId: objectId
 					}
 				}));
 			}
@@ -172,7 +176,9 @@
 
 			document.dispatchEvent(new CustomEvent('restLikes', {
 				detail: {
-					'action': 'error'
+					'action': 'error',
+					objectType: objectType,
+					objectId: objectId
 				}
 			}));
 		});

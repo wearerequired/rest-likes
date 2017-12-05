@@ -143,6 +143,8 @@
 						'action':         'unlike',
 						'count':          response.count,
 						'countFormatted': response.countFormatted,
+						objectType,
+						objectId,
 					}
 				} ) );
 			} else {
@@ -157,6 +159,8 @@
 						'action':         'like',
 						'count':          response.count,
 						'countFormatted': response.countFormatted,
+						objectType,
+						objectId,
 					}
 				} ) );
 			}
@@ -168,6 +172,8 @@
 			document.dispatchEvent( new CustomEvent( 'restLikes', {
 				detail: {
 					'action': 'error',
+					objectType,
+					objectId,
 				}
 			} ) );
 		} );
