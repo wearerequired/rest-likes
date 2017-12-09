@@ -85,17 +85,17 @@ class Plugin {
 		$script_data = [
 			'root'         => esc_url_raw( get_rest_url() ),
 			'object_types' => $this->get_object_types_script_data(),
-		];
-
-		if ( is_user_logged_in() ) {
-			$script_data['nonce'] = wp_create_nonce( 'wp_rest' );
-			$script_data['l10n']  = [
+			'l10n'         => [
 				/* translators: %d: Like count */
 				'likeMsg'   => __( 'Like processed. New like count: %d', 'rest-likes' ),
 				/* translators: %d: Like count */
 				'unlikeMsg' => __( 'Unlike processed. New like count: %d', 'rest-likes' ),
 				'errorMsg'  => __( 'There was an error processing your request.', 'rest-likes' ),
-			];
+			]
+		];
+
+		if ( is_user_logged_in() ) {
+			$script_data['nonce'] = wp_create_nonce( 'wp_rest' );
 		}
 
 		/**
