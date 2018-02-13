@@ -5,28 +5,26 @@
  * @package rest-likes
  */
 
-namespace Required\RestLikes;
+namespace Required\RestLikes\ObjectType;
 
 use WP_Error;
-use WP_Query;
 use WP_Post;
+use WP_Query;
 use WP_REST_Request;
 
-/**
- * Posts Controller class.
- *
- * @since 1.0.0
- */
-class Posts extends Controller {
+class Post implements ObjectType {
 	/**
 	 * The object type this controller is for.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var string
 	 */
 	protected static $object_type = 'post';
+
+	public function get_name() {
+		return static::$object_type;
+	}
 
 	/**
 	 * Adds WordPress hooks.
@@ -35,11 +33,8 @@ class Posts extends Controller {
 	 * to display likes in the posts list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function add_hooks() {
-		parent::add_hooks();
-
 		add_filter( 'manage_posts_columns', [ $this, 'manage_posts_columns' ], 10, 2 );
 		add_filter( 'manage_posts_custom_column', [ $this, 'manage_posts_custom_column' ], 10, 2 );
 		add_action( 'pre_get_posts', [ $this, 'order_by_post_likes' ] );
@@ -53,7 +48,6 @@ class Posts extends Controller {
 	 * Returns the list of post types that likes are allowed for.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @return array Allowed post types.
 	 */
@@ -74,11 +68,10 @@ class Posts extends Controller {
 	 * Returns the post types that the REST field will be registered for.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @return array Enabled post types.
 	 */
-	protected function get_rest_field_object_type() {
+	public function get_rest_field_object_type() {
 		return $this->get_allowed_post_types();
 	}
 
@@ -89,7 +82,6 @@ class Posts extends Controller {
 	 * is allowed and the post is published.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return true|WP_Error True on success, WP_Error object on failure.
@@ -101,84 +93,45 @@ class Posts extends Controller {
 
 		$post_type = get_post_type_object( get_post_type( $request['id'] ) );
 
+		if ( ! $post_type ) {
+			return new WP_Error( 'invalid_post_type', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
+		}
+
 		// Is the post readable?
-		if ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) {
+		if ( ! 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) {
 			return new WP_Error( 'invalid_post', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
-		return parent::check_permission( $request );
+		return true;
+	}
+
+	/**
+	 * Checks whether this object ID is allowed.
+	 *
+	 * @param int $object_id Object ID.
+	 * @return bool True if object ID is allowed, false otherwise.
+	 */
+	public function is_allowed_object_id( $object_id  ) {
+		return $this->is_allowed_post_type( $object_id );
 	}
 
 	/**
 	 * Checks if this post type is allowed.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int|WP_Post|null $post Optional. Post ID or post object. Default is global $post.
 	 *
 	 * @return bool True if post type is allowed, false otherwise.
 	 */
-	public function is_allowed_post_type( $post = null ) {
+	protected function is_allowed_post_type( $post = null ) {
 		return in_array( get_post_type( $post ), $this->get_allowed_post_types(), true );
-	}
-
-	/**
-	 * Returns the like button markup.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param int $object_id Post ID.
-	 * @return string Like button markup. Empty string if post type is not allowed.
-	 */
-	public function get_like_button( $object_id ) {
-		if ( ! $this->is_allowed_post_type( $object_id ) ) {
-			return '';
-		}
-
-		return parent::get_like_button( $object_id );
-	}
-
-	/**
-	 * Returns the like count for a post.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param int $post_id Post ID.
-	 * @return int Like count. Will be zero if post type is not allowed.
-	 */
-	public function get_like_count( $post_id ) {
-		if ( ! $this->is_allowed_post_type( $post_id ) ) {
-			return 0;
-		}
-
-		return parent::get_like_count( $post_id );
-	}
-
-	/**
-	 * Returns the like count markup.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param int $post_id Post ID.
-	 * @return string Like count markup. Empty string if post type is not allowed.
-	 */
-	public function get_like_count_html( $post_id  ) {
-		if ( ! $this->is_allowed_post_type( $post_id ) ) {
-			return '';
-		}
-
-		return parent::get_like_count_html( $post_id );
 	}
 
 	/**
 	 * Filters the columns displayed in the Posts list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param array  $posts_columns An array of column names.
 	 * @param string $post_type     The post type slug.
@@ -198,7 +151,6 @@ class Posts extends Controller {
 	 * Displays the post like count in the list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $column_name The name of the column to display.
 	 * @param int    $post_id     The current post ID.
@@ -215,7 +167,6 @@ class Posts extends Controller {
 	 * Filters the list table sortable columns for a specific screen.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param array $sortable_columns An array of sortable columns.
 	 * @return array The modified array of sortable columns.
@@ -232,7 +183,6 @@ class Posts extends Controller {
 	 * Fires after the query variable object is created, but before the actual query is run.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_Query $query The WP_Query instance (passed by reference).
 	 */

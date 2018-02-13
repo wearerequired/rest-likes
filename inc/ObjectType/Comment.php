@@ -5,28 +5,26 @@
  * @package rest-likes
  */
 
-namespace Required\RestLikes;
+namespace Required\RestLikes\ObjectType;
 
+use WP_Comment;
 use WP_Comment_Query;
 use WP_Error;
-use WP_Comment;
 use WP_REST_Request;
 
-/**
- * Comments Controller class.
- *
- * @since 1.0.0
- */
-class Comments extends Controller {
+class Comment implements ObjectType {
 	/**
 	 * The object type this controller is for.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var string
 	 */
 	protected static $object_type = 'comment';
+
+	public function get_name() {
+		return static::$object_type;
+	}
 
 	/**
 	 * Adds WordPress hooks.
@@ -35,11 +33,8 @@ class Comments extends Controller {
 	 * to display likes in the comments list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function add_hooks() {
-		parent::add_hooks();
-
 		add_filter( 'manage_edit-comments_columns', [ $this, 'manage_comments_columns' ] );
 		add_filter( 'manage_comments_custom_column', [ $this, 'manage_comments_custom_column' ], 10, 2 );
 		add_filter( 'manage_edit-comments_sortable_columns', [ $this, 'manage_sortable_columns' ] );
@@ -50,7 +45,6 @@ class Comments extends Controller {
 	 * Returns the list of comment types that likes are allowed for.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @return array Allowed comment types.
 	 */
@@ -67,6 +61,32 @@ class Comments extends Controller {
 		return apply_filters( 'rest_likes.comment.allowed_comment_types', [ 'comment' ] );
 	}
 
+	public function get_rest_field_object_type() {
+		return $this->get_name();
+	}
+
+	/**
+	 * Checks whether this object ID is allowed.
+	 *
+	 * @param int $object_id Object ID.
+	 * @return bool True if object ID is allowed, false otherwise.
+	 */
+	public function is_allowed_object_id( $object_id  ) {
+		return $this->is_allowed_comment_type( $object_id );
+	}
+
+	/**
+	 * Checks if this comment type is allowed.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int|WP_Comment|null $comment Optional. Comment ID or object. Default is global $comment.
+	 * @return bool True if comment type is allowed, false otherwise.
+	 */
+	protected function is_allowed_comment_type( $comment = null ) {
+		return in_array( get_comment_type( $comment ), $this->get_allowed_comment_types(), true );
+	}
+
 	/**
 	 * Checks permissions on the object ID.
 	 *
@@ -74,7 +94,6 @@ class Comments extends Controller {
 	 * is allowed and the comment is published.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return true|WP_Error True on success, WP_Error object on failure.
@@ -88,78 +107,13 @@ class Comments extends Controller {
 			return new WP_Error( 'invalid_comment_status', __( 'You are not allowed to like this comment.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
-		return parent::check_permission( $request );
-	}
-
-	/**
-	 * Checks if this comment type is allowed.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param int|WP_Comment|null $comment Optional. comment ID or comment object. Default is global $comment.
-	 * @return bool True if comment type is allowed, false otherwise.
-	 */
-	public function is_allowed_comment_type( $comment = null ) {
-		return in_array( get_comment_type( $comment ), $this->get_allowed_comment_types(), true );
-	}
-
-	/**
-	 * Returns the like button markup.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param int $object_id Comment ID.
-	 * @return string Like button markup. Empty string if comment type is not allowed.
-	 */
-	public function get_like_button( $object_id ) {
-		if ( ! $this->is_allowed_comment_type( $object_id ) ) {
-			return '';
-		}
-
-		return parent::get_like_button( $object_id );
-	}
-
-	/**
-	 * Returns the like count for a comment.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param int $comment_id comment ID.
-	 * @return int Like count. Will be zero if comment type is not allowed.
-	 */
-	public function get_like_count( $comment_id ) {
-		if ( ! $this->is_allowed_comment_type( $comment_id ) ) {
-			return 0;
-		}
-
-		return parent::get_like_count( $comment_id );
-	}
-
-	/**
-	 * Returns the like count markup.
-	 *
-	 * @since 1.0.0
-	 * @access public
-	 *
-	 * @param int $comment_id comment ID.
-	 * @return string Like count markup. Empty string if comment type is not allowed.
-	 */
-	public function get_like_count_html( $comment_id ) {
-		if ( ! $this->is_allowed_comment_type( $comment_id ) ) {
-			return '';
-		}
-
-		return parent::get_like_count_html( $comment_id );
+		return true;
 	}
 
 	/**
 	 * Filters the columns displayed in the comments list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param array $comments_columns An array of column names.
 	 * @return array The modified array of column names.
@@ -174,7 +128,6 @@ class Comments extends Controller {
 	 * Displays the comment like count in the list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $column_name The name of the column to display.
 	 * @param int    $comment_id  The current comment ID.
@@ -189,7 +142,6 @@ class Comments extends Controller {
 	 * Filters the list table sortable columns for a specific screen.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param array $sortable_columns An array of sortable columns.
 	 * @return array The modified array of sortable columns.
@@ -206,7 +158,6 @@ class Comments extends Controller {
 	 * Fires after the query variable object is created, but before the actual query is run.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_Comment_Query $query The WP_Comment_Query instance (passed by reference).
 	 */

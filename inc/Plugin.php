@@ -6,6 +6,8 @@
  */
 
 namespace Required\RestLikes;
+use Required\RestLikes\ObjectType\Comment;
+use Required\RestLikes\ObjectType\Post;
 
 /**
  * Main plugin class.
@@ -15,21 +17,19 @@ class Plugin {
 	 * List of object types that likes are enabled for.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var Controller[]
 	 */
 	protected $enabled_object_types = [];
 
 	/**
-	 * Adds WordPress hooks.
+	 * Initializes the plugin.
 	 *
-	 * Initializes the controllers for all the enabled object types.
+	 * Initializes the controllers for all the enabled object types and adds the necessary WordPress hooks.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
-	public function add_hooks() {
+	public function init() {
 		/**
 		 * Filters the object types likes are enabled for.
 		 *
@@ -41,12 +41,12 @@ class Plugin {
 		 * @param array $object_types Array of object types. Default 'post' and 'comment'.
 		 */
 		$available_object_types = apply_filters( 'rest_likes.enabled_object_types', [
-			'post'    => Posts::class,
-			'comment' => Comments::class,
+			'post'    => Post::class,
+			'comment' => Comment::class,
 		] );
 
 		foreach ( $available_object_types as $object_type => $class ) {
-			$this->enabled_object_types[ $object_type ] = new $class;
+			$this->enabled_object_types[ $object_type ] = new Controller( new $class() );
 			$this->enabled_object_types[ $object_type ]->add_hooks();
 		}
 
@@ -59,7 +59,6 @@ class Plugin {
 	 * Loads the plugin's text domain.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain( 'rest-likes', false, basename( plugin_dir_path( __DIR__ ) ) . '/languages' );
@@ -69,7 +68,6 @@ class Plugin {
 	 * Registers JavaScript on front end.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function register_scripts() {
 		$suffix = SCRIPT_DEBUG ? '' : '.min';
@@ -118,7 +116,6 @@ class Plugin {
 	 * Returns script data for all enabled object types.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @return array Data for use in JavaScript part.
 	 */
@@ -126,23 +123,7 @@ class Plugin {
 		$script_data = [];
 
 		foreach ( $this->enabled_object_types as $object_type => $controller ) {
-			$script_data[ $object_type ] = [
-				'endpoint'   => $controller->get_namespace() . $controller->get_rest_route_placeholder(),
-				'classnames' => $controller->get_classnames(),
-				'texts'      => [
-					/** This filter is documented in classes/Controller.php */
-					'like'   => apply_filters( 'rest_likes.button_text.like', _x( 'Like', 'verb', 'rest-likes' ), $object_type ),
-					/**
-					 * Filters the text displayed inside the unlike button.
-					 *
-					 * @since 1.0.0
-					 *
-					 * @param string $button_text The button text. Default 'Unlike'.
-					 * @param string $object_type The object type this button is for.
-					 */
-					'unlike' => apply_filters( 'rest_likes.button_text.unlike', _x( 'Unlike', 'verb', 'rest-likes' ), $object_type ),
-				],
-			];
+			$script_data[ $object_type ] = $controller->get_script_data();
 		}
 
 		return $script_data;
@@ -152,17 +133,13 @@ class Plugin {
 	 * Returns the like count for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
 	 * @return int Like count.
 	 */
 	public function get_like_count( $object_type, $object_id ) {
-		if (
-			isset( $this->enabled_object_types[ $object_type ] ) &&
-			$this->enabled_object_types[ $object_type ] instanceof Controller
-		) {
+		if ( isset( $this->enabled_object_types[ $object_type ] ) ) {
 			return $this->enabled_object_types[ $object_type ]->get_like_count( $object_id );
 		}
 
@@ -174,17 +151,13 @@ class Plugin {
 	 * Returns the like count markup for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
 	 * @return string Like count markup.
 	 */
 	public function get_like_count_html( $object_type, $object_id ) {
-		if (
-			isset( $this->enabled_object_types[ $object_type ] ) &&
-			$this->enabled_object_types[ $object_type ] instanceof Controller
-		) {
+		if ( isset( $this->enabled_object_types[ $object_type ] ) ) {
 			return $this->enabled_object_types[ $object_type ]->get_like_count_html( $object_id );
 		}
 
@@ -196,17 +169,13 @@ class Plugin {
 	 * Returns the like button for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
 	 * @return string Like button.
 	 */
 	public function get_like_button( $object_type, $object_id ) {
-		if (
-			isset( $this->enabled_object_types[ $object_type ] ) &&
-			$this->enabled_object_types[ $object_type ] instanceof Controller
-		) {
+		if ( isset( $this->enabled_object_types[ $object_type ] ) ) {
 			wp_enqueue_script( 'rest-likes' );
 
 			return $this->enabled_object_types[ $object_type ]->get_like_button( $object_id );
