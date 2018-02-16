@@ -28,15 +28,6 @@ class Controller extends WP_REST_Controller {
 	protected $object_type;
 
 	/**
-	 * REST field & meta key value.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @var string
-	 */
-	protected $meta_key = '_rest_likes';
-
-	/**
 	 * REST namespace.
 	 *
 	 * @since 1.0.0
@@ -123,17 +114,6 @@ class Controller extends WP_REST_Controller {
 	}
 
 	/**
-	 * Returns the meta key for the object type.
-	 *
-	 * @since 1.0.0
-	 *
-	 * @return string The meta key.
-	 */
-	public function get_meta_key() {
-		return $this->meta_key;
-	}
-
-	/**
 	 * Returns the REST API namespace for the object type.
 	 *
 	 * @since 1.0.0
@@ -165,7 +145,7 @@ class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 */
 	public function add_rest_field() {
-		register_rest_field( $this->get_rest_field_object_type(), $this->get_meta_key(), [
+		register_rest_field( $this->get_rest_field_object_type(), $this->object_type->get_meta_key(), [
 			'get_callback' => [ $this, 'rest_field_get_callback' ],
 			'schema'       => [
 				'type'        => 'integer',
@@ -373,7 +353,7 @@ class Controller extends WP_REST_Controller {
 		$likes = $remove ? $old_likes - 1 : $old_likes + 1;
 		$likes = max( $likes, 0 );
 
-		update_metadata( $this->get_object_type(), $object_id, $this->get_meta_key(), $likes );
+		update_metadata( $this->get_object_type(), $object_id, $this->object_type->get_meta_key(), $likes );
 
 		$likes_i18n = number_format_i18n( $likes );
 
@@ -453,7 +433,7 @@ class Controller extends WP_REST_Controller {
 			return 0;
 		}
 
-		return absint( get_metadata( $this->get_object_type(), $object_id, $this->get_meta_key(), true ) );
+		return $this->object_type->get_like_count( $object_id );
 	}
 
 	/**

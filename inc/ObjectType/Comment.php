@@ -14,6 +14,15 @@ use WP_REST_Request;
 
 class Comment implements ObjectType {
 	/**
+	 * REST field & meta key value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var string
+	 */
+	protected $meta_key = '_rest_likes';
+
+	/**
 	 * The object type this controller is for.
 	 *
 	 * @since 1.0.0
@@ -39,6 +48,17 @@ class Comment implements ObjectType {
 		add_filter( 'manage_comments_custom_column', [ $this, 'manage_comments_custom_column' ], 10, 2 );
 		add_filter( 'manage_edit-comments_sortable_columns', [ $this, 'manage_sortable_columns' ] );
 		add_action( 'pre_get_comments', [ $this, 'order_by_comment_likes' ] );
+	}
+
+	/**
+	 * Returns the meta key for the object type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string The meta key.
+	 */
+	public function get_meta_key() {
+		return $this->meta_key;
 	}
 
 	/**
@@ -85,6 +105,19 @@ class Comment implements ObjectType {
 	 */
 	protected function is_allowed_comment_type( $comment = null ) {
 		return in_array( get_comment_type( $comment ), $this->get_allowed_comment_types(), true );
+	}
+
+	/**
+	 * Returns the like count for a comment.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $comment_id Comment ID.
+	 *
+	 * @return int Like count.
+	 */
+	public function get_like_count( $comment_id ) {
+		return absint( get_metadata( static::$object_type, $comment_id, $this->get_meta_key(), true ) );
 	}
 
 	/**
@@ -162,7 +195,7 @@ class Comment implements ObjectType {
 	 * @param WP_Comment_Query $query The WP_Comment_Query instance (passed by reference).
 	 */
 	public function order_by_comment_likes( WP_Comment_Query $query ) {
-		if ( is_admin() && 'likes' === $query->query_vars['orderby'] ) {
+		if ( 'likes' === $query->query_vars['orderby'] && is_admin() ) {
 			$query->query_vars['meta_key'] = $this->meta_key;
 			$query->query_vars['orderby']  = 'meta_value_num';
 		}

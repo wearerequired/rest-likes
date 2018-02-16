@@ -14,6 +14,15 @@ use WP_REST_Request;
 
 class Post implements ObjectType {
 	/**
+	 * REST field & meta key value.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @var string
+	 */
+	protected $meta_key = '_rest_likes';
+
+	/**
 	 * The object type this controller is for.
 	 *
 	 * @since 1.0.0
@@ -42,6 +51,17 @@ class Post implements ObjectType {
 		foreach ( $this->get_allowed_post_types() as $post_type ) {
 			add_filter( "manage_edit-{$post_type}_sortable_columns", [ $this, 'manage_sortable_columns' ] );
 		}
+	}
+
+	/**
+	 * Returns the meta key for the object type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @return string The meta key.
+	 */
+	public function get_meta_key() {
+		return $this->meta_key;
 	}
 
 	/**
@@ -129,6 +149,19 @@ class Post implements ObjectType {
 	}
 
 	/**
+	 * Returns the like count for a post.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param int $post_id Post ID.
+	 *
+	 * @return int Like count.
+	 */
+	public function get_like_count( $post_id ) {
+		return absint( get_metadata( static::$object_type, $post_id, $this->get_meta_key(), true ) );
+	}
+
+	/**
 	 * Filters the columns displayed in the Posts list table.
 	 *
 	 * @since 1.0.0
@@ -157,9 +190,7 @@ class Post implements ObjectType {
 	 */
 	public function manage_posts_custom_column( $column_name, $post_id ) {
 		if ( 'likes' === $column_name ) {
-			$likes = $this->get_like_count( $post_id );
-
-			echo is_wp_error( $likes ) ? 0 : number_format_i18n( $likes, 0 );
+			echo number_format_i18n( $this->get_like_count( $post_id ) );
 		}
 	}
 
