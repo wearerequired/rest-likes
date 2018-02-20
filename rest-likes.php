@@ -20,9 +20,9 @@ if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	include __DIR__ . '/vendor/autoload.php';
 }
 
-if ( ! class_exists( '\Required\RestLikes\Controller' ) ) {
+if ( ! class_exists( '\Required\RestLikes\Plugin' ) ) {
 	/* translators: %s: plugin class name */
-	trigger_error( sprintf( __( "%s does not exist. Check Composer's autoloader.", 'rest-likes' ), '\Required\RestLikes\Controller' ), E_USER_WARNING );
+	trigger_error( sprintf( __( "%s does not exist. Check Composer's autoloader.", 'rest-likes' ), '\Required\RestLikes\Plugin' ), E_USER_WARNING );
 
 	return;
 }

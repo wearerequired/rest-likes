@@ -8,13 +8,13 @@
 /**
  * Returns an instance of the main plugin class.
  *
- * @return Required\inc\Plugin
+ * @return Required\RestLikes\Plugin
  */
 function rest_likes() {
 	static $controller = null;
 
 	if ( null === $controller ) {
-		$controller = new \Required\inc\Plugin();
+		$controller = new \Required\RestLikes\Plugin();
 	}
 
 	return $controller;
