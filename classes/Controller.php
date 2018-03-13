@@ -161,11 +161,11 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 * @access public
 	 *
-	 * @param WP_REST_Request $request Request Object.
+	 * @param array $object Data object.
 	 * @return int The like count.
 	 */
-	public function rest_field_get_callback( WP_REST_Request $request ) {
-		return $this->get_like_count( $request['id'] );
+	public function rest_field_get_callback( array $object ) {
+		return $this->get_like_count( $object['id'] );
 	}
 
 	/**
