@@ -57,7 +57,7 @@
   */
 	var addLikedItem = function addLikedItem(objectType, objectId) {
 		if (storage) {
-			var storageData = getLikedItems();
+			var storageData = getLikedItems(objectType);
 			if (storageData) {
 				storageData.push(objectId);
 				storageData = _.unique(storageData);

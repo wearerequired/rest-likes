@@ -54,7 +54,7 @@
 	 */
 	const addLikedItem = ( objectType, objectId ) => {
 		if ( storage ) {
-			let storageData = getLikedItems();
+			let storageData = getLikedItems( objectType );
 			if ( storageData ) {
 				storageData.push( objectId );
 				storageData = _.unique( storageData );
