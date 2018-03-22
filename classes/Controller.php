@@ -207,6 +207,17 @@ abstract class Controller extends WP_REST_Controller {
 	public function add_rest_route() {
 		register_rest_route( $this->get_namespace(), $this->get_rest_route(), [
 			[
+				'methods'             => WP_REST_Server::READABLE,
+				'args'                => [
+					'id' => [
+						'sanitize_callback' => '\\absint',
+						'required'          => true,
+					],
+				],
+				'permission_callback' => '__return_true',
+				'callback'            => [ $this, 'get_like' ],
+			],
+			[
 				'methods'             => WP_REST_Server::CREATABLE,
 				'args'                => [
 					'id' => [
@@ -313,6 +324,25 @@ abstract class Controller extends WP_REST_Controller {
 		);
 
 		delete_transient( $unlike );
+	}
+
+	/**
+	 * Gets like counts of an object.
+	 *
+	 * @since 1.0.2
+	 * @access public
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response Response object.
+	 */
+	public function get_like( $request ) {
+		$likes      = $this->get_like_count( $request['id'] );
+		$likes_i18n = number_format_i18n( $likes );
+
+		return new WP_REST_Response( [
+			'count'          => $likes,
+			'countFormatted' => $likes_i18n,
+		] );
 	}
 
 	/**
