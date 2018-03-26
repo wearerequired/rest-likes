@@ -76,7 +76,7 @@ class Plugin {
 			'rest-likes',
 			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes' . $suffix . '.js' ),
 			[ 'jquery', 'underscore', 'wp-a11y' ],
-			'1.0.0',
+			'1.0.1',
 			true
 		);
 
@@ -89,7 +89,7 @@ class Plugin {
 				/* translators: %d: Like count */
 				'unlikeMsg' => __( 'Unlike processed. New like count: %d', 'rest-likes' ),
 				'errorMsg'  => __( 'There was an error processing your request.', 'rest-likes' ),
-			]
+			],
 		];
 
 		if ( is_user_logged_in() ) {

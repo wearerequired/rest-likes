@@ -5,8 +5,8 @@
  * Plugin Name: REST Likes
  * Plugin URI:  https://required.com
  * Description: Like posts and comments using the REST API.
- * Version:     1.0.0
- * Author:      Silvan Hagen
+ * Version:     1.0.2
+ * Author:      required
  * Author URI:  https://required.com
  * Text Domain: rest-likes
  * Domain Path: /languages

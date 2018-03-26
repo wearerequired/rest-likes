@@ -160,11 +160,11 @@ class Controller extends WP_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request Object.
+	 * @param array $object Data object.
 	 * @return int The like count.
 	 */
-	public function rest_field_get_callback( WP_REST_Request $request ) {
-		return $this->get_like_count( $request['id'] );
+	public function rest_field_get_callback( array $object ) {
+		return $this->get_like_count( $object['id'] );
 	}
 
 	/**
@@ -202,6 +202,17 @@ class Controller extends WP_REST_Controller {
 	 */
 	public function add_rest_route() {
 		register_rest_route( $this->get_namespace(), $this->get_rest_route(), [
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'args'                => [
+					'id' => [
+						'sanitize_callback' => '\\absint',
+						'required'          => true,
+					],
+				],
+				'permission_callback' => '__return_true',
+				'callback'            => [ $this, 'get_like' ],
+			],
 			[
 				'methods'             => WP_REST_Server::CREATABLE,
 				'args'                => [
@@ -305,6 +316,25 @@ class Controller extends WP_REST_Controller {
 		);
 
 		delete_transient( $unlike );
+	}
+
+	/**
+	 * Gets like counts of an object.
+	 *
+	 * @since 1.0.2
+	 * @access public
+	 *
+	 * @param WP_REST_Request $request Request object.
+	 * @return WP_REST_Response Response object.
+	 */
+	public function get_like( $request ) {
+		$likes      = $this->get_like_count( $request['id'] );
+		$likes_i18n = number_format_i18n( $likes );
+
+		return new WP_REST_Response( [
+			'count'          => $likes,
+			'countFormatted' => $likes_i18n,
+		] );
 	}
 
 	/**
