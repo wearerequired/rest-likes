@@ -53,6 +53,8 @@ class Plugin {
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 
 		add_action( 'init', [ $this, 'load_textdomain' ] );
+
+		add_filter( 'heartbeat_received', [ $this, 'heartbeat_received' ], 10, 2 );
 	}
 
 	/**
@@ -63,6 +65,36 @@ class Plugin {
 	 */
 	public function load_textdomain() {
 		load_plugin_textdomain( 'rest-likes', false, basename( plugin_dir_path( __DIR__ ) ) . '/languages' );
+	}
+
+	/**
+	 * Receive Heartbeat data and respond.
+	 *
+	 * Processes data received via a Heartbeat request, and returns additional data to pass back to the front end.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param array $response Heartbeat response data to pass back to front end.
+	 * @param array $data Data received from the front end (unslashed).
+	 * @return array Filtered heartbeat response data.
+	 */
+	public function heartbeat_received( $response, $data ) {
+		if ( empty( $data['rest_likes'] ) ) {
+			return $response;
+		}
+
+		$response['rest_likes'] = [];
+
+		foreach ( (array) $data['rest_likes'] as $object_type => $object_id ) {
+			$response['rest_likes'][] = [
+				'objectType'     => $object_type,
+				'objectId'       => $object_id,
+				'count'          => $this->get_like_count( $object_type, $object_id ),
+				'countFormatted' => number_format_i18n( $this->get_like_count( $object_type, $object_id ) ),
+			];
+		}
+
+		return $response;
 	}
 
 	/**
@@ -77,7 +109,7 @@ class Plugin {
 		wp_register_script(
 			'rest-likes',
 			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes' . $suffix . '.js' ),
-			[ 'jquery', 'underscore', 'wp-a11y' ],
+			[ 'jquery', 'underscore', 'wp-a11y', 'heartbeat' ],
 			'1.0.1',
 			true
 		);
