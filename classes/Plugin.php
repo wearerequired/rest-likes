@@ -85,13 +85,15 @@ class Plugin {
 
 		$response['rest_likes'] = [];
 
-		foreach ( (array) $data['rest_likes'] as $object_type => $object_id ) {
-			$response['rest_likes'][] = [
-				'objectType'     => $object_type,
-				'objectId'       => $object_id,
-				'count'          => $this->get_like_count( $object_type, $object_id ),
-				'countFormatted' => number_format_i18n( $this->get_like_count( $object_type, $object_id ) ),
-			];
+		foreach ( (array) $data['rest_likes'] as $object_type => $object_ids ) {
+			foreach ( (array) $object_ids as $object_id ) {
+				$response['rest_likes'][] = [
+					'objectType'     => $object_type,
+					'objectId'       => $object_id,
+					'count'          => $this->get_like_count( $object_type, $object_id ),
+					'countFormatted' => number_format_i18n( $this->get_like_count( $object_type, $object_id ) ),
+				];
+			}
 		}
 
 		return $response;
