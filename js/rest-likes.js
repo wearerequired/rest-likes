@@ -87,21 +87,22 @@
 		// Check localStorage for liked items, set class on the buttons.
 		$('[data-rest-like-button]').each(function () {
 			var $this = $(this);
-			var type = $this.data('type');
-			var classNames = restLikes.object_types[type].classnames;
+			var objectType = $this.data('type');
+			var classNames = restLikes.object_types[objectType].classnames;
 
 			if ($this.hasClass(classNames.liked)) {
 				return;
 			}
 
-			if (_.contains(getLikedItems(type), $this.data('id'))) {
+			if (_.contains(getLikedItems(objectType), $this.data('id'))) {
 				$this.toggleClass(classNames.liked);
-				$this.find('.' + classNames.label).html(restLikes.object_types[type].texts.unlike);
+				$this.find('.' + classNames.label).html(restLikes.object_types[objectType].texts.unlike);
 			}
 		});
 	};
 
 	/**
+  * Button click handler.
   *
   * @param {string} objectType
   * @param {number} objectId
@@ -183,6 +184,36 @@
 			}));
 		});
 	};
+
+	/**
+  * Heartbeat API.
+  */
+	$(document).on('heartbeat-send', function (event, data) {
+		data.rest_likes = {};
+		_.each(_.keys(restLikes.object_types, function (objectType) {
+			data.rest_likes[objectType] = _.unique($('[data-rest-like-button][data-type="' + objectType + '"]').map(function (i, e) {
+				return $(e).attr('data-id');
+			}));
+		}));
+	});
+
+	$(document).on('heartbeat-tick', function (event, data) {
+		if (!data.rest_likes) {
+			return;
+		}
+
+		_.each(data.rest_likes, function (item) {
+			var objectType = item.objectType,
+			    objectId = item.objectId,
+			    count = item.count,
+			    countFormatted = item.countFormatted;
+
+			var objectTypeData = restLikes.object_types[objectType];
+			var classNames = objectTypeData.classnames;
+
+			$('[data-rest-like-button][data-type="' + objectType + '"][data-id="' + objectId + '"]').find('.' + classNames.count).text(countFormatted).attr('data-likes', count);
+		});
+	});
 
 	/**
   * Hook up the handler.
