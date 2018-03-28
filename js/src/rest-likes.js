@@ -185,11 +185,11 @@
 	 */
 	$( document ).on( 'heartbeat-send', function ( event, data ) {
 		data.rest_likes = {};
-		_.each( _.keys( restLikes.object_types, objectType => {
+		_.each( _.keys( restLikes.object_types ), objectType => {
 			data.rest_likes[ objectType ] = _.unique( $( `[data-rest-like-button][data-type="${objectType}"]` ).map( ( i, e ) => {
 				return $( e ).attr( 'data-id' );
 			} ) );
-		} ) );
+		} );
 	});
 
 	$( document ).on( 'heartbeat-tick', function ( event, data ) {
