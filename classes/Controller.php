@@ -300,9 +300,10 @@ abstract class Controller extends WP_REST_Controller {
 		 *
 		 * @since 1.0.3
 		 *
-		 * @param int $expiration Time until expiration in seconds. Default 2 minutes.
+		 * @param int             $expiration Time until expiration in seconds. Default 2 minutes.
+		 * @param WP_REST_Request $request    Current request object.
 		 */
-		$expiration = apply_filters( 'rest_likes.transient_expiration', 2 * MINUTE_IN_SECONDS );
+		$expiration = apply_filters( 'rest_likes.transient_expiration', 2 * MINUTE_IN_SECONDS, $request );
 
 		set_transient( $transient, 1, $expiration );
 	}
