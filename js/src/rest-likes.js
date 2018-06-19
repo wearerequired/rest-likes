@@ -57,7 +57,7 @@
 			let storageData = getLikedItems( objectType );
 			if ( storageData ) {
 				storageData.push( objectId );
-				storageData = _.unique( storageData );
+				storageData = [ ...new Set( storageData ) ];
 				storage.setItem( objectType, JSON.stringify( storageData ) );
 			}
 		}
@@ -72,8 +72,8 @@
 	const removeLikedItem = ( objectType, objectId ) => {
 		if ( storage ) {
 			let storageData = getLikedItems( objectType );
-			storageData     = _.reject( storageData, num => num === objectId );
-			storageData     = _.unique( storageData );
+			storageData     = storageData.filter( num => num === objectId );
+			storageData     = [ ...new Set( storageData ) ];
 			storage.setItem( objectType, JSON.stringify( storageData ) );
 		}
 	};
@@ -89,7 +89,7 @@
 				return;
 			}
 
-			if ( _.contains( getLikedItems( type ), $this.data( 'id' ) ) ) {
+			if ( -1 !== getLikedItems( type ).indexOf( $this.data( 'id' ) ) ) {
 				$this.toggleClass( classNames.liked );
 				$this.find( `.${classNames.label}` ).html( restLikes.object_types[ type ].texts.unlike );
 			}

@@ -1,5 +1,7 @@
 'use strict';
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 (function (document, window, $, restLikes, wp) {
 	/**
   * Check for localStorage support in the browser.
@@ -60,7 +62,7 @@
 			var storageData = getLikedItems(objectType);
 			if (storageData) {
 				storageData.push(objectId);
-				storageData = _.unique(storageData);
+				storageData = [].concat(_toConsumableArray(new Set(storageData)));
 				storage.setItem(objectType, JSON.stringify(storageData));
 			}
 		}
@@ -75,10 +77,10 @@
 	var removeLikedItem = function removeLikedItem(objectType, objectId) {
 		if (storage) {
 			var storageData = getLikedItems(objectType);
-			storageData = _.reject(storageData, function (num) {
+			storageData = storageData.filter(function (num) {
 				return num === objectId;
 			});
-			storageData = _.unique(storageData);
+			storageData = [].concat(_toConsumableArray(new Set(storageData)));
 			storage.setItem(objectType, JSON.stringify(storageData));
 		}
 	};
@@ -94,7 +96,7 @@
 				return;
 			}
 
-			if (_.contains(getLikedItems(type), $this.data('id'))) {
+			if (-1 !== getLikedItems(type).indexOf($this.data('id'))) {
 				$this.toggleClass(classNames.liked);
 				$this.find('.' + classNames.label).html(restLikes.object_types[type].texts.unlike);
 			}
