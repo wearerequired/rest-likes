@@ -43,7 +43,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
   */
 	var getLikedItems = function getLikedItems(objectType) {
 		if (storage) {
-			var storageData = storage.getItem(objectType);
+			var storageData = storage.getItem('rest-likes-' + objectType);
 			if (storageData) {
 				return JSON.parse(storageData);
 			}
@@ -63,7 +63,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 			if (storageData) {
 				storageData.push(objectId);
 				storageData = [].concat(_toConsumableArray(new Set(storageData)));
-				storage.setItem(objectType, JSON.stringify(storageData));
+				storage.setItem('rest-likes-' + objectType, JSON.stringify(storageData));
 			}
 		}
 	};
@@ -81,7 +81,7 @@ function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr
 				return num === objectId;
 			});
 			storageData = [].concat(_toConsumableArray(new Set(storageData)));
-			storage.setItem(objectType, JSON.stringify(storageData));
+			storage.setItem('rest-likes-' + objectType, JSON.stringify(storageData));
 		}
 	};
 

@@ -38,7 +38,7 @@
 	 */
 	const getLikedItems = objectType => {
 		if ( storage ) {
-			const storageData = storage.getItem( objectType );
+			const storageData = storage.getItem( `rest-likes-${objectType}` );
 			if ( storageData ) {
 				return JSON.parse( storageData );
 			}
@@ -58,7 +58,7 @@
 			if ( storageData ) {
 				storageData.push( objectId );
 				storageData = [ ...new Set( storageData ) ];
-				storage.setItem( objectType, JSON.stringify( storageData ) );
+				storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
 			}
 		}
 	};
@@ -74,7 +74,7 @@
 			let storageData = getLikedItems( objectType );
 			storageData     = storageData.filter( num => num === objectId );
 			storageData     = [ ...new Set( storageData ) ];
-			storage.setItem( objectType, JSON.stringify( storageData ) );
+			storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
 		}
 	};
 
