@@ -111,8 +111,8 @@ class Plugin {
 		wp_register_script(
 			'rest-likes',
 			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes' . $suffix . '.js' ),
-			[ 'jquery', 'underscore', 'wp-a11y', 'heartbeat' ],
-			'1.0.1',
+			[ 'jquery', 'wp-a11y', 'heartbeat' ],
+			'1.0.4',
 			true
 		);
 

@@ -38,7 +38,7 @@
 	 */
 	const getLikedItems = objectType => {
 		if ( storage ) {
-			const storageData = storage.getItem( objectType );
+			const storageData = storage.getItem( `rest-likes-${objectType}` );
 			if ( storageData ) {
 				return JSON.parse( storageData );
 			}
@@ -57,8 +57,8 @@
 			let storageData = getLikedItems( objectType );
 			if ( storageData ) {
 				storageData.push( objectId );
-				storageData = _.unique( storageData );
-				storage.setItem( objectType, JSON.stringify( storageData ) );
+				storageData = [ ...new Set( storageData ) ];
+				storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
 			}
 		}
 	};
@@ -72,9 +72,9 @@
 	const removeLikedItem = ( objectType, objectId ) => {
 		if ( storage ) {
 			let storageData = getLikedItems( objectType );
-			storageData     = _.reject( storageData, num => num === objectId );
-			storageData     = _.unique( storageData );
-			storage.setItem( objectType, JSON.stringify( storageData ) );
+			storageData     = storageData.filter( num => num === objectId );
+			storageData     = [ ...new Set( storageData ) ];
+			storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
 		}
 	};
 
@@ -89,7 +89,7 @@
 				return;
 			}
 
-			if ( _.contains( getLikedItems( objectType ), $this.data( 'id' ) ) ) {
+			if ( -1 !== getLikedItems( objectType ).indexOf( $this.data( 'id' ) ) ) {
 				$this.toggleClass( classNames.liked );
 				$this.find( `.${classNames.label}` ).html( restLikes.object_types[ objectType ].texts.unlike );
 			}
