@@ -2,7 +2,7 @@
   "name":         "wearerequired/rest-likes",
   "description":  "Like posts and comments using the REST API.",
   "type":         "wordpress-plugin",
-  "license":      "GPL-2.0+",
+  "license":      "GPL-2.0-or-later",
   "authors":      [
     {
       "name":     "required+",
@@ -15,15 +15,11 @@
     {
       "type": "composer",
       "url":  "https://wpackagist.org"
-    },
-    {
-      "type": "vcs",
-      "url": "git@github.com:wearerequired/wp-requirements-check.git"
     }
   ],
   "require":      {
     "php": ">=5.6",
-    "wearerequired/wp-requirements-check": "^1.0.0"
+    "wearerequired/wp-requirements-check": "^1.0"
   },
   "require-dev":  {
     "phpunit/phpunit":          "*",
