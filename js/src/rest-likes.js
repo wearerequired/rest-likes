@@ -1,225 +1,285 @@
-((( document, window, $, restLikes, wp ) => {
-	/**
-	 * Check for localStorage support in the browser.
-	 */
-	let storage;
-	let fail;
-	let uid;
+import { speak } from '@wordpress/a11y';
+import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 
-	try {
-		uid = new Date;
-		(storage = window.localStorage).setItem( uid, uid );
-		fail = storage.getItem( uid ) != uid;
-		storage.removeItem( uid );
-		fail && (storage = false);
-	} catch ( exception ) {
-	}
+((( document, window, restLikes ) => {
+    /**
+     * Load localized strings.
+     */
+    setLocaleData( restLikes.l10n, 'rest-likes' );
 
-	/**
-	 * Check for CustomEvent support in the browser.
-	 *
-	 * @url https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
-	 */
-	if ( typeof window.CustomEvent !== 'function' ) {
-		function CustomEvent( event, params = { bubbles: false, cancelable: false, detail: undefined } ) {
-			const evt = document.createEvent( 'CustomEvent' );
-			evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-			return evt;
-		}
+    /**
+     * Check for localStorage support in the browser.
+     */
+    let storage;
+    let fail;
+    let uid;
 
-		CustomEvent.prototype = window.Event.prototype;
-		window.CustomEvent    = CustomEvent;
-	}
+    try {
+        uid = new Date;
+        (storage = window.localStorage).setItem( uid, uid );
+        fail = storage.getItem( uid ) != uid;
+        storage.removeItem( uid );
+        fail && (storage = false);
+    } catch ( exception ) {
+    }
 
-	/**
-	 * Get liked posts from localStorage.
-	 *
-	 * @returns {Array}
-	 */
-	const getLikedItems = objectType => {
-		if ( storage ) {
-			const storageData = storage.getItem( `rest-likes-${objectType}` );
-			if ( storageData ) {
-				return JSON.parse( storageData );
-			}
-		}
-		return [];
-	};
+    /**
+     * Check for CustomEvent support in the browser.
+     *
+     * @url https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
+     */
+    if ( typeof window.CustomEvent !== 'function' ) {
+        const CustomEvent = function ( event, params = { bubbles: false, cancelable: false, detail: undefined } ) {
+            const evt = document.createEvent( 'CustomEvent' );
+            evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
+            return evt;
+        };
 
-	/**
-	 * Add like to localStorage.
-	 *
-	 * @param {string} objectType
-	 * @param {number} objectId
-	 */
-	const addLikedItem = ( objectType, objectId ) => {
-		if ( storage ) {
-			let storageData = getLikedItems( objectType );
-			if ( storageData ) {
-				storageData.push( objectId );
-				storageData = [ ...new Set( storageData ) ];
-				storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
-			}
-		}
-	};
+        CustomEvent.prototype = window.Event.prototype;
+        window.CustomEvent    = CustomEvent;
+    }
 
-	/**
-	 * Remove like from localStorage.
-	 *
-	 * @param {string} objectType
-	 * @param {number} objectId
-	 */
-	const removeLikedItem = ( objectType, objectId ) => {
-		if ( storage ) {
-			let storageData = getLikedItems( objectType );
-			storageData     = storageData.filter( num => num === objectId );
-			storageData     = [ ...new Set( storageData ) ];
-			storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
-		}
-	};
+    /**
+     * Get liked posts from localStorage.
+     *
+     * @returns {Array}
+     */
+    const getLikedItems = objectType => {
+        if ( storage ) {
+            const storageData = storage.getItem( `rest-likes-${objectType}` );
+            if ( storageData ) {
+                return JSON.parse( storageData );
+            }
+        }
+        return [];
+    };
 
-	const checkButtons = () => {
-		// Check localStorage for liked items, set class on the buttons.
-		$( '[data-rest-like-button]' ).each( function() {
-			const $this      = $( this );
-			const objectType = $this.data( 'type' );
-			const classNames = restLikes.object_types[ objectType ].classnames;
+    /**
+     * Add like to localStorage.
+     *
+     * @param {string} objectType
+     * @param {number} objectId
+     */
+    const addLikedItem = ( objectType, objectId ) => {
+        if ( storage ) {
+            let storageData = getLikedItems( objectType );
+            if ( storageData ) {
+                storageData.push( objectId );
+                storageData = [ ...new Set( storageData ) ];
+                storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
+            }
+        }
+    };
 
-			if ( $this.hasClass( classNames.liked ) ) {
-				return;
-			}
+    /**
+     * Remove like from localStorage.
+     *
+     * @param {string} objectType
+     * @param {number} objectId
+     */
+    const removeLikedItem = ( objectType, objectId ) => {
+        if ( storage ) {
+            let storageData = getLikedItems( objectType );
+            storageData     = storageData.filter( num => num === objectId );
+            storageData     = [ ...new Set( storageData ) ];
+            storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
+        }
+    };
 
-			if ( -1 !== getLikedItems( objectType ).indexOf( $this.data( 'id' ) ) ) {
-				$this.toggleClass( classNames.liked );
-				$this.find( `.${classNames.label}` ).html( restLikes.object_types[ objectType ].texts.unlike );
-			}
-		} );
-	};
+    /**
+     * Determines whether an item has been liked already or not.
+     *
+     * @param {string} objectType
+     * @param {number} objectId
+     */
+    const isLikedItem = ( objectType, objectId ) => {
+        return -1 !== getLikedItems( objectType ).indexOf( objectId );
+    }
 
-	/**
-	 * Button click handler.
-	 *
-	 * @param {string} objectType
-	 * @param {number} objectId
-	 */
-	const buttonClickHandler = ( objectType, objectId ) => {
-		// Get all buttons for that specific object.
-		const $button = $( `[data-rest-like-button][data-type="${objectType}"][data-id="${objectId}"]` );
+    /**
+     * Initially checks the status of every available like button on the page.
+     */
+    const checkButtons = () => {
+        // Check localStorage for liked items, set class on the buttons.
+        const likeButtons = document.querySelectorAll( '[data-rest-like-button]' );
 
-		const objectTypeData = restLikes.object_types[ objectType ];
-		const classNames     = objectTypeData.classnames;
+        Array.prototype.forEach.call( likeButtons, likeButton => {
+            const objectId       = likeButton.getAttribute( 'data-id' );
+            const objectType     = likeButton.getAttribute( 'data-type' );
+            const objectTypeData = restLikes.object_types[ objectType ];
+            const classNames     = objectTypeData.classnames;
 
-		// Set class while processing.
-		$button.addClass( classNames.processing );
+            if ( likeButton.classList.contains( classNames.liked ) ) {
+                return;
+            }
 
-		// Define HTTP method.
-		const method = $button.hasClass( classNames.liked ) ? 'DELETE' : 'POST';
+            if ( isLikedItem( objectType, objectId ) ) {
+                likeButton.classList.add( classNames.liked );
+                likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.unlike;
+            }
+        } );
+    };
 
-		// Toggle the button class to show interaction.
-		$button.toggleClass( classNames.liked );
+    /**
+     * Button click handler.
+     *
+     * @param {string} objectType
+     * @param {number} objectId
+     */
+    const buttonClickHandler = ( objectType, objectId ) => {
+        // Get all buttons for that specific object.
+        const likeButtons = document.querySelectorAll( `[data-rest-like-button][data-type="${objectType}"][data-id="${objectId}"]` );
 
-		$.ajax( {
-			url: restLikes.root + objectTypeData.endpoint.replace( '%s', objectId ),
-			method,
-			beforeSend( xhr ) {
-				if ( restLikes.nonce ) {
-					xhr.setRequestHeader( 'X-WP-Nonce', restLikes.nonce );
-				}
-			}
-		} ).done( response => {
-			// Remove processing class
-			$button.removeClass( classNames.processing );
+        const objectTypeData = restLikes.object_types[ objectType ];
+        const classNames     = objectTypeData.classnames;
 
-			$button.find( `.${classNames.count}` ).text( response.countFormatted ).attr( 'data-likes', response.count );
+        Array.prototype.forEach.call( likeButtons, likeButton => {
+            // Set class while processing.
+            likeButton.classList.add( classNames.processing );
+        } );
 
-			if ( 'DELETE' === method ) {
-				removeLikedItem( objectType, objectId );
+        fetch(
+            restLikes.root + objectTypeData.endpoint.replace( '%s', objectId ),
+            {
+                method:  isLikedItem( objectType, objectId ) ? 'DELETE' : 'POST',
+                headers: {
+                    'X-WP-Nonce': restLikes.nonce,
+                },
+            }
+        )
+            .then( response => response.json() )
+            .then( response => {
+                Array.prototype.forEach.call( likeButtons, likeButton => {
+                    // Set class while processing.
+                    likeButton.classList.remove( classNames.processing );
 
-				$button.find( `.${classNames.label}` ).html( objectTypeData.texts.like );
+                    const likeButtonCount = likeButton.querySelector( `.${classNames.count}` );
 
-				wp.a11y.speak( restLikes.l10n.unlikeMsg.replace( '%s', response.count ), 'polite' );
+                    likeButtonCount.innerText = response.countFormatted;
+                    likeButtonCount.setAttribute( 'data-likes', response.count );
+                } );
 
-				document.dispatchEvent( new CustomEvent( 'restLikes', {
-					detail: {
-						'action':         'unlike',
-						'count':          response.count,
-						'countFormatted': response.countFormatted,
-						objectType,
-						objectId,
-					}
-				} ) );
-			} else {
-				addLikedItem( objectType, objectId );
+                if ( isLikedItem( objectType, objectId ) ) {
+                    removeLikedItem( objectType, objectId );
 
-				$button.find( `.${classNames.label}` ).html( objectTypeData.texts.unlike );
+                    Array.prototype.forEach.call( likeButtons, likeButton => {
+                        likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.like;
+                    } );
 
-				wp.a11y.speak( restLikes.l10n.likeMsg.replace( '%s', response.count ), 'polite' );
+                    /* translators: %d: Like count */
+                    speak( sprintf( __( 'Unlike processed. New like count: %d', 'rest-likes' ), response.count ) );
 
-				document.dispatchEvent( new CustomEvent( 'restLikes', {
-					detail: {
-						'action':         'like',
-						'count':          response.count,
-						'countFormatted': response.countFormatted,
-						objectType,
-						objectId,
-					}
-				} ) );
-			}
-		} ).fail( () => {
-			$button.toggleClass( classNames.liked ).removeClass( classNames.processing );
+                    document.dispatchEvent( new CustomEvent( 'restLikes', {
+                        detail: {
+                            'action':         'unlike',
+                            'count':          response.count,
+                            'countFormatted': response.countFormatted,
+                            objectType,
+                            objectId,
+                        }
+                    } ) );
+                }
 
-			wp.a11y.speak( restLikes.l10n.errorMsg, 'polite' );
+                if ( !isLikedItem( objectType, objectId ) ) {
+                    addLikedItem( objectType, objectId );
 
-			document.dispatchEvent( new CustomEvent( 'restLikes', {
-				detail: {
-					'action': 'error',
-					objectType,
-					objectId,
-				}
-			} ) );
-		} );
-	};
+                    Array.prototype.forEach.call( likeButtons, likeButton => {
+                        likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.unlike;
+                    } );
 
-	/**
-	 * Heartbeat API.
-	 */
-	$( document ).on( 'heartbeat-send', function ( event, data ) {
-		data.rest_likes = {};
-		_.each( _.keys( restLikes.object_types ), objectType => {
-			data.rest_likes[ objectType ] = _.unique( $( `[data-rest-like-button][data-type="${objectType}"]` ).map( ( i, e ) => {
-				return $( e ).attr( 'data-id' );
-			} ) );
-		} );
-	});
+                    /* translators: %d: Like count */
+                    speak( sprintf( __( 'Like processed. New like count: %d', 'rest-likes' ), response.count ) );
 
-	$( document ).on( 'heartbeat-tick', function ( event, data ) {
-		if ( ! data.rest_likes ) {
-			return;
-		}
+                    document.dispatchEvent( new CustomEvent( 'restLikes', {
+                        detail: {
+                            'action':         'like',
+                            'count':          response.count,
+                            'countFormatted': response.countFormatted,
+                            objectType,
+                            objectId,
+                        }
+                    } ) );
+                }
+            } )
+            .catch( error => {
+                Array.prototype.forEach.call( likeButtons, likeButton => {
+                    // Set class while processing.
+                    likeButton.classList.remove( classNames.processing );
+                } );
 
-		_.each( data.rest_likes, item => {
-			const {objectType, objectId, count, countFormatted} = item;
-			const objectTypeData = restLikes.object_types[ objectType ];
-			const classNames     = objectTypeData.classnames;
+                console.log( error );
+                speak( __( 'There was an error processing your request.', 'rest-likes' ) );
 
-			$( `[data-rest-like-button][data-type="${objectType}"][data-id="${objectId}"]` )
-				.find( `.${classNames.count}` ).text( countFormatted ).attr( 'data-likes', count );
-		});
-	});
+                document.dispatchEvent( new CustomEvent( 'restLikes', {
+                    detail: {
+                        'action': 'error',
+                        objectType,
+                        objectId,
+                    }
+                } ) );
+            } );
+    };
 
-	/**
-	 * Hook up the handler.
-	 */
-	$( document ).ready( () => {
-		checkButtons();
+    /**
+     * Sends a list of items for Heartbeat calls.
+     */
+    document.addEventListener( 'heartbeat-send', ( event, data ) => {
+        data.rest_likes = {};
 
-		// Allow triggering a custom event to check buttons again.
-		$( document.body ).on( 'restLikes', () => {
-			checkButtons();
-		} );
+        Object.keys( restLikes.object_types ).forEach( objectType => {
+            const likeButtons = document.querySelectorAll( `[data-rest-like-button][data-type="${objectType}"]` );
+            const objectIds   = [];
 
-		$( document.body ).on( 'click', '[data-rest-like-button]', function() {
-			buttonClickHandler( $( this ).data( 'type' ), $( this ).data( 'id' ) );
-		} );
-	} );
-}))( document, window, jQuery, restLikes, wp );
+            Array.prototype.forEach.call( likeButtons, likeButton => {
+                objectIds.push( likeButton.getAttribute( 'data-id' ) )
+            } );
+
+            // Makes the list of object IDs unique.
+            data.rest_likes[ objectType ] = [ ...new Set( objectIds ) ];
+        } );
+    } );
+
+    /**
+     * Listens to Heartbeat ticks and updates like counts for all received items.
+     */
+    document.addEventListener( 'heartbeat-tick', ( event, data ) => {
+        if ( !data.rest_likes ) {
+            return;
+        }
+
+        for ( const item of data.rest_likes ) {
+            const { objectType, objectId, count, countFormatted } = item;
+            const objectTypeData                                  = restLikes.object_types[ objectType ];
+            const classNames                                      = objectTypeData.classnames;
+
+            const likeButtons = document.querySelectorAll( `[data-rest-like-button][data-type="${objectType}"][data-id="${objectId}"]` );
+
+            Array.prototype.forEach.call( likeButtons, likeButton => {
+                const likeButtonCount = likeButton.querySelector( `.${classNames.count}` );
+
+                likeButtonCount.innerText = countFormatted;
+                likeButtonCount.setAttribute( 'data-likes', count );
+            } );
+        }
+    } );
+
+    /**
+     * Hook up the handler.
+     */
+    document.addEventListener( 'DOMContentLoaded', () => {
+        checkButtons();
+
+        // Allow triggering a custom event to check buttons again.
+        document.body.addEventListener( 'restLikes', () => {
+            checkButtons();
+        } );
+
+        const likeButtons = document.querySelectorAll( `[data-rest-like-button]` );
+
+        Array.prototype.forEach.call( likeButtons, likeButton => {
+            likeButton.addEventListener( 'click', ( event ) => {
+                buttonClickHandler( event.currentTarget.getAttribute( 'data-type' ), event.currentTarget.getAttribute( 'data-id' ) );
+            } )
+        } );
+    } );
+}))( document, window, restLikes );

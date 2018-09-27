@@ -19,17 +19,22 @@
   "directories": {
     "js": "./js"
   },
+  "dependencies": {
+    "@wordpress/a11y": "^2.0.0",
+    "@wordpress/i18n": "^2.0.0"
+  },
   "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-preset-env": "^1.5.2",
-    "nodemon": "^1.11.0",
-    "uglify-js": "^3.1.0"
+    "@babel/cli": "^7.1.0",
+    "@babel/core": "^7.1.0",
+    "@babel/preset-env": "^7.1.0",
+    "@babel/runtime": "^7.0.0",
+    "babel-loader": "^8.0.2",
+    "cross-env": "^5.2.0",
+    "webpack": "^4.20.0",
+    "webpack-cli": "^3.1.1"
   },
   "scripts": {
-    "uglifyjs": "find js -type f -name '*.js' ! -name '*.min.js' -maxdepth 1 | while read FILE ; do uglifyjs \"${FILE}\" -o \"${FILE%.js}.min.js\" ; done",
-    "build:js": "babel js/src -d js && npm run uglifyjs",
-    "build": "npm run build:js",
-    "watch:js": "nodemon --watch js/src -e js -x 'npm run build:js'",
-    "watch": "nodemon --watch js/src -e js -x 'npm run build'"
+    "build": "cross-env BABEL_ENV=default NODE_ENV=production webpack",
+    "dev": "cross-env BABEL_ENV=default webpack --watch"
   }
 }
