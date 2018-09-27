@@ -7,6 +7,8 @@
 
 namespace Required\RestLikes;
 
+use function Required\Traduttore_Registry\add_project;
+
 /**
  * Main plugin class.
  */
@@ -52,19 +54,23 @@ class Plugin {
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 
-		add_action( 'init', [ $this, 'load_textdomain' ] );
+		add_action( 'init', [ $this, 'init_traduttore' ] );
 
 		add_filter( 'heartbeat_received', [ $this, 'heartbeat_received' ], 10, 2 );
 	}
 
 	/**
-	 * Loads the plugin's text domain.
+	 * Adds support for translations via Traduttore.
 	 *
 	 * @since 1.0.0
 	 * @access public
 	 */
-	public function load_textdomain() {
-		load_plugin_textdomain( 'rest-likes', false, basename( plugin_dir_path( __DIR__ ) ) . '/languages' );
+	public function init_traduttore() {
+		add_project(
+			'plugin',
+			'rest-likes',
+			'https://translate.required.com/api/translations/required/rest-likes/'
+		);
 	}
 
 	/**
