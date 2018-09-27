@@ -106,46 +106,59 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_scripts() {
-		$suffix = SCRIPT_DEBUG ? '' : '.min';
-
 		wp_register_script(
 			'rest-likes',
-			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes' . $suffix . '.js' ),
+			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
 			[ 'jquery', 'wp-a11y', 'heartbeat' ],
-			'1.0.4',
+			'20180927',
 			true
 		);
 
 		$script_data = [
 			'root'         => esc_url_raw( get_rest_url() ),
 			'object_types' => $this->get_object_types_script_data(),
-			'l10n'         => [
-				/* translators: %d: Like count */
-				'likeMsg'   => __( 'Like processed. New like count: %d', 'rest-likes' ),
-				/* translators: %d: Like count */
-				'unlikeMsg' => __( 'Unlike processed. New like count: %d', 'rest-likes' ),
-				'errorMsg'  => __( 'There was an error processing your request.', 'rest-likes' ),
-			],
+			'l10n'         => $this->get_jed_locale_data( 'rest-likes' ),
 		];
 
 		if ( is_user_logged_in() ) {
 			$script_data['nonce'] = wp_create_nonce( 'wp_rest' );
 		}
 
-		/**
-		 * Filters the script data used by the plugin.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param array $script_data Associative array of script data.
-		 */
-		$script_data = apply_filters( 'rest_likes.script_data', $script_data );
-
 		wp_localize_script(
 			'rest-likes',
 			'restLikes',
 			$script_data
 		);
+	}
+
+	/**
+	 * Returns Jed-formatted localization data.
+	 *
+	 * @since 0.1.0
+	 *
+	 * @param  string $domain Translation domain.
+	 *
+	 * @return array
+	 */
+	private function get_jed_locale_data( $domain ) {
+		$translations = get_translations_for_domain( $domain );
+
+		$locale = [
+			'' => [
+				'domain' => $domain,
+				'lang'   => is_admin() ? get_user_locale() : get_locale(),
+			],
+		];
+
+		if ( ! empty( $translations->headers['Plural-Forms'] ) ) {
+			$locale['']['plural_forms'] = $translations->headers['Plural-Forms'];
+		}
+
+		foreach ( $translations->entries as $msgid => $entry ) {
+			$locale[ $msgid ] = $entry->translations;
+		}
+
+		return $locale;
 	}
 
 	/**

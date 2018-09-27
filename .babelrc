@@ -1,16 +1,12 @@
 {
-	"presets": [
-		[
-			"env",
-			{
-				"targets": {
-					"uglify": true
-				},
-				"browsers": [
-					"last 2 versions"
-				]
-			}
-		]
-	],
-	"sourceMaps": true
+  "presets": [
+    [
+      "@babel/preset-env",
+      {
+        "useBuiltIns": "entry",
+        "forceAllTransforms": true
+      }
+    ]
+  ],
+  "sourceMaps": true
 }
