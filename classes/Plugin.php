@@ -17,7 +17,6 @@ class Plugin {
 	 * List of object types that likes are enabled for.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var Controller[]
 	 */
@@ -29,7 +28,6 @@ class Plugin {
 	 * Initializes the controllers for all the enabled object types.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function add_hooks() {
 		/**
@@ -54,16 +52,18 @@ class Plugin {
 
 		add_action( 'wp_enqueue_scripts', [ $this, 'register_scripts' ] );
 
+		add_action( 'enqueue_block_editor_assets', [ $this, 'enqueue_editor_scripts' ] );
+
 		add_action( 'init', [ $this, 'init_traduttore' ] );
 
 		add_filter( 'heartbeat_received', [ $this, 'heartbeat_received' ], 10, 2 );
+
 	}
 
 	/**
 	 * Adds support for translations via Traduttore.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function init_traduttore() {
 		add_project(
@@ -109,7 +109,6 @@ class Plugin {
 	 * Registers JavaScript on front end.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function register_scripts() {
 		wp_register_script(
@@ -134,6 +133,37 @@ class Plugin {
 			'rest-likes',
 			'restLikes',
 			$script_data
+		);
+	}
+
+	/**
+	 * Enqueues JavaScript for the block editor.
+	 *
+	 * @since 1.0.0
+	 */
+	public function enqueue_editor_scripts() {
+		wp_enqueue_script(
+			'rest-likes-editor',
+			plugins_url( 'js/editor.js', __DIR__ ),
+			[
+				'wp-components',
+				'wp-data',
+				'wp-edit-post',
+				'wp-editor',
+				'wp-element',
+				'wp-i18n',
+				'wp-plugins',
+			],
+			filemtime( plugin_dir_path( __DIR__ ) . 'js/editor.js' ),
+			true
+		);
+
+		$locale_data = $this->get_jed_locale_data( 'rest-likes' );
+
+		wp_add_inline_script(
+			'rest-likes',
+			'wp.i18n.setLocaleData( ' . wp_json_encode( $locale_data ) . ', "rest-likes" );',
+			'before'
 		);
 	}
 
@@ -171,7 +201,6 @@ class Plugin {
 	 * Returns script data for all enabled object types.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @return array Data for use in JavaScript part.
 	 */
@@ -205,7 +234,6 @@ class Plugin {
 	 * Returns the like count for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
@@ -227,7 +255,6 @@ class Plugin {
 	 * Returns the like count markup for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
@@ -249,7 +276,6 @@ class Plugin {
 	 * Returns the like button for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.

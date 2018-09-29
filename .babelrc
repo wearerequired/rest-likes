@@ -1,12 +1,6 @@
 {
   "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "useBuiltIns": "entry",
-        "forceAllTransforms": true
-      }
-    ]
+    "@wordpress/default"
   ],
   "sourceMaps": true
 }
