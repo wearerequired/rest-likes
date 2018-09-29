@@ -28,6 +28,7 @@
     "@babel/core": "^7.1.0",
     "@babel/preset-env": "^7.1.0",
     "@babel/runtime": "^7.0.0",
+    "@wordpress/babel-preset-default": "^2.1.0",
     "babel-loader": "^8.0.2",
     "cross-env": "^5.2.0",
     "webpack": "^4.20.0",
