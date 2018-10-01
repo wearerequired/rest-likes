@@ -21,7 +21,9 @@
   },
   "dependencies": {
     "@wordpress/a11y": "^2.0.0",
-    "@wordpress/i18n": "^2.0.0"
+    "@wordpress/i18n": "^2.0.0",
+    "core-js": "^2.5.7",
+    "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
     "@babel/cli": "^7.1.0",

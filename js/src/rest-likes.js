@@ -1,3 +1,11 @@
+/**
+ * Polyfills
+ */
+import 'whatwg-fetch'
+
+/**
+ * External dependencies.
+ */
 import { speak } from '@wordpress/a11y';
 import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 
