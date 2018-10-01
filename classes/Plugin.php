@@ -116,7 +116,7 @@ class Plugin {
 			'rest-likes',
 			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
 			[ 'jquery', 'wp-a11y', 'heartbeat' ],
-			'20180927',
+			'20181001',
 			true
 		);
 

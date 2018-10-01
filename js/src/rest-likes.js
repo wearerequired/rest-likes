@@ -147,10 +147,15 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
                 },
             }
         )
-            .then( response => response.json() )
+            .then( response => {
+                if ( !response.ok ) {
+                    throw Error( response.statusText );
+                }
+
+                return response.json();
+            } )
             .then( response => {
                 Array.prototype.forEach.call( likeButtons, likeButton => {
-                    // Set class while processing.
                     likeButton.classList.remove( classNames.processing );
 
                     const likeButtonCount = likeButton.querySelector( `.${classNames.count}` );
@@ -203,7 +208,6 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
             } )
             .catch( error => {
                 Array.prototype.forEach.call( likeButtons, likeButton => {
-                    // Set class while processing.
                     likeButton.classList.remove( classNames.processing );
                 } );
 
