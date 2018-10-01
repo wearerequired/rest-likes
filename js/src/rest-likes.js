@@ -2,6 +2,7 @@
  * Polyfills
  */
 import 'whatwg-fetch'
+import "@babel/polyfill";
 
 /**
  * External dependencies.
