@@ -1,16 +1,10 @@
 /**
- * Polyfills
- */
-import 'whatwg-fetch'
-import "@babel/polyfill";
-
-/**
  * External dependencies.
  */
 import { speak } from '@wordpress/a11y';
 import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 
-((( document, window, restLikes ) => {
+(( document, window, restLikes ) => {
     /**
      * Load localized strings.
      */
@@ -276,23 +270,20 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
         }
     } );
 
-    /**
-     * Hook up the handler.
-     */
-    document.addEventListener( 'DOMContentLoaded', () => {
+    // Initialize.
+    checkButtons();
+
+    // Allow triggering a custom event to check buttons again.
+    document.body.addEventListener( 'restLikes', () => {
         checkButtons();
-
-        // Allow triggering a custom event to check buttons again.
-        document.body.addEventListener( 'restLikes', () => {
-            checkButtons();
-        } );
-
-        const likeButtons = document.querySelectorAll( `[data-rest-like-button]` );
-
-        Array.prototype.forEach.call( likeButtons, likeButton => {
-            likeButton.addEventListener( 'click', ( event ) => {
-                buttonClickHandler( event.currentTarget.getAttribute( 'data-type' ), event.currentTarget.getAttribute( 'data-id' ) );
-            } )
-        } );
     } );
-}))( document, window, restLikes );
+
+    const likeButtons = document.querySelectorAll( `[data-rest-like-button]` );
+
+    // Set up event handlers.
+    Array.prototype.forEach.call( likeButtons, likeButton => {
+        likeButton.addEventListener( 'click', ( event ) => {
+            buttonClickHandler( event.currentTarget.getAttribute( 'data-type' ), event.currentTarget.getAttribute( 'data-id' ) );
+        } )
+    } );
+})( document, window, restLikes );

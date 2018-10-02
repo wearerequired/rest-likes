@@ -112,11 +112,13 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_scripts() {
+		$version = '20181001';
+
 		wp_register_script(
 			'rest-likes',
-			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
+			esc_url( plugin_dir_url( __DIR__ ) . 'js/init.js' ),
 			[ 'jquery', 'wp-a11y', 'heartbeat' ],
-			'20181001',
+			$version,
 			true
 		);
 
@@ -124,6 +126,10 @@ class Plugin {
 			'root'         => esc_url_raw( get_rest_url() ),
 			'object_types' => $this->get_object_types_script_data(),
 			'l10n'         => $this->get_jed_locale_data( 'rest-likes' ),
+			'scripts'      => [
+				'modernBrowsers' => esc_url( add_query_arg( 'ver', $version, plugin_dir_url( __DIR__ ) . 'js/modernBrowsers.js' ) ),
+				'legacyBrowsers' => esc_url( add_query_arg( 'ver', $version, plugin_dir_url( __DIR__ ) . 'js/legacyBrowsers.js' ) ),
+			],
 		];
 
 		if ( is_user_logged_in() ) {

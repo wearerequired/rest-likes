@@ -1,10 +1,11 @@
 const webpack = require( 'webpack' );
 
-const config = {
+const modernBrowsers = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
     entry: {
-        'rest-likes': './js/src/rest-likes.js',
+        'init':           './js/src/init.js',
+        'modernBrowsers': './js/src/modernBrowsers.js',
     },
 
     // https://webpack.js.org/configuration/output/
@@ -21,15 +22,63 @@ const config = {
             {
                 test:    /\.js$/,
                 exclude: /node_modules/,
-                use:     'babel-loader',
+                use:     {
+                    loader: 'babel-loader',
+                },
             },
         ],
     },
 };
 
 // https://webpack.js.org/configuration/devtool/#devtool
-if ( config.mode !== 'production' ) {
-    config.devtool = 'source-map';
+if ( modernBrowsers.mode !== 'production' ) {
+    modernBrowsers.devtool = 'source-map';
 }
 
-module.exports = config;
+const legacyBrowsers = {
+    ...modernBrowsers,
+
+    entry: {
+        'legacyBrowsers': './js/src/legacyBrowsers.js',
+    },
+
+    module: {
+        rules: [
+            {
+                test:    /\.js$/,
+                exclude: /node_modules/,
+                use:     {
+                    loader:  'babel-loader',
+                    options: {
+                        // Don't read config from .babelrc or .browserslistrc.
+                        babelrc: false,
+                        presets: [
+                            [
+                                '@babel/preset-env',
+                                {
+                                    useBuiltIns: 'entry',
+                                    targets:     [
+                                        'ie >= 11',
+                                        'last 1 Android versions',
+                                        'last 1 ChromeAndroid versions',
+                                        'last 2 Chrome versions',
+                                        'last 2 Firefox versions',
+                                        'last 2 Safari versions',
+                                        'last 2 iOS versions',
+                                        'last 2 Edge versions',
+                                        'last 2 Opera versions',
+                                    ]
+                                }
+                            ]
+                        ],
+                    }
+                },
+            },
+        ],
+    },
+};
+
+module.exports = [
+    modernBrowsers,
+    legacyBrowsers
+];
