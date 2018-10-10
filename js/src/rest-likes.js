@@ -145,9 +145,9 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
             restLikes.root + objectTypeData.endpoint.replace( '%s', objectId ),
             {
                 method:  isLikedItem( objectType, objectId ) ? 'DELETE' : 'POST',
-                headers: {
-                    'X-WP-Nonce': restLikes.nonce,
-                },
+				headers: restLikes.nonce && {
+					'X-WP-Nonce': restLikes.nonce,
+				},
             }
         )
             .then( response => {
