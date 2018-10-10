@@ -112,11 +112,11 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_scripts() {
-		$version = '20181001';
+		$version = '20181010';
 
 		wp_register_script(
 			'rest-likes',
-			esc_url( plugin_dir_url( __DIR__ ) . 'js/init.js' ),
+			false,
 			[ 'jquery', 'heartbeat' ],
 			$version,
 			true
@@ -140,6 +140,25 @@ class Plugin {
 			'rest-likes',
 			'restLikes',
 			$script_data
+		);
+
+		$inline_script = <<<JS
+'use strict';
+
+(function (document, window, restLikes) {
+    var script = document.createElement('script');
+
+    script.src = 'Promise' in window && 'fetch' in window ? restLikes.scripts.modernBrowsers : restLikes.scripts.legacyBrowsers;
+    script.async = true;
+
+    document.body.appendChild(script);
+})(document, window, restLikes);
+JS;
+
+		wp_scripts()->add_data(
+			'rest-likes',
+			'data',
+			wp_scripts()->get_data( 'rest-likes', 'data' ) . "\n" . $inline_script
 		);
 	}
 

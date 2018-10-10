@@ -4,7 +4,6 @@ const modernBrowsers = {
     mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
     entry: {
-        'init':           './js/src/init.js',
         'modernBrowsers': './js/src/modernBrowsers.js',
     },
 
