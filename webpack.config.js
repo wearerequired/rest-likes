@@ -1,83 +1,48 @@
-const webpack = require( 'webpack' );
+/* global __dirname */
 
-const modernBrowsers = {
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+function getConfig( { browserslistEnv } ) {
+	process.env.BROWSERSLIST_ENV = browserslistEnv;
 
-    entry: {
-        'modernBrowsers': './js/src/modernBrowsers.js',
-    },
+	const isModern = browserslistEnv === 'modern';
 
-    // https://webpack.js.org/configuration/output/
-    output: {
-        path:          __dirname + '/js/',
-        filename:      '[name].js',
-        library:       'RestLikes',
-        libraryTarget: 'this',
-    },
+	const config = {
+		mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
-    // https://github.com/babel/babel-loader#usage
-    module: {
-        rules: [
-            {
-                test:    /\.js$/,
-                exclude: /node_modules/,
-                use:     {
-                    loader: 'babel-loader',
-                },
-            },
-        ],
-    },
-};
+		entry: [
+			isModern ? './js/src/modernBrowsers.js' : './js/src/legacyBrowsers.js',
+		],
 
-// https://webpack.js.org/configuration/devtool/#devtool
-if ( modernBrowsers.mode !== 'production' ) {
-    modernBrowsers.devtool = 'source-map';
+		// https://webpack.js.org/configuration/output/
+		output: {
+			path:          __dirname + '/js/',
+			filename:      isModern ? './modernBrowsers.js' : './legacyBrowsers.js',
+			library:       'RestLikes',
+			libraryTarget: 'this',
+		},
+
+		// https://github.com/babel/babel-loader#usage
+		module: {
+			rules: [
+				{
+					test:    /\.js$/,
+					exclude: /node_modules/,
+					use:     {
+						loader: 'babel-loader',
+					},
+				},
+			],
+		},
+	};
+
+	// https://webpack.js.org/configuration/devtool/#devtool
+	if ( config.mode !== 'production' ) {
+		config.devtool = 'source-map';
+	}
+
+	return config;
 }
 
-const legacyBrowsers = {
-    ...modernBrowsers,
-
-    entry: {
-        'legacyBrowsers': './js/src/legacyBrowsers.js',
-    },
-
-    module: {
-        rules: [
-            {
-                test:    /\.js$/,
-                exclude: /node_modules/,
-                use:     {
-                    loader:  'babel-loader',
-                    options: {
-                        // Don't read config from .babelrc or .browserslistrc.
-                        babelrc: false,
-                        presets: [
-                            [
-                                '@babel/preset-env',
-                                {
-                                    useBuiltIns: 'entry',
-                                    targets:     [
-                                        'ie >= 11',
-                                        'last 1 Android versions',
-                                        'last 1 ChromeAndroid versions',
-                                        'last 2 Chrome versions',
-                                        'last 2 Firefox versions',
-                                        'last 2 Safari versions',
-                                        'last 2 iOS versions',
-                                        'last 2 Edge versions',
-                                        'last 2 Opera versions',
-                                    ]
-                                }
-                            ]
-                        ],
-                    }
-                },
-            },
-        ],
-    },
-};
-
 module.exports = [
-    modernBrowsers,
-    legacyBrowsers
+	getConfig( { browserslistEnv: 'modern' } ),
+	//getConfig( { browserslistEnv: 'legacy' } ),
 ];

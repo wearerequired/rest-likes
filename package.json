@@ -1,8 +1,7 @@
 {
   "name": "rest-likes",
   "description": "Like posts and comments using the REST API.",
-  "license": "GPL-2.0+",
-  "version": "1.0.0",
+  "license": "GPL-2.0-or-later",
   "repository": {
     "type": "git",
     "url": "https://github.com/wearerequired/rest-likes.git"
@@ -32,6 +31,7 @@
     "@babel/preset-env": "^7.1.0",
     "@babel/runtime": "^7.0.0",
     "babel-loader": "^8.0.2",
+    "browserslist": "^4.2.1",
     "cross-env": "^5.2.0",
     "webpack": "^4.20.0",
     "webpack-cli": "^3.1.1"
