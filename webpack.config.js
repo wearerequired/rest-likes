@@ -44,5 +44,5 @@ function getConfig( { browserslistEnv } ) {
 
 module.exports = [
 	getConfig( { browserslistEnv: 'modern' } ),
-	//getConfig( { browserslistEnv: 'legacy' } ),
+	getConfig( { browserslistEnv: 'legacy' } ),
 ];
