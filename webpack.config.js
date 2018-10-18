@@ -1,35 +1,48 @@
-const webpack = require( 'webpack' );
+/* global __dirname */
 
-const config = {
-    mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+function getConfig( { browserslistEnv } ) {
+	process.env.BROWSERSLIST_ENV = browserslistEnv;
 
-    entry: {
-        'rest-likes': './js/src/rest-likes.js',
-    },
+	const isModern = browserslistEnv === 'modern';
 
-    // https://webpack.js.org/configuration/output/
-    output: {
-        path:          __dirname + '/js/',
-        filename:      '[name].js',
-        library:       'RestLikes',
-        libraryTarget: 'this',
-    },
+	const config = {
+		mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
-    // https://github.com/babel/babel-loader#usage
-    module: {
-        rules: [
-            {
-                test:    /\.js$/,
-                exclude: /node_modules/,
-                use:     'babel-loader',
-            },
-        ],
-    },
-};
+		entry: [
+			isModern ? './js/src/modernBrowsers.js' : './js/src/legacyBrowsers.js',
+		],
 
-// https://webpack.js.org/configuration/devtool/#devtool
-if ( config.mode !== 'production' ) {
-    config.devtool = 'source-map';
+		// https://webpack.js.org/configuration/output/
+		output: {
+			path:          __dirname + '/js/',
+			filename:      isModern ? './modernBrowsers.js' : './legacyBrowsers.js',
+			library:       'RestLikes',
+			libraryTarget: 'this',
+		},
+
+		// https://github.com/babel/babel-loader#usage
+		module: {
+			rules: [
+				{
+					test:    /\.js$/,
+					exclude: /node_modules/,
+					use:     {
+						loader: 'babel-loader',
+					},
+				},
+			],
+		},
+	};
+
+	// https://webpack.js.org/configuration/devtool/#devtool
+	if ( config.mode !== 'production' ) {
+		config.devtool = 'source-map';
+	}
+
+	return config;
 }
 
-module.exports = config;
+module.exports = [
+	getConfig( { browserslistEnv: 'modern' } ),
+	getConfig( { browserslistEnv: 'legacy' } ),
+];

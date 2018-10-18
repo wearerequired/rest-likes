@@ -112,11 +112,13 @@ class Plugin {
 	 * @access public
 	 */
 	public function register_scripts() {
+		$version = '20181010';
+
 		wp_register_script(
 			'rest-likes',
-			esc_url( plugin_dir_url( __DIR__ ) . 'js/rest-likes.js' ),
-			[ 'jquery', 'wp-a11y', 'heartbeat' ],
-			'20181001',
+			false,
+			[ 'jquery', 'heartbeat' ],
+			$version,
 			true
 		);
 
@@ -124,6 +126,10 @@ class Plugin {
 			'root'         => esc_url_raw( get_rest_url() ),
 			'object_types' => $this->get_object_types_script_data(),
 			'l10n'         => $this->get_jed_locale_data( 'rest-likes' ),
+			'scripts'      => [
+				'modernBrowsers' => esc_url( add_query_arg( 'ver', $version, plugin_dir_url( __DIR__ ) . 'js/modernBrowsers.js' ) ),
+				'legacyBrowsers' => esc_url( add_query_arg( 'ver', $version, plugin_dir_url( __DIR__ ) . 'js/legacyBrowsers.js' ) ),
+			],
 		];
 
 		if ( is_user_logged_in() ) {
@@ -134,6 +140,25 @@ class Plugin {
 			'rest-likes',
 			'restLikes',
 			$script_data
+		);
+
+		$inline_script = <<<JS
+'use strict';
+
+(function (document, window, restLikes) {
+    var script = document.createElement('script');
+
+    script.src = 'Promise' in window && 'fetch' in window ? restLikes.scripts.modernBrowsers : restLikes.scripts.legacyBrowsers;
+    script.async = true;
+
+    document.body.appendChild(script);
+})(document, window, restLikes);
+JS;
+
+		wp_scripts()->add_data(
+			'rest-likes',
+			'data',
+			wp_scripts()->get_data( 'rest-likes', 'data' ) . "\n" . $inline_script
 		);
 	}
 

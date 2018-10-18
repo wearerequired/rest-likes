@@ -1,12 +1,11 @@
 {
   "presets": [
-    [
-      "@babel/preset-env",
-      {
-        "useBuiltIns": "entry",
-        "forceAllTransforms": true
-      }
-    ]
+	[
+	  "@babel/preset-env",
+	  {
+		"useBuiltIns": "entry"
+	  }
+	]
   ],
   "sourceMaps": true
 }
