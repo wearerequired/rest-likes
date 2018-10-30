@@ -67,7 +67,7 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
         if ( storage ) {
             let storageData = getLikedItems( objectType );
             if ( storageData ) {
-                storageData.push( objectId );
+                storageData.push( parseInt( objectId, 10 ) );
                 storageData = [ ...new Set( storageData ) ];
                 storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
             }
@@ -83,7 +83,7 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
     const removeLikedItem = ( objectType, objectId ) => {
         if ( storage ) {
             let storageData = getLikedItems( objectType );
-            storageData     = storageData.filter( num => num === objectId );
+            storageData     = storageData.filter( num => num !== parseInt( objectId, 10 ) );
             storageData     = [ ...new Set( storageData ) ];
             storage.setItem( `rest-likes-${objectType}`, JSON.stringify( storageData ) );
         }
@@ -96,7 +96,7 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
      * @param {number} objectId
      */
     const isLikedItem = ( objectType, objectId ) => {
-        return -1 !== getLikedItems( objectType ).indexOf( objectId );
+        return -1 !== getLikedItems( objectType ).indexOf( parseInt( objectId, 10 ) );
     }
 
     /**
@@ -167,7 +167,10 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
                     likeButtonCount.setAttribute( 'data-likes', response.count );
                 } );
 
-                if ( isLikedItem( objectType, objectId ) ) {
+
+				const likedItem = isLikedItem( objectType, objectId );
+
+				if ( likedItem ) {
                     removeLikedItem( objectType, objectId );
 
                     Array.prototype.forEach.call( likeButtons, likeButton => {
@@ -186,9 +189,11 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
                             objectId,
                         }
                     } ) );
+
+                    return;
                 }
 
-                if ( !isLikedItem( objectType, objectId ) ) {
+                if ( !likedItem ) {
                     addLikedItem( objectType, objectId );
 
                     Array.prototype.forEach.call( likeButtons, likeButton => {
