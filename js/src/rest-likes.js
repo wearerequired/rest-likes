@@ -97,7 +97,7 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 	 */
 	const isLikedItem = ( objectType, objectId ) => {
 		return -1 !== getLikedItems( objectType ).indexOf( parseInt( objectId, 10 ) );
-	}
+	};
 
 	/**
 	 * Initially checks the status of every available like button on the page.
@@ -282,12 +282,11 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 		checkButtons();
 	} );
 
-	const likeButtons = document.querySelectorAll( `[data-rest-like-button]` );
+	document.body.addEventListener( 'click', e => {
+		const likeButton = e.target.closest( '[data-rest-like-button]' );
 
-	// Set up event handlers.
-	Array.prototype.forEach.call( likeButtons, likeButton => {
-		likeButton.addEventListener( 'click', ( event ) => {
-			buttonClickHandler( event.currentTarget.getAttribute( 'data-type' ), event.currentTarget.getAttribute( 'data-id' ) );
-		} )
+		if ( likeButton ) {
+			buttonClickHandler( likeButton.getAttribute( 'data-type' ), likeButton.getAttribute( 'data-id' ) );
+		}
 	} );
 })( document, window, restLikes );
