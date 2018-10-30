@@ -141,10 +141,12 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 			likeButton.classList.add( classNames.processing );
 		} );
 
+		const likedItem = isLikedItem( objectType, objectId );
+
 		fetch(
 			restLikes.root + objectTypeData.endpoint.replace( '%s', objectId ),
 			{
-				method:  isLikedItem( objectType, objectId ) ? 'DELETE' : 'POST',
+				method:  likedItem ? 'DELETE' : 'POST',
 				headers: restLikes.nonce && {
 					'X-WP-Nonce': restLikes.nonce,
 				},
@@ -166,9 +168,6 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 					likeButtonCount.innerText = response.countFormatted;
 					likeButtonCount.setAttribute( 'data-likes', response.count );
 				} );
-
-
-				const likedItem = isLikedItem( objectType, objectId );
 
 				if ( likedItem ) {
 					removeLikedItem( objectType, objectId );
@@ -193,7 +192,7 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 					return;
 				}
 
-				if ( !likedItem ) {
+				if ( ! likedItem ) {
 					addLikedItem( objectType, objectId );
 
 					Array.prototype.forEach.call( likeButtons, likeButton => {
