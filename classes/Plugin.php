@@ -145,14 +145,15 @@ class Plugin {
 		$inline_script = <<<JS
 'use strict';
 
-(function (document, window, restLikes) {
-    var script = document.createElement('script');
+(function (document, window, ElementPrototype, restLikes) {
+	var script = document.createElement('script');
+	var isModern = 'Promise' in window && 'fetch' in window && 'function' === typeof ElementPrototype.closest;
 
-    script.src = 'Promise' in window && 'fetch' in window ? restLikes.scripts.modernBrowsers : restLikes.scripts.legacyBrowsers;
-    script.async = true;
+	script.src = isModern ? restLikes.scripts.modernBrowsers : restLikes.scripts.legacyBrowsers;
+	script.async = true;
 
-    document.body.appendChild(script);
-})(document, window, restLikes);
+	document.body.appendChild(script);
+})(document, window, window.Element.prototype, restLikes);
 JS;
 
 		wp_scripts()->add_data(
