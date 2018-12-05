@@ -23,7 +23,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Needs to be overridden by sub class.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var string
 	 */
@@ -33,7 +32,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * REST field & meta key value.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var string
 	 */
@@ -43,7 +41,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * REST namespace.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var string
 	 */
@@ -53,7 +50,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * REST route version.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var int
 	 */
@@ -63,7 +59,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Adds WordPress hooks.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function add_hooks() {
 		add_action( 'rest_api_init', [ $this, 'add_rest_route' ] );
@@ -76,7 +71,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * These can be filtered to use class names that better suit the current theme.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @return array An array of CSS class names.
 	 */
@@ -102,7 +96,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Returns the meta key for the object type.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @return string The meta key.
 	 */
@@ -114,7 +107,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Returns the REST API namespace for the object type.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @return string The REST API namespace.
 	 */
@@ -128,7 +120,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Can be either a string or an array of (sub) object types (e.g. post types).
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @return string The object type the REST field should be registered for.
 	 */
@@ -142,7 +133,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * That way, clients can easily retrieve information about the like count.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function add_rest_field() {
 		register_rest_field( $this->get_rest_field_object_type(), $this->get_meta_key(), [
@@ -159,7 +149,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * GET callback for the likes REST field.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param array $object Data object.
 	 * @return int The like count.
@@ -174,7 +163,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * That way, the placeholder can be easily replaced in JavaScript for example.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @return string The REST route placeholder.
 	 */
@@ -188,7 +176,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * @see Controller::add_rest_route()
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @return string The REST route.
 	 */
@@ -202,7 +189,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * The only allowed methods are POST (like) and DELETE (unlike).
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function add_rest_route() {
 		register_rest_route( $this->get_namespace(), $this->get_rest_route(), [
@@ -246,7 +232,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Checks permissions on the object ID.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request Object.
 	 * @return true|WP_Error True if the user has permissions, false otherwise.
@@ -263,7 +248,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Checks if there's already a like for an object from a given IP address.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return True if the user has already liked this object, false otherwise.
@@ -283,7 +267,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Sets the transient for the current object and user.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 */
@@ -312,7 +295,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Deletes like and unlike transients for the current object and user.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 */
@@ -358,7 +340,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Adds a like to an object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response Response object.
@@ -373,7 +354,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Removes a like from an object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response Response object.
@@ -392,7 +372,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Negative like counts are not possible.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int  $object_id Object ID.
 	 * @param bool $remove    Whether to increment or decrement the counter.
@@ -430,7 +409,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Returns the like button markup.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int $object_id Object ID.
 	 * @return string Like button markup.
@@ -473,7 +451,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Returns the like count for an object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int $object_id Object ID.
 	 * @return int Like count.
@@ -486,7 +463,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Returns the like count with markup.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int $object_id Object ID.
 	 * @return string Like count markup.
@@ -507,7 +483,6 @@ abstract class Controller extends WP_REST_Controller {
 	 * Retrieves the item's schema, conforming to JSON Schema.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @return array Item schema data.
 	 */

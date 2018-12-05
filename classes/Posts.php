@@ -22,7 +22,6 @@ class Posts extends Controller {
 	 * The object type this controller is for.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var string
 	 */
@@ -35,7 +34,6 @@ class Posts extends Controller {
 	 * to display likes in the posts list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function add_hooks() {
 		parent::add_hooks();
@@ -53,7 +51,6 @@ class Posts extends Controller {
 	 * Returns the list of post types that likes are allowed for.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @return array Allowed post types.
 	 */
@@ -74,7 +71,6 @@ class Posts extends Controller {
 	 * Returns the post types that the REST field will be registered for.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @return array Enabled post types.
 	 */
@@ -89,7 +85,6 @@ class Posts extends Controller {
 	 * is allowed and the post is published.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return true|WP_Error True on success, WP_Error object on failure.
@@ -113,7 +108,6 @@ class Posts extends Controller {
 	 * Checks if this post type is allowed.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int|WP_Post|null $post Optional. Post ID or post object. Default is global $post.
 	 *
@@ -127,7 +121,6 @@ class Posts extends Controller {
 	 * Returns the like button markup.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int $object_id Post ID.
 	 * @return string Like button markup. Empty string if post type is not allowed.
@@ -144,7 +137,6 @@ class Posts extends Controller {
 	 * Returns the like count for a post.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int $post_id Post ID.
 	 * @return int Like count. Will be zero if post type is not allowed.
@@ -161,7 +153,6 @@ class Posts extends Controller {
 	 * Returns the like count markup.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param int $post_id Post ID.
 	 * @return string Like count markup. Empty string if post type is not allowed.
@@ -178,7 +169,6 @@ class Posts extends Controller {
 	 * Filters the columns displayed in the Posts list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param array  $posts_columns An array of column names.
 	 * @param string $post_type     The post type slug.
@@ -198,7 +188,6 @@ class Posts extends Controller {
 	 * Displays the post like count in the list table.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $column_name The name of the column to display.
 	 * @param int    $post_id     The current post ID.
@@ -215,7 +204,6 @@ class Posts extends Controller {
 	 * Filters the list table sortable columns for a specific screen.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param array $sortable_columns An array of sortable columns.
 	 * @return array The modified array of sortable columns.
@@ -232,7 +220,6 @@ class Posts extends Controller {
 	 * Fires after the query variable object is created, but before the actual query is run.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param WP_Query $query The WP_Query instance (passed by reference).
 	 */

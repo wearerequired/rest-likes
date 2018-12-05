@@ -17,7 +17,6 @@ class Plugin {
 	 * List of object types that likes are enabled for.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @var Controller[]
 	 */
@@ -29,7 +28,6 @@ class Plugin {
 	 * Initializes the controllers for all the enabled object types.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function add_hooks() {
 		/**
@@ -63,7 +61,6 @@ class Plugin {
 	 * Adds support for translations via Traduttore.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function init_traduttore() {
 		add_project(
@@ -109,7 +106,6 @@ class Plugin {
 	 * Registers JavaScript on front end.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 */
 	public function register_scripts() {
 		$version = '20181030';
@@ -197,7 +193,6 @@ JS;
 	 * Returns script data for all enabled object types.
 	 *
 	 * @since 1.0.0
-	 * @access protected
 	 *
 	 * @return array Data for use in JavaScript part.
 	 */
@@ -231,7 +226,6 @@ JS;
 	 * Returns the like count for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
@@ -253,7 +247,6 @@ JS;
 	 * Returns the like count markup for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
@@ -275,7 +268,6 @@ JS;
 	 * Returns the like button for the given object.
 	 *
 	 * @since 1.0.0
-	 * @access public
 	 *
 	 * @param string $object_type Object type.
 	 * @param int    $object_id   Object ID.
