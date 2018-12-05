@@ -298,7 +298,7 @@ abstract class Controller extends WP_REST_Controller {
 		/**
 		 * Filters the expiration of a transient.
 		 *
-		 * @since 1.0.3
+		 * @since 1.0.0
 		 *
 		 * @param int             $expiration Time until expiration in seconds. Default 2 minutes.
 		 * @param WP_REST_Request $request    Current request object.
@@ -339,8 +339,7 @@ abstract class Controller extends WP_REST_Controller {
 	/**
 	 * Gets like counts of an object.
 	 *
-	 * @since 1.0.2
-	 * @access public
+	 * @since 1.0.0
 	 *
 	 * @param WP_REST_Request $request Request object.
 	 * @return WP_REST_Response Response object.
