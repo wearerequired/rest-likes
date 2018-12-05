@@ -83,13 +83,17 @@ abstract class Controller extends WP_REST_Controller {
 		 * @param array  $classnames  The list of CSS class names.
 		 * @param string $object_type The object type the class names are for.
 		 */
-		return apply_filters( 'rest_likes.classnames', [
-			'count'      => 'rest-like-count',
-			'button'     => 'rest-like-button',
-			'label'      => 'rest-like-button-label',
-			'liked'      => 'has-like',
-			'processing' => 'rest-like-processing',
-		], $this->get_object_type() );
+		return apply_filters(
+			'rest_likes.classnames',
+			[
+				'count'      => 'rest-like-count',
+				'button'     => 'rest-like-button',
+				'label'      => 'rest-like-button-label',
+				'liked'      => 'has-like',
+				'processing' => 'rest-like-processing',
+			],
+			$this->get_object_type()
+		);
 	}
 
 	/**
@@ -135,14 +139,18 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 */
 	public function add_rest_field() {
-		register_rest_field( $this->get_rest_field_object_type(), $this->get_meta_key(), [
-			'get_callback' => [ $this, 'rest_field_get_callback' ],
-			'schema'       => [
-				'type'        => 'integer',
-				'description' => 'The number of likes the object has.',
-				'context'     => [ 'view', 'edit', 'embed' ],
-			],
-		] );
+		register_rest_field(
+			$this->get_rest_field_object_type(),
+			$this->get_meta_key(),
+			[
+				'get_callback' => [ $this, 'rest_field_get_callback' ],
+				'schema'       => [
+					'type'        => 'integer',
+					'description' => 'The number of likes the object has.',
+					'context'     => [ 'view', 'edit', 'embed' ],
+				],
+			]
+		);
 	}
 
 	/**
@@ -301,7 +309,7 @@ abstract class Controller extends WP_REST_Controller {
 	protected function delete_transients( $request ) {
 		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
 
-		$like  = sprintf(
+		$like = sprintf(
 			'%s_like_%s',
 			$this->get_object_type(),
 			md5( $ip_address . $request['id'] . WP_REST_Server::CREATABLE )
@@ -309,7 +317,7 @@ abstract class Controller extends WP_REST_Controller {
 
 		delete_transient( $like );
 
-		$unlike  = sprintf(
+		$unlike = sprintf(
 			'%s_like_%s',
 			$this->get_object_type(),
 			md5( $ip_address . $request['id'] . WP_REST_Server::DELETABLE )
@@ -330,10 +338,12 @@ abstract class Controller extends WP_REST_Controller {
 		$likes      = $this->get_like_count( $request['id'] );
 		$likes_i18n = number_format_i18n( $likes );
 
-		return new WP_REST_Response( [
-			'count'          => $likes,
-			'countFormatted' => $likes_i18n,
-		] );
+		return new WP_REST_Response(
+			[
+				'count'          => $likes,
+				'countFormatted' => $likes_i18n,
+			]
+		);
 	}
 
 	/**
@@ -379,8 +389,8 @@ abstract class Controller extends WP_REST_Controller {
 	 */
 	public function handle_like( $object_id, $remove = false ) {
 		$old_likes = $this->get_like_count( $object_id );
-		$likes = $remove ? $old_likes - 1 : $old_likes + 1;
-		$likes = max( $likes, 0 );
+		$likes     = $remove ? $old_likes - 1 : $old_likes + 1;
+		$likes     = max( $likes, 0 );
 
 		update_metadata( $this->get_object_type(), $object_id, $this->get_meta_key(), $likes );
 
@@ -470,7 +480,8 @@ abstract class Controller extends WP_REST_Controller {
 	public function get_like_count_html( $object_id ) {
 		$likes = $this->get_like_count( $object_id );
 
-		return sprintf( apply_filters( 'rest_likes.count_markup', '<span class="%1$s" data-type="%2$s" data-id="%3$d" data-likes="%4$d">%5$s</span>' ),
+		return sprintf(
+			apply_filters( 'rest_likes.count_markup', '<span class="%1$s" data-type="%2$s" data-id="%3$d" data-likes="%4$d">%5$s</span>' ),
 			esc_attr( $this->get_classnames()['count'] ),
 			esc_attr( $this->get_object_type() ),
 			absint( $object_id ),

@@ -97,7 +97,7 @@ class Posts extends Controller {
 		$post_type = get_post_type_object( get_post_type( $request['id'] ) );
 
 		// Is the post readable?
-		if ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) {
+		if ( ! $post_type || ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) ) {
 			return new WP_Error( 'invalid_post', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
@@ -157,7 +157,7 @@ class Posts extends Controller {
 	 * @param int $post_id Post ID.
 	 * @return string Like count markup. Empty string if post type is not allowed.
 	 */
-	public function get_like_count_html( $post_id  ) {
+	public function get_like_count_html( $post_id ) {
 		if ( ! $this->is_allowed_post_type( $post_id ) ) {
 			return '';
 		}
@@ -174,7 +174,7 @@ class Posts extends Controller {
 	 * @param string $post_type     The post type slug.
 	 * @return array The modified array of column names.
 	 */
-	public function manage_posts_columns( $posts_columns, $post_type  ) {
+	public function manage_posts_columns( $posts_columns, $post_type ) {
 		if ( ! in_array( $post_type, $this->get_allowed_post_types(), true ) ) {
 			return $posts_columns;
 		}

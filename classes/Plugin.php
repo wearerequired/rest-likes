@@ -40,10 +40,12 @@ class Plugin {
 		 *
 		 * @param array $object_types Array of object types. Default 'post' and 'comment'.
 		 */
-		$available_object_types = apply_filters( 'rest_likes.enabled_object_types', [
-			'post'    => Posts::class,
-			'comment' => Comments::class,
-		] );
+		$available_object_types = (array) apply_filters(
+			'rest_likes.enabled_object_types', [
+				'post'    => Posts::class,
+				'comment' => Comments::class,
+			]
+		);
 
 		foreach ( $available_object_types as $object_type => $class ) {
 			$this->enabled_object_types[ $object_type ] = new $class;
