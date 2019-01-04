@@ -245,11 +245,21 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return true|WP_Error True if the user has permissions, false otherwise.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
+		$result = true;
+
 		if ( $this->transient_exists( $request ) ) {
-			return new WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), [ 'status' => 400 ] );
+			$result = new WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
-		return true;
+		/**
+		 * Filters the permission for the current REST request.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param true|WP_Error   $result  Permission result. True if the user has permissions, false otherwise.
+		 * @param WP_REST_Request $request Request Object.
+		 */
+		return apply_filters( 'rest_likes.request_permission', $result, $request );
 	}
 
 	/**
