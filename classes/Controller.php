@@ -402,6 +402,15 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return array Response data containing the new like count, raw and formatted.
 	 */
 	public function handle_like( $object_id, $remove = false ) {
+		/**
+		 * Filters whether to increment or decrement the like count for the current object.
+		 *
+		 * @param bool   $remove      Whether to increment or decrement the counter.
+		 * @param int    $object_id   Object ID.
+		 * @param string $object_type Object type.
+		 */
+		$remove = apply_filters( 'rest_likes.decrement_like_count', $remove, $object_id, $this->get_object_type() );
+
 		$old_likes = $this->get_like_count( $object_id );
 		$likes     = $remove ? $old_likes - 1 : $old_likes + 1;
 		$likes     = max( $likes, 0 );
