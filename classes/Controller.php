@@ -405,6 +405,8 @@ abstract class Controller extends WP_REST_Controller {
 		/**
 		 * Filters whether to increment or decrement the like count for the current object.
 		 *
+		 * @since 1.0.0
+		 *
 		 * @param bool   $remove      Whether to increment or decrement the counter.
 		 * @param int    $object_id   Object ID.
 		 * @param string $object_type Object type.
