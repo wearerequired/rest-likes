@@ -225,6 +225,25 @@ JS;
 	}
 
 	/**
+	 * Returns the Controller instance for a given object type.
+	 *
+	 * @since 1.0.0
+	 *
+	 * @param string $object_type Object type.
+	 * @return Controller Controller instance.
+	 */
+	public function get_object_type_controller( $object_type  ) {
+		if (
+			isset( $this->enabled_object_types[ $object_type ] ) &&
+			$this->enabled_object_types[ $object_type ] instanceof Controller
+		) {
+			return $this->enabled_object_types[ $object_type ];
+		}
+
+		return null;
+	}
+
+	/**
 	 * Returns the like count for the given object.
 	 *
 	 * @since 1.0.0
@@ -234,16 +253,14 @@ JS;
 	 * @return int Like count.
 	 */
 	public function get_like_count( $object_type, $object_id ) {
-		if (
-			isset( $this->enabled_object_types[ $object_type ] ) &&
-			$this->enabled_object_types[ $object_type ] instanceof Controller
-		) {
-			return $this->enabled_object_types[ $object_type ]->get_like_count( $object_id );
+		$controller = $this->get_object_type_controller( $object_type );
+
+		if ( $controller ) {
+			return $controller->get_like_count( $object_id );
 		}
 
 		return 0;
 	}
-
 
 	/**
 	 * Returns the like count markup for the given object.
@@ -255,16 +272,14 @@ JS;
 	 * @return string Like count markup.
 	 */
 	public function get_like_count_html( $object_type, $object_id ) {
-		if (
-			isset( $this->enabled_object_types[ $object_type ] ) &&
-			$this->enabled_object_types[ $object_type ] instanceof Controller
-		) {
-			return $this->enabled_object_types[ $object_type ]->get_like_count_html( $object_id );
+		$controller = $this->get_object_type_controller( $object_type );
+
+		if ( $controller ) {
+			return $controller->get_like_count_html( $object_id );
 		}
 
 		return '';
 	}
-
 
 	/**
 	 * Returns the like button for the given object.
@@ -276,13 +291,12 @@ JS;
 	 * @return string Like button.
 	 */
 	public function get_like_button( $object_type, $object_id ) {
-		if (
-			isset( $this->enabled_object_types[ $object_type ] ) &&
-			$this->enabled_object_types[ $object_type ] instanceof Controller
-		) {
+		$controller = $this->get_object_type_controller( $object_type );
+
+		if ( $controller ) {
 			wp_enqueue_script( 'rest-likes' );
 
-			return $this->enabled_object_types[ $object_type ]->get_like_button( $object_id );
+			return $controller->get_like_button( $object_id );
 		}
 
 		return '';
