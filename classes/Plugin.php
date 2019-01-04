@@ -41,7 +41,8 @@ class Plugin {
 		 * @param array $object_types Array of object types. Default 'post' and 'comment'.
 		 */
 		$available_object_types = (array) apply_filters(
-			'rest_likes.enabled_object_types', [
+			'rest_likes.enabled_object_types',
+			[
 				'post'    => Posts::class,
 				'comment' => Comments::class,
 			]
@@ -232,7 +233,7 @@ JS;
 	 * @param string $object_type Object type.
 	 * @return Controller Controller instance.
 	 */
-	public function get_object_type_controller( $object_type  ) {
+	public function get_object_type_controller( $object_type ) {
 		if (
 			isset( $this->enabled_object_types[ $object_type ] ) &&
 			$this->enabled_object_types[ $object_type ] instanceof Controller

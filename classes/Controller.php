@@ -199,41 +199,45 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 */
 	public function add_rest_route() {
-		register_rest_route( $this->get_namespace(), $this->get_rest_route(), [
+		register_rest_route(
+			$this->get_namespace(),
+			$this->get_rest_route(),
 			[
-				'methods'             => WP_REST_Server::READABLE,
-				'args'                => [
-					'id' => [
-						'sanitize_callback' => '\\absint',
-						'required'          => true,
+				[
+					'methods'             => WP_REST_Server::READABLE,
+					'args'                => [
+						'id' => [
+							'sanitize_callback' => '\\absint',
+							'required'          => true,
+						],
 					],
+					'permission_callback' => '__return_true',
+					'callback'            => [ $this, 'get_like' ],
 				],
-				'permission_callback' => '__return_true',
-				'callback'            => [ $this, 'get_like' ],
-			],
-			[
-				'methods'             => WP_REST_Server::CREATABLE,
-				'args'                => [
-					'id' => [
-						'sanitize_callback' => '\\absint',
-						'required'          => true,
+				[
+					'methods'             => WP_REST_Server::CREATABLE,
+					'args'                => [
+						'id' => [
+							'sanitize_callback' => '\\absint',
+							'required'          => true,
+						],
 					],
+					'permission_callback' => [ $this, 'check_permission' ],
+					'callback'            => [ $this, 'add_like' ],
 				],
-				'permission_callback' => [ $this, 'check_permission' ],
-				'callback'            => [ $this, 'add_like' ],
-			],
-			[
-				'methods'             => WP_REST_Server::DELETABLE,
-				'args'                => [
-					'id' => [
-						'sanitize_callback' => '\\absint',
-						'required'          => true,
+				[
+					'methods'             => WP_REST_Server::DELETABLE,
+					'args'                => [
+						'id' => [
+							'sanitize_callback' => '\\absint',
+							'required'          => true,
+						],
 					],
+					'permission_callback' => [ $this, 'check_permission' ],
+					'callback'            => [ $this, 'remove_like' ],
 				],
-				'permission_callback' => [ $this, 'check_permission' ],
-				'callback'            => [ $this, 'remove_like' ],
-			],
-		] );
+			]
+		);
 	}
 
 	/**
