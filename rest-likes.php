@@ -1,7 +1,5 @@
 <?php
 /**
- * @wordpress-plugin
- *
  * Plugin Name: REST Likes
  * Plugin URI:  https://required.com
  * Description: Like posts and comments using the REST API.

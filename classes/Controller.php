@@ -199,41 +199,45 @@ abstract class Controller extends WP_REST_Controller {
 	 * @since 1.0.0
 	 */
 	public function add_rest_route() {
-		register_rest_route( $this->get_namespace(), $this->get_rest_route(), [
+		register_rest_route(
+			$this->get_namespace(),
+			$this->get_rest_route(),
 			[
-				'methods'             => WP_REST_Server::READABLE,
-				'args'                => [
-					'id' => [
-						'sanitize_callback' => '\\absint',
-						'required'          => true,
+				[
+					'methods'             => WP_REST_Server::READABLE,
+					'args'                => [
+						'id' => [
+							'sanitize_callback' => '\\absint',
+							'required'          => true,
+						],
 					],
+					'permission_callback' => '__return_true',
+					'callback'            => [ $this, 'get_like' ],
 				],
-				'permission_callback' => '__return_true',
-				'callback'            => [ $this, 'get_like' ],
-			],
-			[
-				'methods'             => WP_REST_Server::CREATABLE,
-				'args'                => [
-					'id' => [
-						'sanitize_callback' => '\\absint',
-						'required'          => true,
+				[
+					'methods'             => WP_REST_Server::CREATABLE,
+					'args'                => [
+						'id' => [
+							'sanitize_callback' => '\\absint',
+							'required'          => true,
+						],
 					],
+					'permission_callback' => [ $this, 'check_permission' ],
+					'callback'            => [ $this, 'add_like' ],
 				],
-				'permission_callback' => [ $this, 'check_permission' ],
-				'callback'            => [ $this, 'add_like' ],
-			],
-			[
-				'methods'             => WP_REST_Server::DELETABLE,
-				'args'                => [
-					'id' => [
-						'sanitize_callback' => '\\absint',
-						'required'          => true,
+				[
+					'methods'             => WP_REST_Server::DELETABLE,
+					'args'                => [
+						'id' => [
+							'sanitize_callback' => '\\absint',
+							'required'          => true,
+						],
 					],
+					'permission_callback' => [ $this, 'check_permission' ],
+					'callback'            => [ $this, 'remove_like' ],
 				],
-				'permission_callback' => [ $this, 'check_permission' ],
-				'callback'            => [ $this, 'remove_like' ],
-			],
-		] );
+			]
+		);
 	}
 
 	/**
@@ -245,11 +249,21 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return true|WP_Error True if the user has permissions, false otherwise.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
+		$result = true;
+
 		if ( $this->transient_exists( $request ) ) {
-			return new WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), [ 'status' => 400 ] );
+			$result = new WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
-		return true;
+		/**
+		 * Filters the permission for the current REST request.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param true|WP_Error   $result  Permission result. True if the user has permissions, false otherwise.
+		 * @param WP_REST_Request $request Request Object.
+		 */
+		return apply_filters( 'rest_likes.request_permission', $result, $request );
 	}
 
 	/**
@@ -388,6 +402,17 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return array Response data containing the new like count, raw and formatted.
 	 */
 	public function handle_like( $object_id, $remove = false ) {
+		/**
+		 * Filters whether to increment or decrement the like count for the current object.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param bool   $remove      Whether to increment or decrement the counter.
+		 * @param int    $object_id   Object ID.
+		 * @param string $object_type Object type.
+		 */
+		$remove = apply_filters( 'rest_likes.decrement_like_count', $remove, $object_id, $this->get_object_type() );
+
 		$old_likes = $this->get_like_count( $object_id );
 		$likes     = $remove ? $old_likes - 1 : $old_likes + 1;
 		$likes     = max( $likes, 0 );

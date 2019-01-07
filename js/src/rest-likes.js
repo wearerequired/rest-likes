@@ -173,6 +173,7 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 					removeLikedItem( objectType, objectId );
 
 					Array.prototype.forEach.call( likeButtons, likeButton => {
+						likeButton.classList.remove( classNames.liked );
 						likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.like;
 					} );
 
@@ -196,6 +197,7 @@ import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 					addLikedItem( objectType, objectId );
 
 					Array.prototype.forEach.call( likeButtons, likeButton => {
+						likeButton.classList.add( classNames.liked );
 						likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.unlike;
 					} );
 
