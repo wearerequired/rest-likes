@@ -271,10 +271,12 @@ abstract class Controller extends WP_REST_Controller {
 			 *
 			 * @since 1.1.0
 			 *
-			 * @param true|\WP_Error   $result  Permission result. True if the user has permissions, WP_Error otherwise.
-			 * @param \WP_REST_Request $request Request Object.
+			 * @param \WP_Error        $result      Permission result.
+			 * @param int              $object_id   Object ID.
+			 * @param string           $object_type Object type.
+			 * @param \WP_REST_Request $request     Request Object.
 			 */
-			do_action( 'rest_likes.request_rejected', $result, $request );
+			do_action( 'rest_likes.request_rejected', $result, $request['id'], $this->get_object_type(), $request );
 		}
 
 		return $result;
