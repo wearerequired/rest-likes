@@ -15,3 +15,7 @@ composer require wearerequired/rest-likes
 ## Documentation
 
 Check out [the wiki](https://github.com/wearerequired/rest-likes/wiki) for usage examples and further documentation.
+
+## Add-ons
+
+* [REST Likes: Log](https://github.com/wearerequired/rest-likes-log): Implements logging of like actions.
