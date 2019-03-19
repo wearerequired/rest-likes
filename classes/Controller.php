@@ -425,14 +425,16 @@ abstract class Controller extends WP_REST_Controller {
 		 * Fires when the like count is updated for an object.
 		 *
 		 * @since 1.0.0
+		 * @since 1.1.0 Added `$remove` argument.
 		 *
 		 * @param string $object_type The object type.
 		 * @param int    $object_id   Object ID.
 		 * @param int    $likes       The like count.
 		 * @param int    $likes_i18n  The formatted like count.
 		 * @param int    $old_likes   The old like count.
+		 * @param bool   $remove      Whether to increment or decrement the counter.
 		 */
-		do_action( 'rest_likes.update_likes', $this->get_object_type(), $object_id, $likes, $likes_i18n, $old_likes );
+		do_action( 'rest_likes.update_likes', $this->get_object_type(), $object_id, $likes, $likes_i18n, $old_likes, $remove );
 
 		return [
 			'count'          => $likes,
