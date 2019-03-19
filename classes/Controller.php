@@ -265,7 +265,7 @@ abstract class Controller extends WP_REST_Controller {
 		 */
 		$result = apply_filters( 'rest_likes.request_permission', $result, $request );
 
-		if ( is_wp_error( $result ) ) {
+		if ( is_wp_error( $result ) && 'parse_request' === current_action() ) {
 			/**
 			 * Fires when the like request was rejected.
 			 *
