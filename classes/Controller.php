@@ -245,8 +245,8 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request Object.
-	 * @return true|WP_Error True if the user has permissions, false otherwise.
+	 * @param \WP_REST_Request $request Request Object.
+	 * @return true|\WP_Error True if the user has permissions, WP_Error otherwise.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		$result = true;
@@ -260,10 +260,24 @@ abstract class Controller extends WP_REST_Controller {
 		 *
 		 * @since 1.0.0
 		 *
-		 * @param true|WP_Error   $result  Permission result. True if the user has permissions, false otherwise.
-		 * @param WP_REST_Request $request Request Object.
+		 * @param true|\WP_Error   $result  Permission result. True if the user has permissions, WP_Error otherwise.
+		 * @param \WP_REST_Request $request Request Object.
 		 */
-		return apply_filters( 'rest_likes.request_permission', $result, $request );
+		$result = apply_filters( 'rest_likes.request_permission', $result, $request );
+
+		if ( is_wp_error( $result ) ) {
+			/**
+			 * Fires when the like request was rejected.
+			 *
+			 * @since 1.1.0
+			 *
+			 * @param true|\WP_Error   $result  Permission result. True if the user has permissions, WP_Error otherwise.
+			 * @param \WP_REST_Request $request Request Object.
+			 */
+			do_action( 'rest_likes.request_rejected', $result, $request );
+		}
+
+		return $result;
 	}
 
 	/**
