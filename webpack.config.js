@@ -36,7 +36,7 @@ function getConfig( { browserslistEnv } ) {
 
 	// https://webpack.js.org/configuration/devtool/#devtool
 	if ( config.mode !== 'production' ) {
-		config.devtool = 'source-map';
+		config.devtool = 'inline-source-map';
 	}
 
 	return config;
