@@ -41,6 +41,15 @@ if ( typeof window.CustomEvent !== 'function' ) {
 	window.CustomEvent    = CustomEvent;
 }
 
+/**
+ *  Check for NodeList.prototype.forEach() support in the browser.
+ *
+ * @url https://developer.mozilla.org/en-US/docs/Web/API/NodeList/forEach#Polyfill
+ */
+if ( window.NodeList && ! NodeList.prototype.forEach ) {
+	NodeList.prototype.forEach = Array.prototype.forEach;
+}
+
 const api = window.RestLikesApi = {}
 
 /**
@@ -101,27 +110,34 @@ const isLikedItem = ( objectType, objectId ) => {
 };
 
 /**
+ * Checks status of a like button.
+ *
+ * @param {Node} likeButton
+ */
+const checkButton = ( likeButton ) => {
+	const objectId       = likeButton.getAttribute( 'data-id' );
+	const objectType     = likeButton.getAttribute( 'data-type' );
+	const objectTypeData = restLikes.object_types[ objectType ];
+	const classNames     = objectTypeData.classnames;
+
+	if ( likeButton.classList.contains( classNames.liked ) ) {
+		return;
+	}
+
+	if ( isLikedItem( objectType, objectId ) ) {
+		likeButton.classList.add( classNames.liked );
+		likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.unlike;
+	}
+}
+
+/**
  * Initially checks the status of every available like button on the page.
  */
 const checkButtons = () => {
 	// Check localStorage for liked items, set class on the buttons.
 	const likeButtons = document.querySelectorAll( '[data-rest-like-button]' );
 
-	Array.prototype.forEach.call( likeButtons, likeButton => {
-		const objectId       = likeButton.getAttribute( 'data-id' );
-		const objectType     = likeButton.getAttribute( 'data-type' );
-		const objectTypeData = restLikes.object_types[ objectType ];
-		const classNames     = objectTypeData.classnames;
-
-		if ( likeButton.classList.contains( classNames.liked ) ) {
-			return;
-		}
-
-		if ( isLikedItem( objectType, objectId ) ) {
-			likeButton.classList.add( classNames.liked );
-			likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.unlike;
-		}
-	} );
+	likeButtons.forEach( ( likeButton ) => checkButton( likeButton ) );
 };
 
 /**
@@ -158,7 +174,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 	const objectTypeData = restLikes.object_types[ objectType ];
 	const classNames     = objectTypeData.classnames;
 
-	Array.prototype.forEach.call( likeButtons, likeButton => {
+	likeButtons.forEach( ( likeButton ) => {
 		// Set class while processing.
 		likeButton.classList.add( classNames.processing );
 	} );
@@ -174,7 +190,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 			return response.json();
 		} )
 		.then( response => {
-			Array.prototype.forEach.call( likeButtons, likeButton => {
+			likeButtons.forEach( ( likeButton ) => {
 				likeButton.classList.remove( classNames.processing );
 
 				const likeButtonCount = likeButton.querySelector( `.${classNames.count}` );
@@ -186,7 +202,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 			if ( likedItem ) {
 				removeLikedItem( objectType, objectId );
 
-				Array.prototype.forEach.call( likeButtons, likeButton => {
+				likeButtons.forEach( ( likeButton ) => {
 					likeButton.classList.remove( classNames.liked );
 					likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.like;
 				} );
@@ -210,7 +226,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 			if ( ! likedItem ) {
 				addLikedItem( objectType, objectId );
 
-				Array.prototype.forEach.call( likeButtons, likeButton => {
+				likeButtons.forEach( ( likeButton ) => {
 					likeButton.classList.add( classNames.liked );
 					likeButton.querySelector( `.${classNames.label}` ).innerHTML = objectTypeData.texts.unlike;
 				} );
@@ -257,7 +273,7 @@ document.addEventListener( 'heartbeat-send', ( event, data ) => {
 		const likeButtons = document.querySelectorAll( `[data-rest-like-button][data-type="${objectType}"]` );
 		const objectIds   = [];
 
-		Array.prototype.forEach.call( likeButtons, likeButton => {
+		likeButtons.forEach( ( likeButton ) => {
 			objectIds.push( likeButton.getAttribute( 'data-id' ) )
 		} );
 
@@ -290,6 +306,32 @@ document.addEventListener( 'heartbeat-tick', ( event, data ) => {
 	}
 } );
 
+/**
+ * Handles DOM changes to watch for new buttons.
+ *
+ * @param {Array} mutationRecords Array of MutationRecord objects.
+ */
+const handleDomChanges = ( mutationRecords ) => {
+	mutationRecords.forEach( ( mutation ) => {
+		if ( ! mutation.addedNodes.length ) {
+			return;
+		}
+
+		mutation.addedNodes.forEach( ( node ) => {
+			if ( '#text' === node.nodeName ) {
+				return;
+			}
+
+			const buttons = node.querySelectorAll( '[data-rest-like-button]' );
+			if ( ! buttons.length ) {
+				return;
+			}
+
+			buttons.forEach( ( button ) => checkButton( button ) );
+		} );
+	} );
+}
+
 document.dispatchEvent( new CustomEvent( 'restLikes.initialized', {
 	detail: {
 		api
@@ -299,10 +341,13 @@ document.dispatchEvent( new CustomEvent( 'restLikes.initialized', {
 // Initialize.
 checkButtons();
 
-// Allow triggering a custom event to check buttons again.
-document.body.addEventListener( 'restLikes', () => {
-	checkButtons();
-} );
+if ( 'undefined' !== typeof window.MutationObserver ) {
+	const observer = new window.MutationObserver( handleDomChanges );
+	observer.observe( document.body, {
+		childList: true,
+		subtree: true,
+	} );
+}
 
 document.body.addEventListener( 'click', e => {
 	const likeButton = e.target.closest( '[data-rest-like-button]' );
