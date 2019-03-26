@@ -3,32 +3,32 @@
   "type": "wordpress-plugin",
   "description": "Like posts and comments using the REST API.",
   "license": "GPL-2.0-or-later",
-	"authors": [
-		{
-			"name": "required",
-			"email": "info@required.ch",
-			"homepage": "https://required.com",
-			"role": "Company"
-		},
-		{
-			"name": "Dominik Schilling",
-			"email": "dominik@required.ch",
-			"role": "Developer"
-		},
-		{
-			"name": "Stefan Velthuys",
-			"email": "velthuy@required.ch",
-			"role": "Developer"
-		},
-		{
-			"name": "Silvan Hagen",
-			"role": "Developer"
-		},
-		{
-			"name": "Pascal Birchler",
-			"role": "Developer"
-		}
-	],
+  "authors": [
+    {
+      "name": "required",
+      "email": "info@required.ch",
+      "homepage": "https://required.com",
+      "role": "Company"
+    },
+    {
+      "name": "Dominik Schilling",
+      "email": "dominik@required.ch",
+      "role": "Developer"
+    },
+    {
+      "name": "Stefan Velthuys",
+      "email": "velthuy@required.ch",
+      "role": "Developer"
+    },
+    {
+      "name": "Silvan Hagen",
+      "role": "Developer"
+    },
+    {
+      "name": "Pascal Birchler",
+      "role": "Developer"
+    }
+  ],
   "require": {
     "php": ">=7.0",
     "wearerequired/traduttore-registry": "^1.0"
