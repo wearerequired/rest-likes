@@ -1,6 +1,7 @@
 /**
  * External dependencies.
  */
+import jQuery from 'jquery';
 import { speak } from '@wordpress/a11y';
 import { __, sprintf, setLocaleData } from '@wordpress/i18n';
 
@@ -263,10 +264,13 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 		} );
 };
 
+// We need jQuery do listen to custom events triggered by jQuery, see https://bugs.jquery.com/ticket/11047.
+const $document = jQuery( document );
+
 /**
  * Sends a list of items for Heartbeat calls.
  */
-document.addEventListener( 'heartbeat-send', ( event, data ) => {
+$document.on( 'heartbeat-send', ( event, data ) => {
 	data.rest_likes = {};
 
 	Object.keys( restLikes.object_types ).forEach( objectType => {
@@ -282,10 +286,11 @@ document.addEventListener( 'heartbeat-send', ( event, data ) => {
 	} );
 } );
 
+
 /**
  * Listens to Heartbeat ticks and updates like counts for all received items.
  */
-document.addEventListener( 'heartbeat-tick', ( event, data ) => {
+$document.on( 'heartbeat-tick', ( event, data ) => {
 	if ( !data.rest_likes ) {
 		return;
 	}

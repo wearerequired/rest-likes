@@ -5,12 +5,18 @@ function getConfig( { browserslistEnv } ) {
 
 	const isModern = browserslistEnv === 'modern';
 
+	const externals = {
+		jquery: 'jQuery',
+	}
+
 	const config = {
 		mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
 
 		entry: [
 			isModern ? './js/src/modernBrowsers.js' : './js/src/legacyBrowsers.js',
 		],
+
+		externals,
 
 		// https://webpack.js.org/configuration/output/
 		output: {
