@@ -58,6 +58,7 @@ class Plugin {
 		add_action( 'init', [ $this, 'init_traduttore' ] );
 
 		add_filter( 'heartbeat_received', [ $this, 'heartbeat_received' ], 10, 2 );
+		add_filter( 'heartbeat_nopriv_received', [ $this, 'heartbeat_received' ], 10, 2 );
 	}
 
 	/**
@@ -111,7 +112,7 @@ class Plugin {
 	 * @since 1.0.0
 	 */
 	public function register_scripts() {
-		$version = '20190107';
+		$version = '20190329';
 
 		wp_register_script(
 			'rest-likes',
