@@ -318,7 +318,7 @@ const handleDomChanges = ( mutationRecords ) => {
 		}
 
 		mutation.addedNodes.forEach( ( node ) => {
-			if ( '#text' === node.nodeName ) {
+			if ( typeof node.querySelectorAll !== 'function' ) {
 				return;
 			}
 
@@ -341,7 +341,7 @@ document.dispatchEvent( new CustomEvent( 'restLikes.initialized', {
 // Initialize.
 checkButtons();
 
-if ( 'undefined' !== typeof window.MutationObserver ) {
+if ( typeof window.MutationObserver  !== 'undefined' ) {
 	const observer = new window.MutationObserver( handleDomChanges );
 	observer.observe( document.body, {
 		childList: true,
