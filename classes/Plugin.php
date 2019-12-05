@@ -112,7 +112,7 @@ class Plugin {
 	 * @since 1.0.0
 	 */
 	public function register_scripts() {
-		$version = '20190329';
+		$version = '20191205';
 
 		wp_register_script(
 			'rest-likes',
