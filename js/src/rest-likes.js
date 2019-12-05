@@ -158,6 +158,7 @@ api.request = ( objectType, objectId, isLike ) => {
 			headers: restLikes.nonce && {
 				'X-WP-Nonce': restLikes.nonce,
 			},
+			credentials: 'include',
 		}
 	)
 }
