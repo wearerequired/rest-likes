@@ -21,7 +21,7 @@
   "dependencies": {
     "@wordpress/a11y": "^2.0.0",
     "@wordpress/i18n": "^2.0.0",
-    "core-js": "^2.5.7",
+    "core-js": "^3.6.1",
     "element-closest": "^2.0.2",
     "whatwg-fetch": "^3.0.0"
   },
