@@ -30,7 +30,7 @@
     "@babel/core": "^7.1.0",
     "@babel/polyfill": "^7.0.0",
     "@babel/preset-env": "^7.1.0",
-    "@babel/runtime": "^7.0.0",
+    "@babel/runtime": "^7.7.7",
     "babel-loader": "^8.0.2",
     "browserslist": "^4.5.2",
     "cross-env": "^5.2.0",
