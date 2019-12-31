@@ -35,7 +35,7 @@
     "browserslist": "^4.5.2",
     "cross-env": "^5.2.0",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.1.1"
+    "webpack-cli": "^3.3.10"
   },
   "scripts": {
     "build": "cross-env BABEL_ENV=default NODE_ENV=production webpack",
