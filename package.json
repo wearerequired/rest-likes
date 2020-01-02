@@ -19,23 +19,22 @@
     "js": "./js"
   },
   "dependencies": {
-    "@wordpress/a11y": "^2.0.0",
-    "@wordpress/i18n": "^2.0.0",
-    "core-js": "^2.5.7",
-    "element-closest": "^2.0.2",
+    "@wordpress/a11y": "^2.5.1",
+    "@wordpress/i18n": "^3.7.0",
+    "core-js": "^3.6.1",
+    "element-closest": "^3.0.2",
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.1.0",
-    "@babel/core": "^7.1.0",
-    "@babel/polyfill": "^7.0.0",
-    "@babel/preset-env": "^7.1.0",
-    "@babel/runtime": "^7.0.0",
-    "babel-loader": "^8.0.2",
-    "browserslist": "^4.5.2",
-    "cross-env": "^5.2.0",
+    "@babel/cli": "^7.7.7",
+    "@babel/core": "^7.7.7",
+    "@babel/preset-env": "^7.7.7",
+    "@babel/runtime": "^7.7.7",
+    "babel-loader": "^8.0.6",
+    "browserslist": "^4.8.2",
+    "cross-env": "^6.0.3",
     "webpack": "^4.41.5",
-    "webpack-cli": "^3.1.1"
+    "webpack-cli": "^3.3.10"
   },
   "scripts": {
     "build": "cross-env BABEL_ENV=default NODE_ENV=production webpack",
