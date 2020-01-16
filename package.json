@@ -19,7 +19,7 @@
     "js": "./js"
   },
   "dependencies": {
-    "@wordpress/a11y": "^2.5.1",
+    "@wordpress/a11y": "^2.6.0",
     "@wordpress/i18n": "^3.8.0",
     "core-js": "^3.6.2",
     "element-closest": "^3.0.2",
