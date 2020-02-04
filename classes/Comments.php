@@ -1,8 +1,6 @@
 <?php
 /**
  * REST Likes Controller for comments.
- *
- * @package rest-likes
  */
 
 namespace Required\RestLikes;

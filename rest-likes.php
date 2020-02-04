@@ -10,8 +10,6 @@
  * Domain Path: /languages
  * License:     GPL-2.0-or-later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
- *
- * @package rest-likes
  */
 
 // phpcs:disable PSR1.Files.SideEffects

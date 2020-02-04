@@ -1,8 +1,6 @@
 <?php
 /**
  * REST Likes main plugin class.
- *
- * @package rest-likes
  */
 
 namespace Required\RestLikes;
