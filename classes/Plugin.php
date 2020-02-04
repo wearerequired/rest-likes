@@ -49,7 +49,7 @@ class Plugin {
 		);
 
 		foreach ( $available_object_types as $object_type => $class ) {
-			$this->enabled_object_types[ $object_type ] = new $class;
+			$this->enabled_object_types[ $object_type ] = new $class();
 			$this->enabled_object_types[ $object_type ]->add_hooks();
 		}
 
