@@ -14,6 +14,24 @@
 		</properties>
 	</rule>
 
+	<rule ref="WordPress.Security.EscapeOutput">
+		<properties>
+			<property name="customAutoEscapedFunctions" type="array" extend="true">
+				<element value="get_rest_post_like_button"/>
+				<element value="get_rest_comment_like_button"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="rest_likes"/>
+				<element value="Required\RestLikes"/>
+			</property>
+		</properties>
+	</rule>
+
 	<exclude-pattern>*/bin/*</exclude-pattern>
 	<exclude-pattern>*/js/*</exclude-pattern>
 	<exclude-pattern>*/node_modules/*</exclude-pattern>

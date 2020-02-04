@@ -33,7 +33,7 @@ class Plugin {
 		/**
 		 * Filters the object types likes are enabled for.
 		 *
-		 * Contains an array with thebject type as the key,
+		 * Contains an array with the object type as the key,
 		 * and the value being a class extending the Controller class.
 		 *
 		 * @since 1.0.0
