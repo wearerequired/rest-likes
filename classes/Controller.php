@@ -252,7 +252,7 @@ abstract class Controller extends WP_REST_Controller {
 		$result = true;
 
 		if ( $this->transient_exists( $request ) ) {
-			$result = new WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), [ 'status' => 400 ] );
+			$result = new \WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		/**
