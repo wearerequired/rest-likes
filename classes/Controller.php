@@ -291,7 +291,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return True if the user has already liked this object, false otherwise.
 	 */
 	protected function transient_exists( WP_REST_Request $request ) {
-		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+		$ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
 		$transient  = sprintf(
 			'%s_like_%s',
 			$this->get_object_type(),
@@ -309,7 +309,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @param \WP_REST_Request $request Request object.
 	 */
 	protected function set_transient( $request ) {
-		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+		$ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
 		$transient  = sprintf(
 			'%s_like_%s',
 			$this->get_object_type(),
@@ -337,7 +337,7 @@ abstract class Controller extends WP_REST_Controller {
 	 * @param \WP_REST_Request $request Request object.
 	 */
 	protected function delete_transients( $request ) {
-		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
+		$ip_address = $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'];
 
 		$like = sprintf(
 			'%s_like_%s',
