@@ -8,8 +8,6 @@
 namespace Required\RestLikes;
 
 use WP_Comment_Query;
-use WP_Error;
-use WP_Comment;
 use WP_REST_Request;
 
 /**

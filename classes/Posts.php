@@ -7,9 +7,7 @@
 
 namespace Required\RestLikes;
 
-use WP_Error;
 use WP_Query;
-use WP_Post;
 use WP_REST_Request;
 
 /**
