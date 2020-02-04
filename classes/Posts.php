@@ -86,8 +86,8 @@ class Posts extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return true|WP_Error True on success, WP_Error object on failure.
+	 * @param \WP_REST_Request $request Request object.
+	 * @return true|\WP_Error True on success, WP_Error object on failure.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( ! $this->is_allowed_post_type( $request['id'] ) ) {
@@ -109,7 +109,7 @@ class Posts extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|WP_Post|null $post Optional. Post ID or post object. Default is global $post.
+	 * @param int|\WP_Post|null $post Optional. Post ID or post object. Default is global $post.
 	 *
 	 * @return bool True if post type is allowed, false otherwise.
 	 */
@@ -221,7 +221,7 @@ class Posts extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_Query $query The WP_Query instance (passed by reference).
+	 * @param \WP_Query $query The WP_Query instance (passed by reference).
 	 */
 	public function order_by_post_likes( WP_Query $query ) {
 		if ( is_admin() && $query->is_main_query() && 'likes' === $query->get( 'orderby' ) ) {

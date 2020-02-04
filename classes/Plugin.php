@@ -18,7 +18,7 @@ class Plugin {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @var Controller[]
+	 * @var \Required\RestLikes\Controller[]
 	 */
 	protected $enabled_object_types = [];
 
@@ -232,7 +232,7 @@ JS;
 	 * @since 1.0.0
 	 *
 	 * @param string $object_type Object type.
-	 * @return Controller Controller instance.
+	 * @return \Required\RestLikes\Controller Controller instance.
 	 */
 	public function get_object_type_controller( $object_type ) {
 		if (

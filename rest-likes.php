@@ -27,7 +27,7 @@ if ( ! class_exists( 'WP_REST_Controller' ) ) {
 /**
  * Returns an instance of the main plugin class.
  *
- * @return Required\RestLikes\Plugin
+ * @return \Required\RestLikes\Plugin
  */
 function rest_likes() {
 	static $controller = null;
@@ -46,7 +46,7 @@ add_action( 'plugins_loaded', [ rest_likes(), 'add_hooks' ] );
  *
  * @since 1.0.0
  *
- * @param int|WP_Post $post Optional. Post ID or object. Default global $post.
+ * @param int|\WP_Post $post Optional. Post ID or object. Default global $post.
  *
  * @return int The post like count.
  */
@@ -82,7 +82,7 @@ function the_rest_post_like_count() {
  *
  * @since 1.0.0
  *
- * @param int|WP_Post $post Optional. Post ID or object. Default global $post.
+ * @param int|\WP_Post $post Optional. Post ID or object. Default global $post.
  * @return string The like button markup.
  */
 function get_rest_post_like_button( $post = null ) {
@@ -111,7 +111,7 @@ function the_rest_post_like_button() {
  *
  * @since 1.0.0
  *
- * @param int|WP_Comment $comment Optional. Comment ID or object. Default global $comment.
+ * @param int|\WP_Comment $comment Optional. Comment ID or object. Default global $comment.
  * @return int The comment like count.
  */
 function get_rest_comment_like_count( $comment = null ) {
@@ -146,7 +146,7 @@ function the_rest_comment_like_count() {
  *
  * @since 1.0.0
  *
- * @param int|WP_Comment $comment Optional. Comment ID or object. Default global $comment.
+ * @param int|\WP_Comment $comment Optional. Comment ID or object. Default global $comment.
  * @return string The like button markup.
  */
 function get_rest_comment_like_button( $comment = null ) {

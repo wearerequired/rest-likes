@@ -2,6 +2,8 @@
 <ruleset name="rest-likes">
 	<description>Coding standards for WordPress plugins</description>
 
+	<file>.</file>
+
 	<rule ref="Required"/>
 
 	<rule ref="WordPress.WP.I18n">

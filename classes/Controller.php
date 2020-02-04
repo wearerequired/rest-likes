@@ -287,7 +287,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
+	 * @param \WP_REST_Request $request Request object.
 	 * @return True if the user has already liked this object, false otherwise.
 	 */
 	protected function transient_exists( WP_REST_Request $request ) {
@@ -306,7 +306,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
+	 * @param \WP_REST_Request $request Request object.
 	 */
 	protected function set_transient( $request ) {
 		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
@@ -322,7 +322,7 @@ abstract class Controller extends WP_REST_Controller {
 		 * @since 1.0.0
 		 *
 		 * @param int             $expiration Time until expiration in seconds. Default 2 minutes.
-		 * @param WP_REST_Request $request    Current request object.
+		 * @param \WP_REST_Request $request Current request object.
 		 */
 		$expiration = apply_filters( 'rest_likes.transient_expiration', 2 * MINUTE_IN_SECONDS, $request );
 
@@ -334,7 +334,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
+	 * @param \WP_REST_Request $request Request object.
 	 */
 	protected function delete_transients( $request ) {
 		$ip_address = isset( $_SERVER['HTTP_X_FORWARDED_FOR'] ) ? $_SERVER['HTTP_X_FORWARDED_FOR'] : $_SERVER['REMOTE_ADDR'];
@@ -361,8 +361,8 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response Response object.
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response Response object.
 	 */
 	public function get_like( $request ) {
 		$likes      = $this->get_like_count( $request['id'] );
@@ -381,8 +381,8 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response Response object.
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response Response object.
 	 */
 	public function add_like( $request ) {
 		$this->delete_transients( $request );
@@ -395,8 +395,8 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return WP_REST_Response Response object.
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response Response object.
 	 */
 	public function remove_like( $request ) {
 		$this->delete_transients( $request );
