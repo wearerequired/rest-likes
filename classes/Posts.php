@@ -1,15 +1,11 @@
 <?php
 /**
  * REST Likes Controller for posts.
- *
- * @package rest-likes
  */
 
 namespace Required\RestLikes;
 
-use WP_Error;
 use WP_Query;
-use WP_Post;
 use WP_REST_Request;
 
 /**
@@ -86,19 +82,19 @@ class Posts extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return true|WP_Error True on success, WP_Error object on failure.
+	 * @param \WP_REST_Request $request Request object.
+	 * @return true|\WP_Error True on success, WP_Error object on failure.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( ! $this->is_allowed_post_type( $request['id'] ) ) {
-			return new WP_Error( 'invalid_post_type', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
+			return new \WP_Error( 'invalid_post_type', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		$post_type = get_post_type_object( get_post_type( $request['id'] ) );
 
 		// Is the post readable?
 		if ( ! $post_type || ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) ) {
-			return new WP_Error( 'invalid_post', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
+			return new \WP_Error( 'invalid_post', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		return parent::check_permission( $request );
@@ -109,7 +105,7 @@ class Posts extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|WP_Post|null $post Optional. Post ID or post object. Default is global $post.
+	 * @param int|\WP_Post|null $post Optional. Post ID or post object. Default is global $post.
 	 *
 	 * @return bool True if post type is allowed, false otherwise.
 	 */
@@ -221,7 +217,7 @@ class Posts extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_Query $query The WP_Query instance (passed by reference).
+	 * @param \WP_Query $query The WP_Query instance (passed by reference).
 	 */
 	public function order_by_post_likes( WP_Query $query ) {
 		if ( is_admin() && $query->is_main_query() && 'likes' === $query->get( 'orderby' ) ) {

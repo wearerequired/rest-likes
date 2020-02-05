@@ -10,15 +10,16 @@
  * Domain Path: /languages
  * License:     GPL-2.0-or-later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
- *
- * @package rest-likes
  */
+
+// phpcs:disable PSR1.Files.SideEffects
 
 if ( file_exists( __DIR__ . '/vendor/autoload.php' ) ) {
 	include __DIR__ . '/vendor/autoload.php';
 }
 
 if ( ! class_exists( 'WP_REST_Controller' ) ) {
+	// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error -- Debugging info.
 	trigger_error( sprintf( '%s does not exist. Update WordPress or activate the REST API plugin.', 'WP_REST_Controller' ) );
 
 	return;
@@ -27,7 +28,7 @@ if ( ! class_exists( 'WP_REST_Controller' ) ) {
 /**
  * Returns an instance of the main plugin class.
  *
- * @return Required\RestLikes\Plugin
+ * @return \Required\RestLikes\Plugin
  */
 function rest_likes() {
 	static $controller = null;
@@ -38,15 +39,16 @@ function rest_likes() {
 
 	return $controller;
 }
-
 add_action( 'plugins_loaded', [ rest_likes(), 'add_hooks' ] );
+
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound
 
 /**
  * Returns a post's like count.
  *
  * @since 1.0.0
  *
- * @param int|WP_Post $post Optional. Post ID or object. Default global $post.
+ * @param int|\WP_Post $post Optional. Post ID or object. Default global $post.
  *
  * @return int The post like count.
  */
@@ -74,6 +76,7 @@ function the_rest_post_like_count() {
 		return;
 	}
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
 	echo rest_likes()->get_like_count_html( 'post', $post->ID );
 }
 
@@ -82,7 +85,7 @@ function the_rest_post_like_count() {
  *
  * @since 1.0.0
  *
- * @param int|WP_Post $post Optional. Post ID or object. Default global $post.
+ * @param int|\WP_Post $post Optional. Post ID or object. Default global $post.
  * @return string The like button markup.
  */
 function get_rest_post_like_button( $post = null ) {
@@ -111,7 +114,7 @@ function the_rest_post_like_button() {
  *
  * @since 1.0.0
  *
- * @param int|WP_Comment $comment Optional. Comment ID or object. Default global $comment.
+ * @param int|\WP_Comment $comment Optional. Comment ID or object. Default global $comment.
  * @return int The comment like count.
  */
 function get_rest_comment_like_count( $comment = null ) {
@@ -132,12 +135,13 @@ function get_rest_comment_like_count( $comment = null ) {
  * @return void
  */
 function the_rest_comment_like_count() {
-	$comment = get_comment( $comment );
+	$comment = get_comment();
 
 	if ( ! $comment ) {
 		return;
 	}
 
+	// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Already escaped.
 	echo rest_likes()->get_like_count_html( 'comment', $comment->comment_ID );
 }
 
@@ -146,7 +150,7 @@ function the_rest_comment_like_count() {
  *
  * @since 1.0.0
  *
- * @param int|WP_Comment $comment Optional. Comment ID or object. Default global $comment.
+ * @param int|\WP_Comment $comment Optional. Comment ID or object. Default global $comment.
  * @return string The like button markup.
  */
 function get_rest_comment_like_button( $comment = null ) {
@@ -169,3 +173,5 @@ function get_rest_comment_like_button( $comment = null ) {
 function the_rest_comment_like_button() {
 	echo get_rest_comment_like_button();
 }
+
+// phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound

@@ -1,8 +1,6 @@
 <?php
 /**
  * REST Likes main plugin class.
- *
- * @package rest-likes
  */
 
 namespace Required\RestLikes;
@@ -18,7 +16,7 @@ class Plugin {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @var Controller[]
+	 * @var \Required\RestLikes\Controller[]
 	 */
 	protected $enabled_object_types = [];
 
@@ -33,7 +31,7 @@ class Plugin {
 		/**
 		 * Filters the object types likes are enabled for.
 		 *
-		 * Contains an array with thebject type as the key,
+		 * Contains an array with the object type as the key,
 		 * and the value being a class extending the Controller class.
 		 *
 		 * @since 1.0.0
@@ -49,7 +47,7 @@ class Plugin {
 		);
 
 		foreach ( $available_object_types as $object_type => $class ) {
-			$this->enabled_object_types[ $object_type ] = new $class;
+			$this->enabled_object_types[ $object_type ] = new $class();
 			$this->enabled_object_types[ $object_type ]->add_hooks();
 		}
 
@@ -232,7 +230,7 @@ JS;
 	 * @since 1.0.0
 	 *
 	 * @param string $object_type Object type.
-	 * @return Controller Controller instance.
+	 * @return \Required\RestLikes\Controller Controller instance.
 	 */
 	public function get_object_type_controller( $object_type ) {
 		if (

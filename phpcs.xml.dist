@@ -1,36 +1,34 @@
 <?xml version="1.0"?>
-<ruleset name="WordPress Coding Standards for Plugins">
-	<description>Generally-applicable sniffs for WordPress plugins</description>
+<ruleset name="rest-likes">
+	<description>Coding standards for REST Likes</description>
 
-	<rule ref="WordPress-Core" />
-	<rule ref="WordPress-Docs">
-		<exclude-pattern>*/tests/*</exclude-pattern>
-		<!-- Prevent false positives for IDE annotations -->
-		<exclude name="Squiz.PHP.CommentedOutCode"/>
-	</rule>
-
-	<!-- Check all PHP files in directory tree by default. -->
-	<arg name="extensions" value="php"/>
 	<file>.</file>
 
-	<!-- Show progress and sniff codes in all reports -->
-	<arg value="ps"/>
-
-	<rule ref="WordPress-Core">
-		<exclude name="WordPress.Files.FileName.NotHyphenatedLowercase"/>
-		<exclude name="WordPress.Files.FileName.InvalidClassFileName"/>
-	</rule>
+	<rule ref="Required"/>
 
 	<rule ref="WordPress.WP.I18n">
 		<properties>
-			<property name="text_domain" type="array" value="rest-likes" />
+			<property name="text_domain" type="array">
+				<element value="rest-likes"/>
+			</property>
 		</properties>
 	</rule>
 
-	<!-- Allow . in hook names -->
-	<rule ref="WordPress.NamingConventions.ValidHookName">
+	<rule ref="WordPress.Security.EscapeOutput">
 		<properties>
-			<property name="additionalWordDelimiters" value="."/>
+			<property name="customAutoEscapedFunctions" type="array" extend="true">
+				<element value="get_rest_post_like_button"/>
+				<element value="get_rest_comment_like_button"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="rest_likes"/>
+				<element value="Required\RestLikes"/>
+			</property>
 		</properties>
 	</rule>
 

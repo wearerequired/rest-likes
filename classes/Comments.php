@@ -1,15 +1,11 @@
 <?php
 /**
  * REST Likes Controller for comments.
- *
- * @package rest-likes
  */
 
 namespace Required\RestLikes;
 
 use WP_Comment_Query;
-use WP_Error;
-use WP_Comment;
 use WP_REST_Request;
 
 /**
@@ -72,16 +68,16 @@ class Comments extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_REST_Request $request Request object.
-	 * @return true|WP_Error True on success, WP_Error object on failure.
+	 * @param \WP_REST_Request $request Request object.
+	 * @return true|\WP_Error True on success, WP_Error object on failure.
 	 */
 	public function check_permission( WP_REST_Request $request ) {
 		if ( ! $this->is_allowed_comment_type( $request['id'] ) ) {
-			return new WP_Error( 'invalid_comment_type', __( 'You are not allowed to like this comment.', 'rest-likes' ), [ 'status' => 400 ] );
+			return new \WP_Error( 'invalid_comment_type', __( 'You are not allowed to like this comment.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		if ( 'approved' !== wp_get_comment_status( $request['id'] ) ) {
-			return new WP_Error( 'invalid_comment_status', __( 'You are not allowed to like this comment.', 'rest-likes' ), [ 'status' => 400 ] );
+			return new \WP_Error( 'invalid_comment_status', __( 'You are not allowed to like this comment.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
 		return parent::check_permission( $request );
@@ -92,7 +88,7 @@ class Comments extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param int|WP_Comment|null $comment Optional. comment ID or comment object. Default is global $comment.
+	 * @param int|\WP_Comment|null $comment Optional. comment ID or comment object. Default is global $comment.
 	 * @return bool True if comment type is allowed, false otherwise.
 	 */
 	public function is_allowed_comment_type( $comment = null ) {
@@ -196,7 +192,7 @@ class Comments extends Controller {
 	 *
 	 * @since 1.0.0
 	 *
-	 * @param WP_Comment_Query $query The WP_Comment_Query instance (passed by reference).
+	 * @param \WP_Comment_Query $query The WP_Comment_Query instance (passed by reference).
 	 */
 	public function order_by_comment_likes( WP_Comment_Query $query ) {
 		if ( is_admin() && 'likes' === $query->query_vars['orderby'] ) {
