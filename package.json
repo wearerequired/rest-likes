@@ -26,15 +26,15 @@
     "whatwg-fetch": "^3.0.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.8.3",
-    "@babel/core": "^7.8.3",
+    "@babel/cli": "^7.8.4",
+    "@babel/core": "^7.9.0",
     "@babel/preset-env": "^7.8.3",
     "@babel/runtime": "^7.8.3",
-    "babel-loader": "^8.0.6",
-    "browserslist": "^4.8.3",
+    "babel-loader": "^8.1.0",
+    "browserslist": "^4.11.1",
     "cross-env": "^6.0.3",
-    "webpack": "^4.41.5",
-    "webpack-cli": "^3.3.10"
+    "webpack": "^4.42.1",
+    "webpack-cli": "^3.3.11"
   },
   "scripts": {
     "build": "cross-env BABEL_ENV=default NODE_ENV=production webpack",
