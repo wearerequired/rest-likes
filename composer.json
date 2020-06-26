@@ -34,7 +34,7 @@
     "wearerequired/traduttore-registry": "^2.0"
   },
   "require-dev": {
-    "dealerdirect/phpcodesniffer-composer-installer": "^0.6",
+    "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
     "phpunit/phpunit": "^6.5",
     "wearerequired/coding-standards": "^1.1"
   },
