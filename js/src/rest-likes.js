@@ -151,7 +151,7 @@ const checkButtons = () => {
 api.request = ( objectType, objectId, isLike ) => {
 	const objectTypeData = restLikes.object_types[ objectType ];
 
-	return fetch(
+	return window.fetch(
 		restLikes.root + objectTypeData.endpoint.replace( '%s', objectId ),
 		{
 			method:  isLike ? 'DELETE' : 'POST',
