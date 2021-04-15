@@ -187,7 +187,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 		.then( response => {
 			// Support other `request` implementations which don't return a Response object
 			// like jQuery.ajax().
-			if ( response instanceof Response ) {
+			if ( window.Response && response instanceof Response ) {
 				if ( !response.ok ) {
 					throw Error( response.statusText );
 				}
