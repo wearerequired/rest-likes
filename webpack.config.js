@@ -20,10 +20,8 @@ function getConfig( { browserslistEnv } ) {
 
 		// https://webpack.js.org/configuration/output/
 		output: {
-			path:          __dirname + '/js/',
-			filename:      isModern ? './modernBrowsers.js' : './legacyBrowsers.js',
-			library:       'RestLikes',
-			libraryTarget: 'this',
+			path: __dirname + '/js/',
+			filename: isModern ? './modernBrowsers.js' : './legacyBrowsers.js',
 		},
 
 		// https://github.com/babel/babel-loader#usage
