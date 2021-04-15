@@ -185,11 +185,19 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 
 	api.request( objectType, objectId, likedItem )
 		.then( response => {
-			if ( !response.ok ) {
-				throw Error( response.statusText );
-			}
+			// Support other `request` implementations which don't return a Response object
+			// like jQuery.ajax().
+			if ( response instanceof Response ) {
+				if ( !response.ok ) {
+					throw Error( response.statusText );
+				}
 
-			return response.json();
+				return response.json();
+			} else if ( 'object' === typeof response ) {
+				return response;
+			} else {
+				throw Error( 'Unknown response' );
+			}
 		} )
 		.then( response => {
 			likeButtons.forEach( ( likeButton ) => {
@@ -252,7 +260,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 				likeButton.classList.remove( classNames.processing );
 			} );
 
-			console.log( error );
+			console.error( error );
 			speak( __( 'There was an error processing your request.', 'rest-likes' ) );
 
 			document.dispatchEvent( new CustomEvent( 'restLikes', {
