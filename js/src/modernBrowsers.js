@@ -1,1 +1,0 @@
-import './rest-likes';
