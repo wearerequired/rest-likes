@@ -1,52 +1,59 @@
-/* global __dirname */
+const path = require( 'path' );
+const TerserPlugin = require( 'terser-webpack-plugin' );
 
-function getConfig( { browserslistEnv } ) {
-	process.env.BROWSERSLIST_ENV = browserslistEnv;
+const isProduction = process.env.NODE_ENV === 'production';
 
-	const isModern = browserslistEnv === 'modern';
+module.exports = [
+	{
+		mode: isProduction ? 'production' : 'development',
+		devtool: isProduction ? undefined : 'inline-source-map',
 
-	const externals = {
-		jquery: 'jQuery',
-	}
+		externals: {
+			jquery: 'jQuery',
+		},
 
-	const config = {
-		mode: process.env.NODE_ENV === 'production' ? 'production' : 'development',
+		// https://webpack.js.org/configuration/entry-context/#context
+		context: path.resolve( __dirname, 'js/src' ),
 
-		entry: [
-			isModern ? './js/src/modernBrowsers.js' : './js/src/legacyBrowsers.js',
-		],
+		entry: {
+			'rest-likes': './index.js',
+		},
 
-		externals,
+		// https://webpack.js.org/configuration/optimization/#optimization-runtimechunk
+		optimization: {
+			minimizer: [
+				new TerserPlugin( {
+					parallel: true,
+					extractComments: false,
+					terserOptions: {
+						output: {
+							comments: false,
+						},
+						compress: {
+							passes: 2,
+						},
+					},
+				} ),
+			],
+		},
 
 		// https://webpack.js.org/configuration/output/
 		output: {
-			path: __dirname + '/js/',
-			filename: isModern ? './modernBrowsers.js' : './legacyBrowsers.js',
+			path: path.resolve( __dirname, 'js/dist' ),
+			uniqueName: '@wearerequired/rest-likes',
+			filename: '[name].js',
+			clean: true, // Clean the output directory before emit.
 		},
 
 		// https://github.com/babel/babel-loader#usage
 		module: {
 			rules: [
 				{
-					test:    /\.js$/,
+					test: /\.js$/,
 					exclude: /node_modules/,
-					use:     {
-						loader: 'babel-loader',
-					},
+					use: 'babel-loader',
 				},
 			],
 		},
-	};
-
-	// https://webpack.js.org/configuration/devtool/#devtool
-	if ( config.mode !== 'production' ) {
-		config.devtool = 'inline-source-map';
-	}
-
-	return config;
-}
-
-module.exports = [
-	getConfig( { browserslistEnv: 'modern' } ),
-	getConfig( { browserslistEnv: 'legacy' } ),
+	},
 ];

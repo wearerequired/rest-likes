@@ -26,31 +26,6 @@ try {
 } catch ( exception ) {
 }
 
-/**
- * Check for CustomEvent support in the browser.
- *
- * @url https://developer.mozilla.org/en-US/docs/Web/API/CustomEvent/CustomEvent#Polyfill
- */
-if ( typeof window.CustomEvent !== 'function' ) {
-	const CustomEvent = function ( event, params = { bubbles: false, cancelable: false, detail: undefined } ) {
-		const evt = document.createEvent( 'CustomEvent' );
-		evt.initCustomEvent( event, params.bubbles, params.cancelable, params.detail );
-		return evt;
-	};
-
-	CustomEvent.prototype = window.Event.prototype;
-	window.CustomEvent    = CustomEvent;
-}
-
-/**
- *  Check for NodeList.prototype.forEach() support in the browser.
- *
- * @url https://developer.mozilla.org/en-US/docs/Web/API/NodeList/forEach#Polyfill
- */
-if ( window.NodeList && ! NodeList.prototype.forEach ) {
-	NodeList.prototype.forEach = Array.prototype.forEach;
-}
-
 const api = window.RestLikesApi = {}
 
 /**

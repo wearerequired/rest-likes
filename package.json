@@ -16,23 +16,47 @@
   },
   "homepage": "https://github.com/wearerequired/rest-likes#readme",
   "dependencies": {
-    "@wordpress/a11y": "^3.0.0",
-    "@wordpress/i18n": "^4.0.0",
-    "core-js": "^3.12.1",
-    "element-closest": "^3.0.2",
-    "whatwg-fetch": "^3.6.2"
+    "@wordpress/a11y": "3.21.0",
+    "@wordpress/i18n": "4.21.0"
   },
   "devDependencies": {
-    "@babel/cli": "^7.13.16",
-    "@babel/core": "^7.14.2",
-    "@babel/preset-env": "^7.14.2",
-    "@babel/runtime": "^7.14.0",
-    "babel-loader": "^8.2.2",
-    "webpack": "^5.37.0",
-    "webpack-cli": "^4.7.0"
+    "@babel/cli": "7.19.3",
+    "@babel/core": "7.20.2",
+    "@babel/preset-env": "7.20.2",
+    "@wearerequired/browserslist-config": "0.3.0",
+    "@wearerequired/eslint-config": "3.0.0",
+    "babel-loader": "9.1.0",
+    "core-js": "3.26.0",
+    "prettier": "npm:wp-prettier@2.6.2",
+    "terser-webpack-plugin": "5.3.6",
+    "webpack": "5.74.0",
+    "webpack-cli": "4.10.0"
   },
   "scripts": {
     "build": "NODE_ENV=production webpack",
     "dev": "webpack --watch"
+  },
+  "eslintConfig": {
+    "extends": [
+      "@wearerequired/eslint-config"
+    ],
+    "rules": {
+      "@wordpress/no-global-event-listener": "off"
+    }
+  },
+  "browserslist": [
+    "extends @wearerequired/browserslist-config/modern"
+  ],
+  "babel": {
+    "presets": [
+      [
+        "@babel/preset-env",
+        {
+          "modules": false,
+          "useBuiltIns": "usage",
+          "corejs": 3
+        }
+      ]
+    ]
   }
 }
