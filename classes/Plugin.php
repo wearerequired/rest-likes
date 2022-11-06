@@ -110,11 +110,11 @@ class Plugin {
 	 * @since 1.0.0
 	 */
 	public function register_scripts() {
-		$version = '20200102';
+		$version = '20221106';
 
 		wp_register_script(
 			'rest-likes',
-			false,
+			plugin_dir_url( REST_LIKES_PLUGIN_FILE ) . 'js/dist/rest-likes.js',
 			[ 'jquery', 'heartbeat' ],
 			$version,
 			true
@@ -124,10 +124,6 @@ class Plugin {
 			'root'         => esc_url_raw( get_rest_url() ),
 			'object_types' => $this->get_object_types_script_data(),
 			'l10n'         => $this->get_jed_locale_data( 'rest-likes' ),
-			'scripts'      => [
-				'modernBrowsers' => esc_url( add_query_arg( 'ver', $version, plugin_dir_url( __DIR__ ) . 'js/modernBrowsers.js' ) ),
-				'legacyBrowsers' => esc_url( add_query_arg( 'ver', $version, plugin_dir_url( __DIR__ ) . 'js/legacyBrowsers.js' ) ),
-			],
 		];
 
 		if ( is_user_logged_in() ) {
@@ -138,26 +134,6 @@ class Plugin {
 			'rest-likes',
 			'restLikes',
 			$script_data
-		);
-
-		$inline_script = <<<JS
-'use strict';
-
-(function (document, window, ElementPrototype, restLikes) {
-	var script = document.createElement('script');
-	var isModern = 'Promise' in window && 'fetch' in window && 'function' === typeof ElementPrototype.closest;
-
-	script.src = isModern ? restLikes.scripts.modernBrowsers : restLikes.scripts.legacyBrowsers;
-	script.async = true;
-
-	document.body.appendChild(script);
-})(document, window, window.Element.prototype, restLikes);
-JS;
-
-		wp_scripts()->add_data(
-			'rest-likes',
-			'data',
-			wp_scripts()->get_data( 'rest-likes', 'data' ) . "\n" . $inline_script
 		);
 	}
 

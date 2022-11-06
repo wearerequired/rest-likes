@@ -25,6 +25,8 @@ if ( ! class_exists( 'WP_REST_Controller' ) ) {
 	return;
 }
 
+const REST_LIKES_PLUGIN_FILE = __FILE__;
+
 /**
  * Returns an instance of the main plugin class.
  *
