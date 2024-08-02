@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schemas.wp.org/wp/6.6/block.json",
+  "name": "wearerequired/rest-likes",
+  "apiVersion": 2,
+  "category": "widget",
+  "title": "Rest Likes Button",
+  "description": "Outputs the rest likes button.",
+  "textdomain": "rest-likes",
+  "supports": {
+    "customClassName": false,
+    "html": false
+  },
+  "attributes": {},
+  "example": {},
+  "editorScript": "rest-likes-blocks-editor",
+  "editorStyle": "rest-likes-blocks-editor"
+}
