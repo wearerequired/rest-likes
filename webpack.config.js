@@ -1,59 +1,48 @@
-const path = require( 'path' );
-const TerserPlugin = require( 'terser-webpack-plugin' );
+const { basename, dirname, resolve } = require( 'path' );
+const defaultConfig = require( './node_modules/@wordpress/scripts/config/webpack.config' );
+const CopyWebpackPlugin = require( 'copy-webpack-plugin' ); // eslint-disable-line import/no-extraneous-dependencies -- Part of @wordpress/scripts.
 
-const isProduction = process.env.NODE_ENV === 'production';
+module.exports = {
+	// https://github.com/WordPress/gutenberg/blob/master/packages/scripts/config/webpack.config.js
+	...defaultConfig,
 
-module.exports = [
-	{
-		mode: isProduction ? 'production' : 'development',
-		devtool: isProduction ? undefined : 'inline-source-map',
+	externals: {
+		jquery: 'jQuery',
+	},
 
-		externals: {
-			jquery: 'jQuery',
-		},
+	// https://webpack.js.org/configuration/entry-context/#context
+	context: resolve( __dirname, 'js/src' ),
 
-		// https://webpack.js.org/configuration/entry-context/#context
-		context: path.resolve( __dirname, 'js/src' ),
+	// https://webpack.js.org/configuration/entry-context/#entry
+	entry: {
+		blocks: './blocks.ts',
+		'rest-likes': './index.js',
+	},
 
-		entry: {
-			'rest-likes': './index.js',
-		},
+	// https://webpack.js.org/configuration/output/
+	output: {
+		...defaultConfig.output,
+		uniqueName: '@wearerequired/rest-likes',
+		path: resolve( __dirname, 'js/dist' ),
+		filename: '[name].js',
+	},
 
-		// https://webpack.js.org/configuration/optimization/#optimization-runtimechunk
-		optimization: {
-			minimizer: [
-				new TerserPlugin( {
-					parallel: true,
-					extractComments: false,
-					terserOptions: {
-						output: {
-							comments: false,
-						},
-						compress: {
-							passes: 2,
-						},
-					},
-				} ),
-			],
-		},
-
-		// https://webpack.js.org/configuration/output/
-		output: {
-			path: path.resolve( __dirname, 'js/dist' ),
-			uniqueName: '@wearerequired/rest-likes',
-			filename: '[name].js',
-			clean: true, // Clean the output directory before emit.
-		},
-
-		// https://github.com/babel/babel-loader#usage
-		module: {
-			rules: [
+	plugins: [
+		...defaultConfig.plugins,
+		new CopyWebpackPlugin( {
+			patterns: [
 				{
-					test: /\.js$/,
-					exclude: /node_modules/,
-					use: 'babel-loader',
+					// Copy block.json to build folder with name of block as filename
+					from: 'blocks/**/block.json',
+					to( { absoluteFilename } ) {
+						// Get the block folder name
+						const blockName = basename( dirname( absoluteFilename ) );
+						// Output with original extension (.json)
+						return `./${ blockName }-block[ext]`;
+					},
+					noErrorOnMissing: true,
 				},
 			],
-		},
-	},
-];
+		} ),
+	],
+};

@@ -17,48 +17,50 @@
   "homepage": "https://github.com/wearerequired/rest-likes#readme",
   "dependencies": {
     "@wordpress/a11y": "3.21.0",
-    "@wordpress/i18n": "4.21.0"
+    "@wordpress/i18n": "4.21.0",
+    "@wordpress/icons": "10.4.0"
   },
   "devDependencies": {
-    "@babel/cli": "7.19.3",
-    "@babel/core": "7.20.2",
-    "@babel/preset-env": "7.20.2",
+    "@types/node": "20.14.12",
+    "@types/webpack-env": "1.18.5",
+    "@types/wordpress__block-editor": "11.5.15",
+    "@types/wordpress__blocks": "12.5.14",
     "@wearerequired/browserslist-config": "0.3.0",
-    "@wearerequired/eslint-config": "3.0.0",
-    "babel-loader": "9.1.0",
-    "core-js": "3.26.0",
-    "prettier": "npm:wp-prettier@2.6.2",
-    "terser-webpack-plugin": "5.3.6",
-    "webpack": "5.74.0",
-    "webpack-cli": "4.10.0"
+    "@wearerequired/eslint-config": "6.0.0",
+    "@wearerequired/postcss-config": "1.1.0",
+    "@wearerequired/stylelint-config": "6.0.0",
+    "@wordpress/element": "6.4.0",
+    "@wordpress/scripts": "27.9.0",
+    "prettier": "npm:wp-prettier@3.0.3",
+    "typescript": "5.5.4"
   },
   "scripts": {
-    "build": "NODE_ENV=production webpack",
-    "dev": "webpack --watch",
-    "lint": "eslint .",
-    "lint:fix": "eslint . --fix"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "wp-scripts build",
+    "start": "wp-scripts start",
+    "start:hot": "wp-scripts start --hot --allowed-hosts all",
+    "lint-js": "wp-scripts lint-js",
+    "lint-js:fix": "wp-scripts lint-js --fix",
+    "lint-css": "wp-scripts lint-style",
+    "lint-css:fix": "wp-scripts lint-style --fix"
   },
   "eslintConfig": {
     "extends": [
       "@wearerequired/eslint-config"
     ],
     "rules": {
-      "@wordpress/no-global-event-listener": "off"
+      "@wordpress/no-global-event-listener": "off",
+      "@wordpress/i18n-text-domain": [
+        "error",
+        {
+          "allowedTextDomain": [
+            "rest-likes"
+          ]
+        }
+      ]
     }
   },
   "browserslist": [
     "extends @wearerequired/browserslist-config/modern"
-  ],
-  "babel": {
-    "presets": [
-      [
-        "@babel/preset-env",
-        {
-          "modules": false,
-          "useBuiltIns": "usage",
-          "corejs": 3
-        }
-      ]
-    ]
-  }
+  ]
 }

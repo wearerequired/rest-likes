@@ -57,6 +57,8 @@ class Plugin {
 
 		add_filter( 'heartbeat_received', [ $this, 'heartbeat_received' ], 10, 2 );
 		add_filter( 'heartbeat_nopriv_received', [ $this, 'heartbeat_received' ], 10, 2 );
+
+		Blocks\bootstrap();
 	}
 
 	/**
