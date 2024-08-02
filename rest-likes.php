@@ -26,6 +26,9 @@ if ( ! class_exists( 'WP_REST_Controller' ) ) {
 }
 
 const REST_LIKES_PLUGIN_FILE = __FILE__;
+const REST_LIKES_PLUGIN_DIR  = __DIR__;
+
+require_once __DIR__ . '/inc/Blocks/namespace.php';
 
 /**
  * Returns an instance of the main plugin class.
