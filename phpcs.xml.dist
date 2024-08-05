@@ -6,6 +6,11 @@
 
 	<rule ref="Required"/>
 
+	<!-- The minimum supported WordPress version for all sniffs which use it. -->
+	<config name="minimum_supported_wp_version" value="6.6"/>
+	<!-- The minimum PHP requirement. -->
+	<config name="testVersion" value="8.0-"/>
+
 	<rule ref="WordPress.WP.I18n">
 		<properties>
 			<property name="text_domain" type="array">
@@ -19,6 +24,7 @@
 			<property name="customAutoEscapedFunctions" type="array" extend="true">
 				<element value="get_rest_post_like_button"/>
 				<element value="get_rest_comment_like_button"/>
+				<element value="get_block_wrapper_attributes"/>
 			</property>
 		</properties>
 	</rule>
@@ -32,9 +38,12 @@
 		</properties>
 	</rule>
 
-	<exclude-pattern>*/bin/*</exclude-pattern>
-	<exclude-pattern>*/js/*</exclude-pattern>
-	<exclude-pattern>*/node_modules/*</exclude-pattern>
-	<exclude-pattern>*/tests/*</exclude-pattern>
-	<exclude-pattern>*/vendor/*</exclude-pattern>
+	<!-- Used in block render files. -->
+	<rule ref="VariableAnalysis.CodeAnalysis.VariableAnalysis">
+		<properties>
+			<property name="validUndefinedVariableNames" value="attributes block"/>
+		</properties>
+	</rule>
+
+	<exclude-pattern>/js/dist/*</exclude-pattern>
 </ruleset>
