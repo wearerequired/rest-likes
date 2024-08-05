@@ -37,5 +37,5 @@
     ],
     "types": [ "node", "webpack-env" ]
   },
-  "include": [ "assets/src/**/*.ts", "assets/src/**/*.tsx", "assets/src/**/*.json", "assets/src/blocks/example/index.ts" ]
+  "include": [ "js/src/**/*.ts", "js/src/**/*.tsx", "js/src/**/*.json" ]
 }
