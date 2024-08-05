@@ -1,17 +1,18 @@
 {
   "$schema": "https://schemas.wp.org/wp/6.6/block.json",
-  "name": "wearerequired/post-like-button",
+  "name": "wearerequired/comment-like-button",
   "apiVersion": 3,
   "category": "theme",
-  "title": "Post Like Button",
-  "description": "Let users like a post.",
+  "ancestor": [ "core/comment-template" ],
+  "title": "Comment Like Button",
+  "description": "Let users like a comment.",
   "textdomain": "rest-likes",
   "supports": {
     "html": false
   },
-  "usesContext": [ "postId" ],
+  "usesContext": [ "commentId" ],
   "viewScript": "rest-likes",
   "editorScript": "rest-likes-blocks-editor",
   "editorStyle": "rest-likes-blocks-editor",
-  "render": "file:post-like-button-block-render.php"
+  "render": "file:comment-like-button-block-render.php"
 }
