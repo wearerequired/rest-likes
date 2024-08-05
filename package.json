@@ -16,13 +16,12 @@
   },
   "homepage": "https://github.com/wearerequired/rest-likes#readme",
   "dependencies": {
+    "@types/wordpress__blocks": "12.5.14",
     "@wordpress/icons": "10.4.0"
   },
   "devDependencies": {
     "@types/node": "22.1.0",
     "@types/webpack-env": "1.18.5",
-    "@types/wordpress__block-editor": "11.5.15",
-    "@types/wordpress__blocks": "12.5.14",
     "@wearerequired/browserslist-config": "0.3.0",
     "@wearerequired/eslint-config": "6.0.0",
     "@wearerequired/postcss-config": "1.1.0",
