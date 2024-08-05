@@ -16,12 +16,10 @@
   },
   "homepage": "https://github.com/wearerequired/rest-likes#readme",
   "dependencies": {
-    "@wordpress/a11y": "3.21.0",
-    "@wordpress/i18n": "4.21.0",
     "@wordpress/icons": "10.4.0"
   },
   "devDependencies": {
-    "@types/node": "20.14.12",
+    "@types/node": "22.1.0",
     "@types/webpack-env": "1.18.5",
     "@types/wordpress__block-editor": "11.5.15",
     "@types/wordpress__blocks": "12.5.14",
@@ -29,8 +27,7 @@
     "@wearerequired/eslint-config": "6.0.0",
     "@wearerequired/postcss-config": "1.1.0",
     "@wearerequired/stylelint-config": "6.0.0",
-    "@wordpress/element": "6.4.0",
-    "@wordpress/scripts": "27.9.0",
+    "@wordpress/scripts": "28.4.0",
     "prettier": "npm:wp-prettier@3.0.3",
     "typescript": "5.5.4"
   },

@@ -20,11 +20,7 @@ function bootstrap(): void {
  */
 function register_block_types(): void {
 	register_block_type_from_metadata(
-		REST_LIKES_PLUGIN_DIR . '/js/dist/rest-likes-block.json',
-		[
-			'render_callback' => __NAMESPACE__ . '\render_rest_likes_block',
-			'view_script'     => 'rest-likes',
-		]
+		REST_LIKES_PLUGIN_DIR . '/js/dist/rest-likes-block.json'
 	);
 }
 
@@ -52,15 +48,4 @@ function register_assets(): void {
 			filemtime( REST_LIKES_PLUGIN_DIR . '/js/dist/blocks.css' )
 		);
 	}
-}
-
-/**
- * Renders the REST Likes block.
- *
- * @return string Rendered block content.
- */
-function render_rest_likes_block(): string {
-	ob_start();
-	the_rest_post_like_button();
-	return ob_get_clean();
 }

@@ -42,6 +42,17 @@ module.exports = {
 					},
 					noErrorOnMissing: true,
 				},
+				{
+					// Copy index.php to build folder with name of block as filename
+					from: 'blocks/**/index.php',
+					to( { absoluteFilename } ) {
+						// Get the block folder name
+						const blockName = basename( dirname( absoluteFilename ) );
+						// Output with original extension (.php)
+						return `./${ blockName }-block-render[ext]`;
+					},
+					noErrorOnMissing: true,
+				},
 			],
 		} ),
 	],

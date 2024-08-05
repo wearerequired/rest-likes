@@ -12,6 +12,8 @@
   },
   "attributes": {},
   "example": {},
+  "viewScript": "rest-likes",
   "editorScript": "rest-likes-blocks-editor",
-  "editorStyle": "rest-likes-blocks-editor"
+  "editorStyle": "rest-likes-blocks-editor",
+  "render": "file:rest-likes-block-render.php"
 }
