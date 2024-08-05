@@ -9,11 +9,9 @@ import { useBlockProps } from '@wordpress/block-editor';
 import './edit.css';
 
 const Edit = (): JSX.Element => {
-	const blockProps = useBlockProps( {
-		className: 'my-custom-css-class',
-	} );
+	const blockProps = useBlockProps();
 
-	return <p { ...blockProps }>rest-likes</p>;
+	return <div { ...blockProps }>❤️</div>;
 };
 
 export default Edit;

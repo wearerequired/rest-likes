@@ -19,9 +19,12 @@ function bootstrap(): void {
  * Registers block types.
  */
 function register_block_types(): void {
-	register_block_type_from_metadata(
-		REST_LIKES_PLUGIN_DIR . '/js/dist/rest-likes-block.json'
-	);
+	$block_json_files = glob( REST_LIKES_PLUGIN_DIR . '/js/dist/*-block.json' );
+	if ( \is_array( $block_json_files ) ) {
+		foreach ( $block_json_files as $block_json_file ) {
+			register_block_type_from_metadata( $block_json_file );
+		}
+	}
 }
 
 /**
