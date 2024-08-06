@@ -57,6 +57,8 @@ class Plugin {
 
 		add_filter( 'heartbeat_received', [ $this, 'heartbeat_received' ], 10, 2 );
 		add_filter( 'heartbeat_nopriv_received', [ $this, 'heartbeat_received' ], 10, 2 );
+
+		Blocks\bootstrap();
 	}
 
 	/**
@@ -110,20 +112,19 @@ class Plugin {
 	 * @since 1.0.0
 	 */
 	public function register_scripts() {
-		$version = '20221106';
+		$script_asset = require REST_LIKES_PLUGIN_DIR . '/js/dist/rest-likes.asset.php';
 
 		wp_register_script(
 			'rest-likes',
 			plugin_dir_url( REST_LIKES_PLUGIN_FILE ) . 'js/dist/rest-likes.js',
-			[ 'jquery', 'heartbeat' ],
-			$version,
+			array_merge( $script_asset['dependencies'], [ 'heartbeat' ] ),
+			$script_asset['version'],
 			true
 		);
 
 		$script_data = [
 			'root'         => esc_url_raw( get_rest_url() ),
 			'object_types' => $this->get_object_types_script_data(),
-			'l10n'         => $this->get_jed_locale_data( 'rest-likes' ),
 		];
 
 		if ( is_user_logged_in() ) {
@@ -135,36 +136,6 @@ class Plugin {
 			'restLikes',
 			$script_data
 		);
-	}
-
-	/**
-	 * Returns Jed-formatted localization data.
-	 *
-	 * @since 0.1.0
-	 *
-	 * @param  string $domain Translation domain.
-	 *
-	 * @return array
-	 */
-	private function get_jed_locale_data( $domain ) {
-		$translations = get_translations_for_domain( $domain );
-
-		$locale = [
-			'' => [
-				'domain' => $domain,
-				'lang'   => is_admin() ? get_user_locale() : get_locale(),
-			],
-		];
-
-		if ( ! empty( $translations->headers['Plural-Forms'] ) ) {
-			$locale['']['plural_forms'] = $translations->headers['Plural-Forms'];
-		}
-
-		foreach ( $translations->entries as $msgid => $entry ) {
-			$locale[ $msgid ] = $entry->translations;
-		}
-
-		return $locale;
 	}
 
 	/**

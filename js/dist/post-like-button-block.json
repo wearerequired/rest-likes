@@ -1,0 +1,17 @@
+{
+  "$schema": "https://schemas.wp.org/wp/6.6/block.json",
+  "name": "wearerequired/post-like-button",
+  "apiVersion": 3,
+  "category": "theme",
+  "title": "Post Like Button",
+  "description": "Let users like a post.",
+  "textdomain": "rest-likes",
+  "supports": {
+    "html": false
+  },
+  "usesContext": [ "postId" ],
+  "viewScript": "rest-likes",
+  "editorScript": "rest-likes-blocks-editor",
+  "editorStyle": "rest-likes-blocks-editor",
+  "render": "file:post-like-button-block-render.php"
+}

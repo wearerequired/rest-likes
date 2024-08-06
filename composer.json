@@ -21,6 +21,11 @@
       "role": "Developer"
     },
     {
+      "name": "Stefan Pasch",
+      "email": "stefan@required.ch",
+      "role": "Developer"
+    },
+    {
       "name": "Silvan Hagen",
       "role": "Developer"
     },
@@ -35,7 +40,7 @@
   },
   "require-dev": {
     "dealerdirect/phpcodesniffer-composer-installer": "^0.7",
-    "wearerequired/coding-standards": "^1.1"
+    "wearerequired/coding-standards": "^6.0"
   },
   "extra": {
     "branch-alias": {
@@ -44,11 +49,16 @@
   },
   "autoload": {
     "psr-4": {
-      "Required\\RestLikes\\": "classes"
+      "Required\\RestLikes\\": "inc/"
     }
   },
   "scripts": {
     "format": "vendor/bin/phpcbf --report-summary --report-source .",
     "lint": "vendor/bin/phpcs --report-summary --report-source ."
+  },
+  "config": {
+    "allow-plugins": {
+      "dealerdirect/phpcodesniffer-composer-installer": true
+    }
   }
 }

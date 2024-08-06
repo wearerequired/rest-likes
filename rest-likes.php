@@ -1,14 +1,15 @@
 <?php
 /**
  * Plugin Name: REST Likes
- * Plugin URI:  https://required.com
+ * Plugin URI: https://required.com
  * Description: Like posts and comments using the REST API.
- * Version:     2.0.0
- * Author:      required
- * Author URI:  https://required.com
+ * Version: 3.0.0-beta
+ * Author: required
+ * Requires at least: 6.6
+ * Author URI: https://required.com
  * Text Domain: rest-likes
  * Domain Path: /languages
- * License:     GPL-2.0-or-later
+ * License: GPL-2.0-or-later
  * License URI: http://www.gnu.org/licenses/gpl-2.0.txt
  */
 
@@ -26,6 +27,9 @@ if ( ! class_exists( 'WP_REST_Controller' ) ) {
 }
 
 const REST_LIKES_PLUGIN_FILE = __FILE__;
+const REST_LIKES_PLUGIN_DIR  = __DIR__;
+
+require_once __DIR__ . '/inc/Blocks/namespace.php';
 
 /**
  * Returns an instance of the main plugin class.

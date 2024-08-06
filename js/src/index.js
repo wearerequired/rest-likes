@@ -3,12 +3,7 @@
  */
 import jQuery from 'jquery';
 import { speak } from '@wordpress/a11y';
-import { __, sprintf, setLocaleData } from '@wordpress/i18n';
-
-/**
- * Load localized strings.
- */
-setLocaleData( window.restLikes.l10n, 'rest-likes' );
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Check for localStorage support in the browser.
