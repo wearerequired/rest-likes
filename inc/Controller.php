@@ -520,13 +520,28 @@ abstract class Controller extends WP_REST_Controller {
 	public function get_like_count_html( $object_id ) {
 		$likes = $this->get_like_count( $object_id );
 
+		if ( 1 === $likes ) {
+			$likes_text = sprintf(
+				/* translators: $s = number of likes */
+				__( '%s like', 'rest-likes' ),
+				$likes
+			);
+		} else {
+			$likes_text = sprintf(
+				/* translators: $s = number of likes */
+				_n( '%s like', '%s likes', $likes, 'rest-likes' ),
+				$likes
+			);
+		}
+
 		return sprintf(
-			apply_filters( 'rest_likes.count_markup', '<span class="%1$s" data-type="%2$s" data-id="%3$d" data-likes="%4$d">%5$s</span>' ),
+			apply_filters( 'rest_likes.count_markup', '<span class="%1$s" data-type="%2$s" data-id="%3$d" data-likes="%4$d"><span aria-hidden="true">%5$s</span><span class="screen-reader-text">%6$s</span></span>' ),
 			esc_attr( $this->get_classnames()['count'] ),
 			esc_attr( $this->get_object_type() ),
 			absint( $object_id ),
 			esc_attr( $likes ),
-			esc_html( number_format_i18n( $likes ) )
+			esc_html( number_format_i18n( $likes ) ),
+			esc_html( $likes_text )
 		);
 	}
 

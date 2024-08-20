@@ -3,7 +3,7 @@
  */
 import jQuery from 'jquery';
 import { speak } from '@wordpress/a11y';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Check for localStorage support in the browser.
@@ -179,7 +179,24 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 
 				const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
 
-				likeButtonCount.innerText = response.countFormatted;
+				let likeButtonScreenReaderText;
+				if ( 1 === response.count ) {
+					likeButtonScreenReaderText = sprintf(
+						/* translators: $s = number of likes */
+						__( '%s like', 'rest-likes' ),
+						response.countFormatted
+					);
+				} else {
+					likeButtonScreenReaderText = sprintf(
+						/* translators: $s = number of likes */
+						_n( '%s like', '%s likes', response.count, 'rest-likes' ),
+						response.countFormatted
+					);
+				}
+
+				likeButtonCount.innerHTML =
+					sprintf( objectTypeData.html.visual_text, response.countFormatted ) + // eslint-disable-line @wordpress/valid-sprintf
+					sprintf( objectTypeData.html.screen_reader_text, likeButtonScreenReaderText ); // eslint-disable-line @wordpress/valid-sprintf
 				likeButtonCount.setAttribute( 'data-likes', response.count );
 			} );
 
@@ -309,7 +326,24 @@ $document.on( 'heartbeat-tick', ( event, data ) => {
 		likeButtons.forEach( ( likeButton ) => {
 			const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
 
-			likeButtonCount.innerText = countFormatted;
+			let likeButtonScreenReaderText;
+			if ( 1 === count ) {
+				likeButtonScreenReaderText = sprintf(
+					/* translators: $s = number of likes */
+					__( '%s like', 'rest-likes' ),
+					countFormatted
+				);
+			} else {
+				likeButtonScreenReaderText = sprintf(
+					/* translators: $s = number of likes */
+					_n( '%s like', '%s likes', count, 'rest-likes' ),
+					countFormatted
+				);
+			}
+
+			likeButtonCount.innerHTML =
+				sprintf( objectTypeData.html.visual_text, countFormatted ) + // eslint-disable-line @wordpress/valid-sprintf
+				sprintf( objectTypeData.html.screen_reader_text, likeButtonScreenReaderText ); // eslint-disable-line @wordpress/valid-sprintf
 			likeButtonCount.setAttribute( 'data-likes', count );
 		} );
 	}
