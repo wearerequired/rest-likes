@@ -115,6 +115,41 @@ const checkButtons = () => {
 };
 
 /**
+ * Update the like button count.
+ * @param {HTMLButtonElement} likeButtonCount The like button count
+ * @param {number}            count           The count as a number
+ * @param {string}            countFormatted  The count as formatted number for reading
+ */
+const updateLikeButtonCount = ( likeButtonCount, count, countFormatted ) => {
+	const likeButtonSpanVisual = likeButtonCount.querySelector( '[aria-hidden]' );
+	const likeButtonSpanScreenReader = likeButtonCount.querySelector( '.screen-reader-text' );
+
+	if ( ! likeButtonSpanVisual || ! likeButtonSpanScreenReader ) {
+		return;
+	}
+
+	let likeButtonScreenReaderText;
+	if ( 1 === count ) {
+		likeButtonScreenReaderText = sprintf(
+			/* translators: $s = number of likes */
+			__( '%s like', 'rest-likes' ),
+			countFormatted
+		);
+	} else {
+		likeButtonScreenReaderText = sprintf(
+			/* translators: $s = number of likes */
+			_n( '%s like', '%s likes', count, 'rest-likes' ),
+			countFormatted
+		);
+	}
+
+	likeButtonSpanVisual.textContent = countFormatted;
+	likeButtonSpanScreenReader.textContent = likeButtonScreenReaderText;
+
+	likeButtonCount.setAttribute( 'data-likes', count );
+};
+
+/**
  * Sends request to API.
  *
  * @param {string}  objectType
@@ -176,28 +211,9 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 		.then( ( response ) => {
 			likeButtons.forEach( ( likeButton ) => {
 				likeButton.classList.remove( classNames.processing );
-
 				const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
 
-				let likeButtonScreenReaderText;
-				if ( 1 === response.count ) {
-					likeButtonScreenReaderText = sprintf(
-						/* translators: $s = number of likes */
-						__( '%s like', 'rest-likes' ),
-						response.countFormatted
-					);
-				} else {
-					likeButtonScreenReaderText = sprintf(
-						/* translators: $s = number of likes */
-						_n( '%s like', '%s likes', response.count, 'rest-likes' ),
-						response.countFormatted
-					);
-				}
-
-				likeButtonCount.innerHTML =
-					sprintf( objectTypeData.html.visual_text, response.countFormatted ) + // eslint-disable-line @wordpress/valid-sprintf
-					sprintf( objectTypeData.html.screen_reader_text, likeButtonScreenReaderText ); // eslint-disable-line @wordpress/valid-sprintf
-				likeButtonCount.setAttribute( 'data-likes', response.count );
+				updateLikeButtonCount( likeButtonCount, response.count, response.countFormatted );
 			} );
 
 			if ( likedItem ) {
@@ -326,25 +342,7 @@ $document.on( 'heartbeat-tick', ( event, data ) => {
 		likeButtons.forEach( ( likeButton ) => {
 			const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
 
-			let likeButtonScreenReaderText;
-			if ( 1 === count ) {
-				likeButtonScreenReaderText = sprintf(
-					/* translators: $s = number of likes */
-					__( '%s like', 'rest-likes' ),
-					countFormatted
-				);
-			} else {
-				likeButtonScreenReaderText = sprintf(
-					/* translators: $s = number of likes */
-					_n( '%s like', '%s likes', count, 'rest-likes' ),
-					countFormatted
-				);
-			}
-
-			likeButtonCount.innerHTML =
-				sprintf( objectTypeData.html.visual_text, countFormatted ) + // eslint-disable-line @wordpress/valid-sprintf
-				sprintf( objectTypeData.html.screen_reader_text, likeButtonScreenReaderText ); // eslint-disable-line @wordpress/valid-sprintf
-			likeButtonCount.setAttribute( 'data-likes', count );
+			updateLikeButtonCount( likeButtonCount, count, countFormatted );
 		} );
 	}
 } );
