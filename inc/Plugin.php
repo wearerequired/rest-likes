@@ -165,10 +165,6 @@ class Plugin {
 					 */
 					'unlike' => apply_filters( 'rest_likes.button_text.unlike', _x( 'Unlike', 'verb', 'rest-likes' ), $object_type ),
 				],
-				'html'       => [
-					'visual_text'        => '<span aria-hidden="true">%s</span>',
-					'screen_reader_text' => '<span class="screen-reader-text">%s</span>',
-				],
 			];
 		}
 
