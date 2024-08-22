@@ -211,8 +211,8 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 		.then( ( response ) => {
 			likeButtons.forEach( ( likeButton ) => {
 				likeButton.classList.remove( classNames.processing );
-				const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
 
+				const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
 				updateLikeButtonCount( likeButtonCount, response.count, response.countFormatted );
 			} );
 
