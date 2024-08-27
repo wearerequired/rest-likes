@@ -3,7 +3,7 @@
  */
 import jQuery from 'jquery';
 import { speak } from '@wordpress/a11y';
-import { __, sprintf } from '@wordpress/i18n';
+import { __, _n, sprintf } from '@wordpress/i18n';
 
 /**
  * Check for localStorage support in the browser.
@@ -115,6 +115,37 @@ const checkButtons = () => {
 };
 
 /**
+ * Update the like button count.
+ * @param {HTMLButtonElement} likeButtonCount The like button count
+ * @param {number}            count           The count as a number
+ * @param {string}            countFormatted  The count as formatted number for reading
+ */
+const updateLikeButtonCount = ( likeButtonCount, count, countFormatted ) => {
+	const likeButtonSpanVisual = likeButtonCount.querySelector( '[aria-hidden]' );
+	const likeButtonSpanScreenReader = likeButtonCount.querySelector( '.screen-reader-text' );
+
+	if ( ! likeButtonSpanVisual || ! likeButtonSpanScreenReader ) {
+		return;
+	}
+
+	let likeButtonScreenReaderText;
+	if ( 1 === count ) {
+		likeButtonScreenReaderText = __( 'One like', 'rest-likes' );
+	} else {
+		likeButtonScreenReaderText = sprintf(
+			/* translators: %s: number of likes */
+			_n( '%s like', '%s likes', count, 'rest-likes' ),
+			countFormatted
+		);
+	}
+
+	likeButtonSpanVisual.textContent = countFormatted;
+	likeButtonSpanScreenReader.textContent = likeButtonScreenReaderText;
+
+	likeButtonCount.setAttribute( 'data-likes', count );
+};
+
+/**
  * Sends request to API.
  *
  * @param {string}  objectType
@@ -178,9 +209,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 				likeButton.classList.remove( classNames.processing );
 
 				const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
-
-				likeButtonCount.innerText = response.countFormatted;
-				likeButtonCount.setAttribute( 'data-likes', response.count );
+				updateLikeButtonCount( likeButtonCount, response.count, response.countFormatted );
 			} );
 
 			if ( likedItem ) {
@@ -309,8 +338,7 @@ $document.on( 'heartbeat-tick', ( event, data ) => {
 		likeButtons.forEach( ( likeButton ) => {
 			const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
 
-			likeButtonCount.innerText = countFormatted;
-			likeButtonCount.setAttribute( 'data-likes', count );
+			updateLikeButtonCount( likeButtonCount, count, countFormatted );
 		} );
 	}
 } );
