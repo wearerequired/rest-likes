@@ -130,14 +130,10 @@ const updateLikeButtonCount = ( likeButtonCount, count, countFormatted ) => {
 
 	let likeButtonScreenReaderText;
 	if ( 1 === count ) {
-		likeButtonScreenReaderText = sprintf(
-			/* translators: $s = number of likes */
-			__( '%s like', 'rest-likes' ),
-			countFormatted
-		);
+		likeButtonScreenReaderText = __( 'One like', 'rest-likes' );
 	} else {
 		likeButtonScreenReaderText = sprintf(
-			/* translators: $s = number of likes */
+			/* translators: %s: number of likes */
 			_n( '%s like', '%s likes', count, 'rest-likes' ),
 			countFormatted
 		);

@@ -15,7 +15,7 @@ const Edit = (): JSX.Element => {
 					<span aria-hidden="true">37</span>
 					<span className="screen-reader-text">
 						{
-							/* translators: $s = number of likes */
+							/* translators: %s: number of likes */
 							sprintf( _n( '%s likes', '%s likes', 37, 'rest-likes' ), 37 )
 						}
 					</span>

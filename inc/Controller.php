@@ -521,14 +521,10 @@ abstract class Controller extends WP_REST_Controller {
 		$likes = $this->get_like_count( $object_id );
 
 		if ( 1 === $likes ) {
-			$likes_text = sprintf(
-				/* translators: $s = number of likes */
-				__( '%s like', 'rest-likes' ),
-				$likes
-			);
+			$likes_text = __( 'One like', 'rest-likes' );
 		} else {
 			$likes_text = sprintf(
-				/* translators: $s = number of likes */
+				/* translators: %s: number of likes */
 				_n( '%s like', '%s likes', $likes, 'rest-likes' ),
 				$likes
 			);
