@@ -8,7 +8,10 @@
   "description": "Let users like a comment.",
   "textdomain": "rest-likes",
   "supports": {
-    "html": false
+    "html": false,
+    "interactivity": {
+      "clientNavigation": true
+    }
   },
   "usesContext": [ "commentId" ],
   "viewScript": "rest-likes",

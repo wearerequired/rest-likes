@@ -7,7 +7,10 @@
   "description": "Let users like a post.",
   "textdomain": "rest-likes",
   "supports": {
-    "html": false
+    "html": false,
+    "interactivity": {
+      "clientNavigation": true
+    }
   },
   "usesContext": [ "postId" ],
   "viewScript": "rest-likes",
