@@ -94,6 +94,58 @@ abstract class Controller extends WP_REST_Controller {
 	}
 
 	/**
+	 * Returns a list of translatable strings.
+	 *
+	 * These can be filtered to use strings that better suit the current theme.
+	 *
+	 * @since 1.2.0
+	 *
+	 * @param int $likes Number of likes.
+	 * @return array An array of labels.
+	 */
+	public function get_labels( $likes = 0 ) {
+		$object_type = $this->get_object_type();
+
+		/**
+		 * Filters the text displayed inside the like button.
+		 *
+		 * @since 1.0.0
+		 *
+		 * @param string $button_text The button text. Default 'Like'.
+		 * @param string $object_type The object type this button is for.
+		 */
+		$like_button_text = apply_filters( 'rest_likes.button_text.like', _x( 'Like', 'verb', 'rest-likes' ), $object_type );
+
+		/**
+		 * Filters the translatable strings for a given object type.
+		 *
+		 * @since 1.2.0
+		 *
+		 * @param array  $labels  The list of translatable strings.
+		 * @param string $object_type The object type the labels are for.
+		 * @param int    $likes       Current count of likes.
+		 */
+		$labels = apply_filters(
+			'rest_likes.labels',
+			[
+				'invalid'          => __( 'You cannot like the same thing all day long', 'rest-likes' ),
+				'like_button_text' => $like_button_text,
+				/* translators: %d: Like count */
+				'speak_like'       => __( 'Like processed. New like count: %d', 'rest-likes' ),
+				/* translators: %d: Like count */
+				'speak_unlike'     => __( 'Unlike processed. New like count: %d', 'rest-likes' ),
+				'one_like'         => __( 'One like', 'rest-likes' ),
+				/* translators: %s: Formatted number of likes */
+				'plural_likes'     => _n( '%s like', '%s likes', $likes, 'rest-likes' ),
+			],
+			$object_type,
+			$likes
+		);
+
+		return $labels;
+	}
+
+	/**
 	 * Returns the meta key for the object type.
 	 *
 	 * @since 1.0.0
@@ -249,7 +301,7 @@ abstract class Controller extends WP_REST_Controller {
 		$result = true;
 
 		if ( $this->transient_exists( $request ) ) {
-			$result = new \WP_Error( 'invalid_action', __( 'You cannot like the same thing all day long', 'rest-likes' ), [ 'status' => 400 ] );
+			$result = new \WP_Error( 'invalid_action', $this->get_labels()['invalid'], [ 'status' => 400 ] );
 		}
 
 		/**
@@ -450,8 +502,9 @@ abstract class Controller extends WP_REST_Controller {
 		do_action( 'rest_likes.update_likes', $this->get_object_type(), $object_id, $likes, $likes_i18n, $old_likes, $remove );
 
 		return [
-			'count'          => $likes,
-			'countFormatted' => $likes_i18n,
+			'count'            => $likes,
+			'countFormatted'   => $likes_i18n,
+			'screenReaderText' => 1 === $likes ? $this->get_labels()['one_like'] : $this->get_labels( $likes )['plural_likes'],
 		];
 	}
 
@@ -466,23 +519,15 @@ abstract class Controller extends WP_REST_Controller {
 	public function get_like_button( $object_id ) {
 		$object_id = absint( $object_id );
 
-		/**
-		 * Filters the text displayed inside the like button.
-		 *
-		 * @since 1.0.0
-		 *
-		 * @param string $button_text The button text. Default 'Like'.
-		 * @param string $object_type The object type this button is for.
-		 */
-		$button_text = apply_filters( 'rest_likes.button_text.like', _x( 'Like', 'verb', 'rest-likes' ), $this->get_object_type() );
-
 		$button = sprintf(
-			'<button class="%1$s" data-type="%2$s" data-id="%3$d" data-rest-like-button>%4$s %5$s</button>',
-			esc_attr( $this->get_classnames()['button'] ),
-			esc_attr( $this->get_object_type() ),
-			$object_id,
-			sprintf( '<span class="%1$s">%2$s</span>', $this->get_classnames()['label'], $button_text ),
-			$this->get_like_count_html( $object_id )
+			'<button class="%1$s" data-rest-like-button data-type="%2$s" data-id="%3$d" data-speak-like="%4$s" data-speak-unlike="%5$s">%6$s %7$s</button>',
+			esc_attr( $this->get_classnames()['button'] ), // Class name.
+			esc_attr( $this->get_object_type() ), // Object type.
+			absint( $object_id ), // Object ID.
+			$this->get_labels()['speak_like'], // JS data attribute for speak text after like.
+			$this->get_labels()['speak_unlike'], // JS data attribute for speak text after unlike.
+			sprintf( '<span class="%1$s">%2$s</span>', $this->get_classnames()['label'], $this->get_labels()['like_button_text'] ), // Button HTML content.
+			$this->get_like_count_html( $object_id ), // Like count HTML content.
 		);
 
 		/**
@@ -521,11 +566,10 @@ abstract class Controller extends WP_REST_Controller {
 		$likes = $this->get_like_count( $object_id );
 
 		if ( 1 === $likes ) {
-			$likes_text = __( 'One like', 'rest-likes' );
+			$likes_text = $this->get_labels()['one_like'];
 		} else {
 			$likes_text = sprintf(
-				/* translators: %s: number of likes */
-				_n( '%s like', '%s likes', $likes, 'rest-likes' ),
+				$this->get_labels( $likes )['plural_likes'],
 				$likes
 			);
 		}
