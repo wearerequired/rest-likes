@@ -4,20 +4,26 @@
 import apiFetch from '@wordpress/api-fetch';
 import { __, _n, sprintf } from '@wordpress/i18n';
 import { PostType } from '@wordpress/core-data';
-import { useSelect } from '@wordpress/data';
-import { useEffect, useState } from '@wordpress/element';
-import { useBlockProps } from '@wordpress/block-editor';
 import { Spinner } from '@wordpress/components';
+import { useBlockProps } from '@wordpress/block-editor';
+import { useEffect, useState } from '@wordpress/element';
+import { useSelect } from '@wordpress/data';
 
 const Edit = ( { context }: { context: { postId: number; postType: string } } ): JSX.Element => {
 	const blockProps = useBlockProps();
 	const [ likeCount, setLikeCount ] = useState< number | null >( null );
+	const [ isLoading, setIsLoading ] = useState< boolean >( true );
+	const [ error, setError ] = useState< string | null >( null );
+
 	const restBase = useSelect(
 		(
 			select: ( store: 'core' ) => {
 				getPostType: ( postType: string ) => PostType | undefined;
 			}
 		) => {
+			if ( ! context.postType ) {
+				return false;
+			}
 			const postTypeData = select( 'core' ).getPostType( context.postType );
 			return postTypeData ? postTypeData.rest_base : null;
 		},
@@ -25,19 +31,39 @@ const Edit = ( { context }: { context: { postId: number; postType: string } } ):
 	);
 
 	useEffect( () => {
-		if ( restBase ) {
-			apiFetch( { path: `/wp/v2/${ restBase }/${ context.postId }` } )
-				.then( ( data: { _rest_likes: number } ) => {
-					setLikeCount( data._rest_likes );
-				} )
-				.catch( ( error: Error ) => {
-					console.error( __( 'Error fetching like count:', 'rest-likes' ), error );
-				} );
+		if ( ! context.postId || false === restBase ) {
+			setLikeCount( 0 );
+			setIsLoading( false );
+			return;
 		}
+
+		if ( ! restBase ) {
+			return;
+		}
+
+		apiFetch( { path: `/wp/v2/${ restBase }/${ context.postId }` } )
+			.then( ( data: { _rest_likes: number } ) => {
+				setLikeCount( data._rest_likes ?? 0 );
+				setIsLoading( false );
+			} )
+			.catch( ( fetchError: Error ) => {
+				setError(
+					sprintf(
+						/*translators: %s: The error message */
+						__( 'Post Like Button: %s', 'rest-likes' ),
+						fetchError.message
+					)
+				);
+				setIsLoading( false );
+			} );
 	}, [ restBase, context.postId ] );
 
-	if ( ! restBase || ( ! likeCount && 0 !== likeCount ) ) {
+	if ( isLoading ) {
 		return <Spinner />;
+	}
+
+	if ( error ) {
+		return <div { ...blockProps }>{ error }</div>;
 	}
 
 	return (

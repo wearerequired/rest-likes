@@ -3,32 +3,45 @@
  */
 import apiFetch from '@wordpress/api-fetch';
 import { __, _n, sprintf } from '@wordpress/i18n';
-import { useEffect, useState } from '@wordpress/element';
-import { useBlockProps } from '@wordpress/block-editor';
 import { Spinner } from '@wordpress/components';
+import { useBlockProps } from '@wordpress/block-editor';
+import { useEffect, useState } from '@wordpress/element';
 
 const Edit = ( { context }: { context: { commentId: number } } ): JSX.Element => {
 	const blockProps = useBlockProps();
 	const [ likeCount, setLikeCount ] = useState< number | null >( null );
+	const [ isLoading, setIsLoading ] = useState< boolean >( true );
+	const [ error, setError ] = useState< string | null >( null );
 
-	if ( context.commentId ) {
-		useEffect( () => {
-			apiFetch( { path: `/wp/v2/comments/${ context.commentId }` } )
-				.then( ( data: { _rest_likes: number } ) => {
-					setLikeCount( data._rest_likes );
-				} )
-				.catch( ( error: Error ) => {
-					console.error( __( 'Error fetching like count:', 'rest-likes' ), error );
-				} );
-		}, [ context.commentId ] );
-
-		if ( ! likeCount && 0 !== likeCount ) {
-			return <Spinner />;
+	useEffect( () => {
+		if ( ! context.commentId ) {
+			setLikeCount( 0 );
+			setIsLoading( false );
+			return;
 		}
+		apiFetch( { path: `/wp/v2/comments/${ context.commentId }` } )
+			.then( ( data: { _rest_likes: number } ) => {
+				setLikeCount( data._rest_likes ?? 0 );
+				setIsLoading( false );
+			} )
+			.catch( ( fetchError: Error ) => {
+				setError(
+					sprintf(
+						/*translators: %s: The error message */
+						__( 'Comment Like Button: %s', 'rest-likes' ),
+						fetchError.message
+					)
+				);
+				setIsLoading( false );
+			} );
+	}, [ context.commentId ] );
+
+	if ( isLoading ) {
+		return <Spinner />;
 	}
 
-	if ( ! context.commentId ) {
-		setLikeCount( null );
+	if ( error ) {
+		return <div { ...blockProps }>{ error }</div>;
 	}
 
 	return (
