@@ -524,8 +524,8 @@ abstract class Controller extends WP_REST_Controller {
 			esc_attr( $this->get_classnames()['button'] ), // Class name.
 			esc_attr( $this->get_object_type() ), // Object type.
 			absint( $object_id ), // Object ID.
-			$this->get_labels()['speak_like'], // JS data attribute for speak text after like.
-			$this->get_labels()['speak_unlike'], // JS data attribute for speak text after unlike.
+			esc_attr( $this->get_labels()['speak_like'] ), // JS data attribute for speak text after like.
+			esc_attr( $this->get_labels()['speak_unlike'] ), // JS data attribute for speak text after unlike.
 			sprintf( '<span class="%1$s">%2$s</span>', $this->get_classnames()['label'], $this->get_labels()['like_button_text'] ), // Button HTML content.
 			$this->get_like_count_html( $object_id ), // Like count HTML content.
 		);
