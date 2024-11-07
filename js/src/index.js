@@ -116,11 +116,12 @@ const checkButtons = () => {
 
 /**
  * Update the like button count.
- * @param {HTMLButtonElement} likeButtonCount The like button count
- * @param {number}            count           The count as a number
- * @param {string}            countFormatted  The count as formatted number for reading
+ * @param {HTMLButtonElement} likeButtonCount  The like button count
+ * @param {number}            count            The count as a number
+ * @param {string}            countFormatted   The count as formatted number for reading
+ * @param {string}            screenReaderText A screenreader text calculated with PHP.
  */
-const updateLikeButtonCount = ( likeButtonCount, count, countFormatted ) => {
+const updateLikeButtonCount = ( likeButtonCount, count, countFormatted, screenReaderText ) => {
 	const likeButtonSpanVisual = likeButtonCount.querySelector( '[aria-hidden]' );
 	const likeButtonSpanScreenReader = likeButtonCount.querySelector( '.screen-reader-text' );
 
@@ -128,19 +129,9 @@ const updateLikeButtonCount = ( likeButtonCount, count, countFormatted ) => {
 		return;
 	}
 
-	let likeButtonScreenReaderText;
-	if ( 1 === count ) {
-		likeButtonScreenReaderText = __( 'One like', 'rest-likes' );
-	} else {
-		likeButtonScreenReaderText = sprintf(
-			/* translators: %s: number of likes */
-			_n( '%s like', '%s likes', count, 'rest-likes' ),
-			countFormatted
-		);
-	}
-
 	likeButtonSpanVisual.textContent = countFormatted;
-	likeButtonSpanScreenReader.textContent = likeButtonScreenReaderText;
+	likeButtonSpanScreenReader.textContent =
+		1 === count ? screenReaderText : sprintf( screenReaderText, countFormatted );
 
 	likeButtonCount.setAttribute( 'data-likes', count );
 };
@@ -209,7 +200,12 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 				likeButton.classList.remove( classNames.processing );
 
 				const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
-				updateLikeButtonCount( likeButtonCount, response.count, response.countFormatted );
+				updateLikeButtonCount(
+					likeButtonCount,
+					response.count,
+					response.countFormatted,
+					response.screenReaderText
+				);
 			} );
 
 			if ( likedItem ) {
@@ -221,13 +217,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 						objectTypeData.texts.like;
 				} );
 
-				speak(
-					sprintf(
-						/* translators: %d: Like count */
-						__( 'Unlike processed. New like count: %d', 'rest-likes' ),
-						response.count
-					)
-				);
+				speak( sprintf( likeButtons[ 0 ].dataset.speakUnlike, response.count ) ); // eslint-disable-line @wordpress/valid-sprintf
 
 				document.dispatchEvent(
 					new CustomEvent( 'restLikes', {
@@ -235,6 +225,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 							action: 'unlike',
 							count: response.count,
 							countFormatted: response.countFormatted,
+							screenReaderText: response.screenReaderText,
 							objectType,
 							objectId,
 						},
@@ -253,13 +244,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 						objectTypeData.texts.unlike;
 				} );
 
-				speak(
-					sprintf(
-						/* translators: %d: Like count */
-						__( 'Like processed. New like count: %d', 'rest-likes' ),
-						response.count
-					)
-				);
+				speak( sprintf( likeButtons[ 0 ].dataset.speakLike, response.count ) ); // eslint-disable-line @wordpress/valid-sprintf
 
 				document.dispatchEvent(
 					new CustomEvent( 'restLikes', {
@@ -267,6 +252,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 							action: 'like',
 							count: response.count,
 							countFormatted: response.countFormatted,
+							screenReaderText: response.screenReaderText,
 							objectType,
 							objectId,
 						},
@@ -327,7 +313,7 @@ $document.on( 'heartbeat-tick', ( event, data ) => {
 	}
 
 	for ( const item of data.rest_likes ) {
-		const { objectType, objectId, count, countFormatted } = item;
+		const { objectType, objectId, count, countFormatted, screenReaderText } = item;
 		const objectTypeData = window.restLikes.object_types[ objectType ];
 		const classNames = objectTypeData.classnames;
 
@@ -338,7 +324,7 @@ $document.on( 'heartbeat-tick', ( event, data ) => {
 		likeButtons.forEach( ( likeButton ) => {
 			const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
 
-			updateLikeButtonCount( likeButtonCount, count, countFormatted );
+			updateLikeButtonCount( likeButtonCount, count, countFormatted, screenReaderText );
 		} );
 	}
 } );
