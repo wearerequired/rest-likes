@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
-* Filter `rest_likes.labels`
+* Introduce `rest_likes.labels` filter.
 
 ### Changed
 * Remove browser support for IE 11.

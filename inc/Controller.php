@@ -98,7 +98,7 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * These can be filtered to use strings that better suit the current theme.
 	 *
-	 * @since 1.2.0
+	 * @since 3.0.0
 	 *
 	 * @param int $likes Number of likes.
 	 * @return array An array of labels.
@@ -119,7 +119,7 @@ abstract class Controller extends WP_REST_Controller {
 		/**
 		 * Filters the translatable strings for a given object type.
 		 *
-		 * @since 1.2.0
+		 * @since 3.0.0
 		 *
 		 * @param array  $labels  The list of translatable strings.
 		 * @param string $object_type The object type the labels are for.
