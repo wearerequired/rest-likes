@@ -336,22 +336,25 @@ $document.on( 'heartbeat-tick', ( event, data ) => {
  */
 const handleDomChanges = ( mutationRecords ) => {
 	mutationRecords.forEach( ( mutation ) => {
-		if ( ! mutation.addedNodes.length ) {
-			return;
+		if (
+			'attributes' === mutation.type &&
+			mutation.target.closest( '[data-rest-like-button]' )
+		) {
+			checkButton( mutation.target );
+		} else if ( 'childList' === mutation.type && mutation.addedNodes.length ) {
+			mutation.addedNodes.forEach( ( node ) => {
+				if ( typeof node.querySelectorAll !== 'function' ) {
+					return;
+				}
+
+				const buttons = node.querySelectorAll( '[data-rest-like-button]' );
+				if ( ! buttons.length ) {
+					return;
+				}
+
+				buttons.forEach( ( button ) => checkButton( button ) );
+			} );
 		}
-
-		mutation.addedNodes.forEach( ( node ) => {
-			if ( typeof node.querySelectorAll !== 'function' ) {
-				return;
-			}
-
-			const buttons = node.querySelectorAll( '[data-rest-like-button]' );
-			if ( ! buttons.length ) {
-				return;
-			}
-
-			buttons.forEach( ( button ) => checkButton( button ) );
-		} );
 	} );
 };
 
@@ -371,6 +374,7 @@ if ( typeof window.MutationObserver !== 'undefined' ) {
 	observer.observe( document.body, {
 		childList: true,
 		subtree: true,
+		attributes: true,
 	} );
 }
 
