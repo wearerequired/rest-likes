@@ -336,11 +336,10 @@ $document.on( 'heartbeat-tick', ( event, data ) => {
  */
 const handleDomChanges = ( mutationRecords ) => {
 	mutationRecords.forEach( ( mutation ) => {
-		if (
-			'attributes' === mutation.type &&
-			mutation.target.closest( '[data-rest-like-button]' )
-		) {
-			checkButton( mutation.target );
+		const closestButton = mutation.target.closest( '[data-rest-like-button]' );
+
+		if ( 'attributes' === mutation.type && closestButton ) {
+			checkButton( closestButton );
 		} else if ( 'childList' === mutation.type && mutation.addedNodes.length ) {
 			mutation.addedNodes.forEach( ( node ) => {
 				if ( typeof node.querySelectorAll !== 'function' ) {
