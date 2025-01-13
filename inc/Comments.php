@@ -152,7 +152,7 @@ class Comments extends Controller {
 	 * @return array The modified array of column names.
 	 */
 	public function manage_comments_columns( $comments_columns ) {
-		$comments_columns['likes'] = __( 'Likes', 'rest-likes' );
+		$comments_columns['likes'] = apply_filters( 'rest_likes.list_table_column_heading', __( 'Likes', 'rest-likes' ), $this->get_object_type() );
 
 		return $comments_columns;
 	}
