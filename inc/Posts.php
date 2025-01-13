@@ -171,11 +171,11 @@ class Posts extends Controller {
 	 * @return array The modified array of column names.
 	 */
 	public function manage_posts_columns( $posts_columns, $post_type ) {
-		if ( ! in_array( $post_type, $this->get_allowed_post_types(), true ) ) {
+		if ( ! \in_array( $post_type, $this->get_allowed_post_types(), true ) ) {
 			return $posts_columns;
 		}
 
-		$posts_columns['likes'] = __( 'Likes', 'rest-likes' );
+		$posts_columns['likes'] = apply_filters( 'rest_likes.list_table_column_heading', __( 'Likes', 'rest-likes' ), $this->get_object_type() );
 
 		return $posts_columns;
 	}
