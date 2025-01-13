@@ -221,8 +221,21 @@ class Posts extends Controller {
 	 */
 	public function order_by_post_likes( WP_Query $query ) {
 		if ( is_admin() && $query->is_main_query() && 'likes' === $query->get( 'orderby' ) ) {
-			$query->set( 'meta_key', $this->get_meta_key() );
 			$query->set( 'orderby', 'meta_value_num' );
+			$query->set(
+				'meta_query',
+				[
+					'relation' => 'OR',
+					[
+						'key'     => $this->get_meta_key(),
+						'compare' => 'EXISTS',
+					],
+					[
+						'key'     => $this->get_meta_key(),
+						'compare' => 'NOT EXISTS',
+					],
+				]
+			);
 		}
 	}
 }
