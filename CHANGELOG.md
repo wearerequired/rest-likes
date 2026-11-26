@@ -19,6 +19,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 * Update the screen reader text when like counts are refreshed.
 * Prevent PHP warnings when getting the like count of a non-existent comment.
+* Only expose like counts of posts that are published or readable by the current user, and of approved comments.
 
 ## [1.1.0] - 2022-11-07
 

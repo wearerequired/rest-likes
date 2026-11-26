@@ -260,7 +260,7 @@ abstract class Controller extends WP_REST_Controller {
 							'required'          => true,
 						],
 					],
-					'permission_callback' => '__return_true',
+					'permission_callback' => [ $this, 'check_read_permission' ],
 					'callback'            => [ $this, 'get_like' ],
 				],
 				[
@@ -287,6 +287,34 @@ abstract class Controller extends WP_REST_Controller {
 				],
 			]
 		);
+	}
+
+	/**
+	 * Checks whether the like count of an object can be read.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return true|\WP_Error True if the like count can be read, WP_Error otherwise.
+	 */
+	public function check_read_permission( WP_REST_Request $request ) {
+		if ( ! $this->is_readable( $request['id'] ) ) {
+			return new \WP_Error( 'invalid_object', __( 'Invalid object ID.', 'rest-likes' ), [ 'status' => 404 ] );
+		}
+
+		return true;
+	}
+
+	/**
+	 * Determines whether the like count of an object can be read by the current user.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int $object_id Object ID.
+	 * @return bool Whether the like count can be read.
+	 */
+	public function is_readable( $object_id ) {
+		return true;
 	}
 
 	/**
@@ -424,11 +452,14 @@ abstract class Controller extends WP_REST_Controller {
 	 *
 	 * @param int[] $object_ids Object IDs.
 	 * @return array List of like count data, each containing the object ID, raw and formatted count and screen reader text.
+	 *               Objects that cannot be read are omitted.
 	 */
 	public function get_like_counts( array $object_ids ) {
 		$object_ids = array_values( array_unique( array_map( 'absint', $object_ids ) ) );
 
 		$this->prime_caches( $object_ids );
+
+		$object_ids = array_values( array_filter( $object_ids, [ $this, 'is_readable' ] ) );
 
 		return array_map(
 			function ( $object_id ) {

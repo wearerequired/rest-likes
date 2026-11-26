@@ -98,6 +98,20 @@ class Comments extends Controller {
 	}
 
 	/**
+	 * Determines whether the like count of a comment can be read.
+	 *
+	 * The comment type has to be allowed and the comment has to be approved.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int $object_id Comment ID.
+	 * @return bool Whether the like count can be read.
+	 */
+	public function is_readable( $object_id ) {
+		return $this->is_allowed_comment_type( $object_id ) && 'approved' === wp_get_comment_status( $object_id );
+	}
+
+	/**
 	 * Primes the comment and comment meta caches.
 	 *
 	 * The comment objects are needed for checking the comment type.
