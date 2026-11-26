@@ -321,7 +321,7 @@ api.buttonClickHandler = ( objectType, objectId ) => {
  */
 const getCountsUrls = () => {
 	const urls = [];
-	const limit = window.restLikes.counts_limit;
+	const limit = Number( window.restLikes.counts_limit );
 
 	Object.keys( window.restLikes.object_types ).forEach( ( objectType ) => {
 		const likeButtons = document.querySelectorAll(
@@ -346,44 +346,39 @@ const getCountsUrls = () => {
 };
 
 /**
- * How long a count changed by the visitor is protected from older responses.
+ * How long a count changed by the visitor is not overwritten by refreshes.
  *
- * Covers a stale page cache entry that is served once more while the cache
- * refreshes it in the background.
+ * A matching response is no proof that the cache caught up: it can come from
+ * a request that bypassed the cache, while an older entry is still served later.
  */
 const CHANGED_COUNT_TTL = 10 * 60 * 1000;
 
 /**
- * Counts changed by the visitor during this page view.
+ * Objects liked or unliked during this page view, mapped to when their protection expires.
  *
- * @type {Map<string, {count: number, expiresAt: number}>}
+ * @type {Map<string, number>}
  */
 const changedCounts = new Map();
 
 document.addEventListener( 'restLikes', ( { detail } ) => {
 	if ( 'like' === detail.action || 'unlike' === detail.action ) {
-		changedCounts.set( `${ detail.objectType }:${ detail.objectId }`, {
-			count: detail.count,
-			expiresAt: Date.now() + CHANGED_COUNT_TTL,
-		} );
+		changedCounts.set(
+			`${ detail.objectType }:${ detail.objectId }`,
+			Date.now() + CHANGED_COUNT_TTL
+		);
 	}
 } );
 
 /**
- * Determines whether a refreshed count would revert a change made by the visitor.
+ * Determines whether a refreshed count could revert a change made by the visitor.
  *
  * @param {Object} item Like count data as returned by the REST API.
  * @return {boolean} Whether the count should be ignored.
  */
-const isOutdatedCount = ( item ) => {
+const isProtectedCount = ( item ) => {
 	const key = `${ item.objectType }:${ item.objectId }`;
-	const changed = changedCounts.get( key );
 
-	if ( ! changed ) {
-		return false;
-	}
-
-	if ( item.count !== changed.count && Date.now() < changed.expiresAt ) {
+	if ( Date.now() < changedCounts.get( key ) ) {
 		return true;
 	}
 
@@ -413,7 +408,7 @@ api.refreshCounts = () =>
 		)
 		.then( ( responses ) => {
 			for ( const item of responses.flat() ) {
-				if ( ! isOutdatedCount( item ) ) {
+				if ( ! isProtectedCount( item ) ) {
 					updateLikeButtonsCount(
 						getLikeButtons( item.objectType, item.objectId ),
 						item.objectType,
@@ -426,7 +421,7 @@ api.refreshCounts = () =>
 			console.error( error ); // eslint-disable-line no-console
 		} );
 
-const refreshInterval = window.restLikes.refresh_interval * 1000;
+const refreshInterval = Number( window.restLikes.refresh_interval ) * 1000;
 let lastRefresh = Date.now();
 let refreshTimer;
 
