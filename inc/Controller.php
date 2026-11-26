@@ -414,15 +414,58 @@ abstract class Controller extends WP_REST_Controller {
 	 * @return \WP_REST_Response Response object.
 	 */
 	public function get_like( $request ) {
-		$likes      = $this->get_like_count( $request['id'] );
-		$likes_i18n = number_format_i18n( $likes );
+		return new WP_REST_Response( $this->prepare_like_count( $this->get_like_count( $request['id'] ) ) );
+	}
 
-		return new WP_REST_Response(
-			[
-				'count'          => $likes,
-				'countFormatted' => $likes_i18n,
-			]
+	/**
+	 * Returns the like counts for a list of objects.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int[] $object_ids Object IDs.
+	 * @return array List of like count data, each containing the object ID, raw and formatted count and screen reader text.
+	 */
+	public function get_like_counts( array $object_ids ) {
+		$object_ids = array_values( array_unique( array_map( 'absint', $object_ids ) ) );
+
+		$this->prime_caches( $object_ids );
+
+		return array_map(
+			function ( $object_id ) {
+				return array_merge(
+					[ 'objectId' => $object_id ],
+					$this->prepare_like_count( $this->get_like_count( $object_id ) )
+				);
+			},
+			$object_ids
 		);
+	}
+
+	/**
+	 * Primes the caches needed to get the like counts of multiple objects.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int[] $object_ids Object IDs.
+	 */
+	protected function prime_caches( array $object_ids ) {
+		update_meta_cache( $this->get_object_type(), $object_ids );
+	}
+
+	/**
+	 * Prepares a like count for a response.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int $likes Like count.
+	 * @return array Like count, raw and formatted, and the screen reader text.
+	 */
+	protected function prepare_like_count( $likes ) {
+		return [
+			'count'            => $likes,
+			'countFormatted'   => number_format_i18n( $likes ),
+			'screenReaderText' => 1 === $likes ? $this->get_labels()['one_like'] : $this->get_labels( $likes )['plural_likes'],
+		];
 	}
 
 	/**
@@ -484,7 +527,7 @@ abstract class Controller extends WP_REST_Controller {
 
 		update_metadata( $this->get_object_type(), $object_id, $this->get_meta_key(), $likes );
 
-		$likes_i18n = number_format_i18n( $likes );
+		$response = $this->prepare_like_count( $likes );
 
 		/**
 		 * Fires when the like count is updated for an object.
@@ -499,13 +542,9 @@ abstract class Controller extends WP_REST_Controller {
 		 * @param int    $old_likes   The old like count.
 		 * @param bool   $remove      Whether to increment or decrement the counter.
 		 */
-		do_action( 'rest_likes.update_likes', $this->get_object_type(), $object_id, $likes, $likes_i18n, $old_likes, $remove );
+		do_action( 'rest_likes.update_likes', $this->get_object_type(), $object_id, $likes, $response['countFormatted'], $old_likes, $remove );
 
-		return [
-			'count'            => $likes,
-			'countFormatted'   => $likes_i18n,
-			'screenReaderText' => 1 === $likes ? $this->get_labels()['one_like'] : $this->get_labels( $likes )['plural_likes'],
-		];
+		return $response;
 	}
 
 	/**

@@ -8,9 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 * Introduce `rest_likes.labels` filter.
+* Introduce `rest-likes/v1/counts` REST API endpoint to get the like counts of multiple objects.
+* Introduce `rest_likes.refresh_interval` filter.
 
 ### Changed
 * Remove browser support for IE 11.
+* Replace the Heartbeat API with a cacheable REST API request for refreshing like counts. Counts are refreshed every 120 seconds, only while the page is visible.
+* Remove the jQuery dependency.
+
+### Fixed
+* Update the screen reader text when like counts are refreshed.
+* Prevent PHP warnings when getting the like count of a non-existent comment.
 
 ## [1.1.0] - 2022-11-07
 

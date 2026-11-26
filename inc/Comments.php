@@ -92,7 +92,22 @@ class Comments extends Controller {
 	 * @return bool True if comment type is allowed, false otherwise.
 	 */
 	public function is_allowed_comment_type( $comment = null ) {
-		return in_array( get_comment_type( $comment ), $this->get_allowed_comment_types(), true );
+		$comment = get_comment( $comment );
+
+		return $comment && in_array( get_comment_type( $comment ), $this->get_allowed_comment_types(), true );
+	}
+
+	/**
+	 * Primes the comment and comment meta caches.
+	 *
+	 * The comment objects are needed for checking the comment type.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int[] $object_ids Comment IDs.
+	 */
+	protected function prime_caches( array $object_ids ) {
+		_prime_comment_caches( $object_ids, true );
 	}
 
 	/**

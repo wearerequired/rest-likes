@@ -5,12 +5,36 @@
 
 namespace Required\RestLikes;
 
+use WP_REST_Request;
+use WP_REST_Response;
+use WP_REST_Server;
 use function Required\Traduttore_Registry\add_project;
 
 /**
  * Main plugin class.
  */
 class Plugin {
+	/**
+	 * REST namespace of the like counts route.
+	 *
+	 * @since 3.0.0
+	 */
+	const REST_NAMESPACE = 'rest-likes/v1';
+
+	/**
+	 * REST route for fetching like counts of multiple objects.
+	 *
+	 * @since 3.0.0
+	 */
+	const COUNTS_ROUTE = '/counts';
+
+	/**
+	 * Maximum number of object IDs per object type in a single like counts request.
+	 *
+	 * @since 3.0.0
+	 */
+	const MAX_COUNTS_PER_TYPE = 100;
+
 	/**
 	 * List of object types that likes are enabled for.
 	 *
@@ -55,8 +79,7 @@ class Plugin {
 
 		add_action( 'init', [ $this, 'init_traduttore' ] );
 
-		add_filter( 'heartbeat_received', [ $this, 'heartbeat_received' ], 10, 2 );
-		add_filter( 'heartbeat_nopriv_received', [ $this, 'heartbeat_received' ], 10, 2 );
+		add_action( 'rest_api_init', [ $this, 'add_counts_rest_route' ] );
 
 		Blocks\bootstrap();
 	}
@@ -75,35 +98,62 @@ class Plugin {
 	}
 
 	/**
-	 * Receive Heartbeat data and respond.
+	 * Registers the REST route for fetching like counts of multiple objects.
 	 *
-	 * Processes data received via a Heartbeat request, and returns additional data to pass back to the front end.
+	 * Uses GET so that responses can be cached by a page cache, which matters
+	 * because every open tab polls this route.
 	 *
-	 * @since 1.0.0
-	 *
-	 * @param array $response Heartbeat response data to pass back to front end.
-	 * @param array $data Data received from the front end (unslashed).
-	 * @return array Filtered heartbeat response data.
+	 * @since 3.0.0
 	 */
-	public function heartbeat_received( $response, $data ) {
-		if ( empty( $data['rest_likes'] ) ) {
-			return $response;
+	public function add_counts_rest_route() {
+		$args = [];
+
+		foreach ( array_keys( $this->enabled_object_types ) as $object_type ) {
+			$args[ $object_type ] = [
+				'type'     => 'array',
+				'items'    => [
+					'type'    => 'integer',
+					'minimum' => 1,
+				],
+				'maxItems' => self::MAX_COUNTS_PER_TYPE,
+				'default'  => [],
+			];
 		}
 
-		$response['rest_likes'] = [];
+		register_rest_route(
+			self::REST_NAMESPACE,
+			self::COUNTS_ROUTE,
+			[
+				'methods'             => WP_REST_Server::READABLE,
+				'args'                => $args,
+				'permission_callback' => '__return_true',
+				'callback'            => [ $this, 'get_like_counts' ],
+			]
+		);
+	}
 
-		foreach ( (array) $data['rest_likes'] as $object_type => $object_ids ) {
-			foreach ( (array) $object_ids as $object_id ) {
-				$response['rest_likes'][] = [
-					'objectType'     => $object_type,
-					'objectId'       => $object_id,
-					'count'          => $this->get_like_count( $object_type, $object_id ),
-					'countFormatted' => number_format_i18n( $this->get_like_count( $object_type, $object_id ) ),
-				];
+	/**
+	 * Returns the like counts for the requested objects.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param \WP_REST_Request $request Request object.
+	 * @return \WP_REST_Response Response object.
+	 */
+	public function get_like_counts( WP_REST_Request $request ) {
+		$counts = [];
+
+		foreach ( $this->enabled_object_types as $object_type => $controller ) {
+			if ( empty( $request[ $object_type ] ) ) {
+				continue;
+			}
+
+			foreach ( $controller->get_like_counts( $request[ $object_type ] ) as $count ) {
+				$counts[] = array_merge( [ 'objectType' => $object_type ], $count );
 			}
 		}
 
-		return $response;
+		return new WP_REST_Response( $counts );
 	}
 
 	/**
@@ -117,14 +167,31 @@ class Plugin {
 		wp_register_script(
 			'rest-likes',
 			plugin_dir_url( REST_LIKES_PLUGIN_FILE ) . 'js/dist/rest-likes.js',
-			array_merge( $script_asset['dependencies'], [ 'heartbeat' ] ),
+			$script_asset['dependencies'],
 			$script_asset['version'],
 			true
 		);
 
+		/**
+		 * Filters the interval in seconds in which like counts are refreshed while the page is visible.
+		 *
+		 * Pages are usually served from a page cache, so the counts in the markup can be outdated.
+		 *
+		 * @since 3.0.0
+		 *
+		 * @param int $interval Refresh interval in seconds, at most one day. 0 or less disables refreshing. Default 120.
+		 */
+		$refresh_interval = (int) apply_filters( 'rest_likes.refresh_interval', 120 );
+
+		// Browsers fire timeouts longer than ~24.8 days immediately, which would cause a request loop.
+		$refresh_interval = min( max( 0, $refresh_interval ), DAY_IN_SECONDS );
+
 		$script_data = [
-			'root'         => esc_url_raw( get_rest_url() ),
-			'object_types' => $this->get_object_types_script_data(),
+			'root'             => esc_url_raw( get_rest_url() ),
+			'object_types'     => $this->get_object_types_script_data(),
+			'counts_endpoint'  => self::REST_NAMESPACE . self::COUNTS_ROUTE,
+			'refresh_interval' => $refresh_interval,
+			'counts_limit'     => self::MAX_COUNTS_PER_TYPE,
 		];
 
 		if ( is_user_logged_in() ) {

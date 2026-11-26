@@ -114,6 +114,19 @@ class Posts extends Controller {
 	}
 
 	/**
+	 * Primes the post and post meta caches.
+	 *
+	 * The post objects are needed for checking the post type.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int[] $object_ids Post IDs.
+	 */
+	protected function prime_caches( array $object_ids ) {
+		_prime_post_caches( $object_ids, false, true );
+	}
+
+	/**
 	 * Returns the like button markup.
 	 *
 	 * @since 1.0.0
