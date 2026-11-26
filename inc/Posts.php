@@ -90,10 +90,7 @@ class Posts extends Controller {
 			return new \WP_Error( 'invalid_post_type', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
-		$post_type = get_post_type_object( get_post_type( $request['id'] ) );
-
-		// Is the post readable?
-		if ( ! $post_type || ( 'publish' !== get_post_status( $request['id'] ) && ! current_user_can( $post_type->cap->read_post, $request['id'] ) ) ) {
+		if ( ! $this->is_readable( $request['id'] ) ) {
 			return new \WP_Error( 'invalid_post', __( 'You are not allowed to like this post.', 'rest-likes' ), [ 'status' => 400 ] );
 		}
 
@@ -111,6 +108,43 @@ class Posts extends Controller {
 	 */
 	public function is_allowed_post_type( $post = null ) {
 		return in_array( get_post_type( $post ), $this->get_allowed_post_types(), true );
+	}
+
+	/**
+	 * Determines whether the like count of a post can be read by the current user.
+	 *
+	 * The post type has to be allowed and the post has to be published or readable by the current user.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int $object_id Post ID.
+	 * @return bool Whether the like count can be read.
+	 */
+	public function is_readable( $object_id ) {
+		if ( ! $this->is_allowed_post_type( $object_id ) ) {
+			return false;
+		}
+
+		if ( 'publish' === get_post_status( $object_id ) ) {
+			return true;
+		}
+
+		$post_type = get_post_type_object( get_post_type( $object_id ) );
+
+		return $post_type && current_user_can( $post_type->cap->read_post, $object_id );
+	}
+
+	/**
+	 * Primes the post and post meta caches.
+	 *
+	 * The post objects are needed for checking the post type.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param int[] $object_ids Post IDs.
+	 */
+	protected function prime_caches( array $object_ids ) {
+		_prime_post_caches( $object_ids, false, true );
 	}
 
 	/**

@@ -1,9 +1,8 @@
 /**
  * External dependencies.
  */
-import jQuery from 'jquery';
 import { speak } from '@wordpress/a11y';
-import { __, _n, sprintf } from '@wordpress/i18n';
+import { __, sprintf } from '@wordpress/i18n';
 
 /**
  * Check for localStorage support in the browser.
@@ -122,10 +121,18 @@ const checkButtons = () => {
  * @param {string}            screenReaderText A screenreader text calculated with PHP.
  */
 const updateLikeButtonCount = ( likeButtonCount, count, countFormatted, screenReaderText ) => {
+	if ( ! likeButtonCount ) {
+		return;
+	}
+
 	const likeButtonSpanVisual = likeButtonCount.querySelector( '[aria-hidden]' );
 	const likeButtonSpanScreenReader = likeButtonCount.querySelector( '.screen-reader-text' );
 
-	if ( ! likeButtonSpanVisual || ! likeButtonSpanScreenReader ) {
+	if (
+		! likeButtonSpanVisual ||
+		! likeButtonSpanScreenReader ||
+		String( count ) === likeButtonCount.getAttribute( 'data-likes' )
+	) {
 		return;
 	}
 
@@ -134,6 +141,38 @@ const updateLikeButtonCount = ( likeButtonCount, count, countFormatted, screenRe
 		1 === count ? screenReaderText : sprintf( screenReaderText, countFormatted );
 
 	likeButtonCount.setAttribute( 'data-likes', count );
+};
+
+/**
+ * Returns all like buttons of an object.
+ *
+ * @param {string} objectType
+ * @param {number} objectId
+ * @return {NodeList} Like buttons.
+ */
+const getLikeButtons = ( objectType, objectId ) =>
+	document.querySelectorAll(
+		`[data-rest-like-button][data-type="${ objectType }"][data-id="${ objectId }"]`
+	);
+
+/**
+ * Updates the count of all given like buttons of an object type.
+ *
+ * @param {NodeList} likeButtons
+ * @param {string}   objectType
+ * @param {Object}   data        Like count data as returned by the REST API.
+ */
+const updateLikeButtonsCount = ( likeButtons, objectType, data ) => {
+	const classNames = window.restLikes.object_types[ objectType ].classnames;
+
+	likeButtons.forEach( ( likeButton ) => {
+		updateLikeButtonCount(
+			likeButton.querySelector( `.${ classNames.count }` ),
+			data.count,
+			data.countFormatted,
+			data.screenReaderText
+		);
+	} );
 };
 
 /**
@@ -165,10 +204,7 @@ api.request = ( objectType, objectId, isLike ) => {
  * @param {number} objectId
  */
 api.buttonClickHandler = ( objectType, objectId ) => {
-	// Get all buttons for that specific object.
-	const likeButtons = document.querySelectorAll(
-		`[data-rest-like-button][data-type="${ objectType }"][data-id="${ objectId }"]`
-	);
+	const likeButtons = getLikeButtons( objectType, objectId );
 
 	const objectTypeData = window.restLikes.object_types[ objectType ];
 	const classNames = objectTypeData.classnames;
@@ -198,15 +234,9 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 		.then( ( response ) => {
 			likeButtons.forEach( ( likeButton ) => {
 				likeButton.classList.remove( classNames.processing );
-
-				const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
-				updateLikeButtonCount(
-					likeButtonCount,
-					response.count,
-					response.countFormatted,
-					response.screenReaderText
-				);
 			} );
+
+			updateLikeButtonsCount( likeButtons, objectType, response );
 
 			if ( likedItem ) {
 				removeLikedItem( objectType, objectId );
@@ -280,54 +310,142 @@ api.buttonClickHandler = ( objectType, objectId ) => {
 		} );
 };
 
-// We need jQuery do listen to custom events triggered by jQuery, see https://bugs.jquery.com/ticket/11047.
-const $document = jQuery( document );
-
 /**
- * Sends a list of items for Heartbeat calls.
+ * Builds the counts endpoint URLs for all like buttons on the page.
+ *
+ * Each URL contains the IDs of one object type, up to the endpoint's limit.
+ * IDs are sorted so that every visitor of the same page requests the same URL,
+ * which allows the response to be served from the page cache.
+ *
+ * @return {URL[]} Counts endpoint URLs.
  */
-$document.on( 'heartbeat-send', ( event, data ) => {
-	data.rest_likes = {};
+const getCountsUrls = () => {
+	const urls = [];
+	const limit = Number( window.restLikes.counts_limit );
 
 	Object.keys( window.restLikes.object_types ).forEach( ( objectType ) => {
 		const likeButtons = document.querySelectorAll(
 			`[data-rest-like-button][data-type="${ objectType }"]`
 		);
-		const objectIds = [];
+		const objectIds = [ ...likeButtons ]
+			.map( ( likeButton ) => parseInt( likeButton.getAttribute( 'data-id' ), 10 ) )
+			.filter( ( objectId ) => objectId > 0 );
+		const uniqueObjectIds = [ ...new Set( objectIds ) ].sort( ( a, b ) => a - b );
 
-		likeButtons.forEach( ( likeButton ) => {
-			objectIds.push( likeButton.getAttribute( 'data-id' ) );
-		} );
-
-		// Makes the list of object IDs unique.
-		data.rest_likes[ objectType ] = [ ...new Set( objectIds ) ];
+		for ( let i = 0; i < uniqueObjectIds.length; i += limit ) {
+			const url = new URL(
+				window.restLikes.root + window.restLikes.counts_endpoint,
+				window.location.href
+			);
+			url.searchParams.set( objectType, uniqueObjectIds.slice( i, i + limit ).join( ',' ) );
+			urls.push( url );
+		}
 	} );
+
+	return urls;
+};
+
+/**
+ * How long a count changed by the visitor is not overwritten by refreshes.
+ *
+ * A matching response is no proof that the cache caught up: it can come from
+ * a request that bypassed the cache, while an older entry is still served later.
+ */
+const CHANGED_COUNT_TTL = 10 * 60 * 1000;
+
+/**
+ * Objects liked or unliked during this page view, mapped to when their protection expires.
+ *
+ * @type {Map<string, number>}
+ */
+const changedCounts = new Map();
+
+document.addEventListener( 'restLikes', ( { detail } ) => {
+	if ( 'like' === detail.action || 'unlike' === detail.action ) {
+		changedCounts.set(
+			`${ detail.objectType }:${ detail.objectId }`,
+			Date.now() + CHANGED_COUNT_TTL
+		);
+	}
 } );
 
 /**
- * Listens to Heartbeat ticks and updates like counts for all received items.
+ * Determines whether a refreshed count could revert a change made by the visitor.
+ *
+ * @param {Object} item Like count data as returned by the REST API.
+ * @return {boolean} Whether the count should be ignored.
  */
-$document.on( 'heartbeat-tick', ( event, data ) => {
-	if ( ! data.rest_likes ) {
+const isProtectedCount = ( item ) => {
+	const key = `${ item.objectType }:${ item.objectId }`;
+
+	if ( Date.now() < changedCounts.get( key ) ) {
+		return true;
+	}
+
+	changedCounts.delete( key );
+	return false;
+};
+
+/**
+ * Updates the like counts of all buttons from the counts endpoint.
+ *
+ * @return {Promise} Resolves once the counts are updated, never rejects.
+ */
+api.refreshCounts = () =>
+	Promise.resolve()
+		.then( () =>
+			Promise.all(
+				getCountsUrls().map( ( url ) =>
+					window.fetch( url ).then( ( response ) => {
+						if ( ! response.ok ) {
+							throw Error( response.statusText );
+						}
+
+						return response.json();
+					} )
+				)
+			)
+		)
+		.then( ( responses ) => {
+			for ( const item of responses.flat() ) {
+				if ( ! isProtectedCount( item ) ) {
+					updateLikeButtonsCount(
+						getLikeButtons( item.objectType, item.objectId ),
+						item.objectType,
+						item
+					);
+				}
+			}
+		} )
+		.catch( ( error ) => {
+			console.error( error ); // eslint-disable-line no-console
+		} );
+
+const refreshInterval = Number( window.restLikes.refresh_interval ) * 1000;
+let lastRefresh = Date.now();
+let refreshTimer;
+
+/**
+ * Schedules the next like count refresh.
+ *
+ * Hidden tabs don't poll at all. A tab that becomes visible again
+ * refreshes right away if its counts are older than the interval.
+ */
+const scheduleRefresh = () => {
+	window.clearTimeout( refreshTimer );
+
+	if ( ! refreshInterval || document.hidden ) {
 		return;
 	}
 
-	for ( const item of data.rest_likes ) {
-		const { objectType, objectId, count, countFormatted, screenReaderText } = item;
-		const objectTypeData = window.restLikes.object_types[ objectType ];
-		const classNames = objectTypeData.classnames;
-
-		const likeButtons = document.querySelectorAll(
-			`[data-rest-like-button][data-type="${ objectType }"][data-id="${ objectId }"]`
-		);
-
-		likeButtons.forEach( ( likeButton ) => {
-			const likeButtonCount = likeButton.querySelector( `.${ classNames.count }` );
-
-			updateLikeButtonCount( likeButtonCount, count, countFormatted, screenReaderText );
-		} );
-	}
-} );
+	refreshTimer = window.setTimeout(
+		() => {
+			lastRefresh = Date.now();
+			api.refreshCounts().then( scheduleRefresh );
+		},
+		Math.max( 0, lastRefresh + refreshInterval - Date.now() )
+	);
+};
 
 /**
  * Handles DOM changes to watch for new buttons.
@@ -367,6 +485,8 @@ document.dispatchEvent(
 
 // Initialize.
 checkButtons();
+scheduleRefresh();
+document.addEventListener( 'visibilitychange', scheduleRefresh );
 
 if ( typeof window.MutationObserver !== 'undefined' ) {
 	const observer = new window.MutationObserver( handleDomChanges );
